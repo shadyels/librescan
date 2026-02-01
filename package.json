@@ -4,10 +4,13 @@
   "description": "LibreScan - AI-powered bookshelf scanner and book recommendation engine",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run dev:vite & npm run dev:api",
+    "dev:vite": "vite",
+    "dev:api": "vercel dev --listen 3001",
     "build": "vite build",
     "preview": "vite preview",
-    "db:setup": "node scripts/setup-database.js"
+    "db:setup": "node scripts/setup-database.js",
+    "db:check": "node scripts/check-sessions.js"
   },
   "repository": {
     "type": "git",
@@ -37,6 +40,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.23",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "vercel": "^50.9.6"
   }
 }

@@ -88,7 +88,6 @@ async function setupDatabase() {
     
     //run schema
     console.log("Creating database tables...");
-    console.log("Executing SQL at position 1618:", schema.substring(1550, 1650)); //DEBUGGING
     await client.query(schema);
     console.log("Tables created successfully!");
 
