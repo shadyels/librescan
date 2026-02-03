@@ -1,4 +1,18 @@
+import {useNavigate} from "react-router-dom"
+import CameraCapture from "../components/CameraCapture"
+
 function Home() {
+  const navigate = useNavigate();
+
+  /**
+   * Handle successful upload
+   * Navigate to Results page with scanId
+   */
+  const handleUploadSuccess = (scanId) => {
+    console.log("Upload successful, navigating to results::", scanId);
+    navigate(`/results/${scanId}`);
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -18,12 +32,8 @@ function Home() {
           next favorite book.
         </p>
 
-        {/* Placeholder for future upload/scan functionality */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-          <p className="text-gray-500">
-            Camera and upload functionality coming soon...
-          </p>
-        </div>
+        {/*  upload/scan functionality */}
+        <CameraCapture onUploadSuccess={handleUploadSuccess} />
       </div>
     </div>
   );

@@ -14,7 +14,6 @@ async function initDB() {
     upgrade(db) {
       // Create object store if it doesn't exist
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        // Create store WITHOUT keyPath - we'll use explicit keys
         db.createObjectStore(STORE_NAME)
       }
     },

@@ -10,7 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "db:setup": "node scripts/setup-database.js",
-    "db:check": "node scripts/check-sessions.js"
+    "db:check": "node scripts/check-sessions.js",
+    "test:upload": "node scripts/test-upload.js"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,9 @@
     "@vitejs/plugin-react": "^5.1.2",
     "dom": "^0.0.3",
     "dotenv": "^17.2.3",
+    "formidable": "^3.5.4",
     "idb": "^8.0.3",
+    "multer": "^2.0.2",
     "pg": "^8.18.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -39,6 +42,9 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.23",
+    "axios": "^1.13.4",
+    "form-data": "^4.0.5",
+    "node-fetch": "^2.7.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "vercel": "^50.9.6"
