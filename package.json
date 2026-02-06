@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "db:setup": "node scripts/setup-database.js",
     "db:check": "node scripts/check-sessions.js",
-    "test:upload": "node scripts/test-upload.js"
+    "test:upload": "node scripts/test-upload.js",
+    "download:test-image": "node scripts/download-test-image.js"
   },
   "repository": {
     "type": "git",

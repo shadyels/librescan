@@ -1,61 +1,64 @@
-import axios from "axios";
-import FormData from "form-data";
-import fs from "fs";
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
+import FormData from 'form-data';
+
+const API_URL = 'http://localhost:3000/api/upload-image';
+// Use process.cwd() to correctly locate the file in the project root
+const IMAGE_PATH = path.join(process.cwd(), 'test-image.jpg');
 
 async function testUpload() {
-  const imagePath = "./test-image.jpg";
+  console.log('🚀 Starting Upload Test...');
 
-  // Check if test image exists
-  if (!fs.existsSync(imagePath)) {
-    console.error("ERROR: test-image.jpg not found in project root");
-    console.error("Please add a test image file and try again");
-    return;
+  if (!fs.existsSync(IMAGE_PATH)) {
+    console.error(`❌ Error: Test image not found at ${IMAGE_PATH}`);
+    process.exit(1);
   }
 
-  console.log("Creating form data...");
-  const form = new FormData();
-  form.append("image", fs.createReadStream(imagePath));
-
-  console.log("Sending upload request...");
-
   try {
-    const response = await axios.post(
-      "http://localhost:3000/api/upload-image",
-      form,
-      {
-        headers: {
-          ...form.getHeaders(),
-        },
-      },
-    );
+    const form = new FormData();
+    
+    // FIX: Read file as a Buffer instead of a Stream
+    // This allows form-data to calculate the Content-Length automatically,
+    // preventing the "Transfer-Encoding: chunked" error in Vercel.
+    const fileBuffer = fs.readFileSync(IMAGE_PATH);
+    
+    form.append('image', fileBuffer, {
+      filename: 'test-image.jpg',
+      contentType: 'image/jpeg',
+    });
+    
+    form.append('device_id', '361ae423-0fc4-41e4-8bc9-465552e7abf0');
 
-    console.log(`Response status: ${response.status}`);
-    console.log("Response data:", JSON.stringify(response.data, null, 2));
+    console.log(`📸 Uploading ${path.basename(IMAGE_PATH)} (${fileBuffer.length} bytes)...`);
 
-    if (response.data.success) {
-      console.log("\n✅ Upload successful!");
-      console.log(`Scan ID: ${response.data.scan_id}`);
-      console.log(`File: ${response.data.file.filename}`);
-      console.log(`Size: ${(response.data.file.size / 1024).toFixed(2)} KB`);
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: form,
+      headers: form.getHeaders(), // Still required for boundary
+    });
+
+    // Handle response
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      
+      if (response.ok) {
+        console.log('\n✅ TEST PASSED!');
+        console.log('--------------------------------------------------');
+        console.log(`Scan ID:   ${data.scan_id}`);
+        console.log(`Books:     ${data.recognized_books?.books?.length || 0} found`);
+        console.log('--------------------------------------------------');
+      } else {
+        console.error('\n❌ Server Error:', data);
+      }
     } else {
-      console.log("\n❌ Upload failed!");
-      console.log(`Error: ${response.data.error}`);
+      console.error(`\n❌ Unexpected Response: ${response.status} ${response.statusText}`);
+      console.error(await response.text());
     }
+
   } catch (error) {
-    console.error("\n❌ Request failed!");
-
-    if (error.response) {
-      // Server responded with error status
-      console.error(`Status: ${error.response.status}`);
-      console.error("Response:", JSON.stringify(error.response.data, null, 2));
-    } else if (error.request) {
-      // Request made but no response
-      console.error("No response received from server");
-      console.error("Make sure Vercel dev is running on port 3001");
-    } else {
-      // Error setting up request
-      console.error("Error:", error.message);
-    }
+    console.error('\n❌ Script Error:', error.message);
   }
 }
 
