@@ -1,3 +1,4 @@
+import { all } from 'axios'
 import { query } from './lib/database.js'
 
 /**
@@ -9,7 +10,8 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false, 
-      error: 'Method not allowed' 
+      error: 'Method not allowed',
+      allowedMethods: ['POST'] 
     })
   }
   

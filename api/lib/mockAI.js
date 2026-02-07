@@ -92,23 +92,3 @@ export async function recognizeBooks(imagePath) {
   console.log(`Mock AI: Recognized ${mockBooks.length} books`)
   return result
 }
-
-/**
- * Future: Real Florence-2 API call function
- * This will replace recognizeBooks() when USE_MOCK_AI=false
- * 
- * Will use HuggingFace Inference API:
- * - Endpoint: https://api-inference.huggingface.co/models/microsoft/Florence-2-large
- * - Task: OCR_WITH_REGION
- * - Returns: Text detected in image with bounding boxes
- */
-export async function recognizeBooksWithFlorence(imagePath, apiKey) {
-  // TODO: Implement in Phase 2B
-  // 1. Read image file from imagePath
-  // 2. Convert to base64 or buffer
-  // 3. POST to HuggingFace API with authorization header
-  // 4. Parse response (Florence-2 returns text regions)
-  // 5. Extract book titles and authors from detected text
-  // 6. Return in same format as mockBooks
-  throw new Error('Real AI not implemented yet - use mock mode')
-}
