@@ -24,7 +24,7 @@ function SkeletonCard() {
         rounded-md: Slightly rounded corners
         mb-4: Margin bottom for spacing
       */}
-      <div className="w-full aspect-[3/4] bg-gray-300 rounded-md mb-4"></div>
+      <div className="w-full aspect-3/4 bg-gray-300 rounded-md mb-4"></div>
 
       {/* Title placeholder */}
       {/* 

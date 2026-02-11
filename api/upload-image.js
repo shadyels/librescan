@@ -1,18 +1,24 @@
-/**
- * Image Upload API Endpoint
- * POST /api/upload-image
- *
- * Accepts multipart/form-data image uploads, processes with AI book recognition,
- * and stores results in the database.
- *
- * Flow:
- * 1. Parse multipart form data with Formidable
- * 2. Validate uploaded file
- * 3. Process image with AI (mock or real based on env var)
- * 4. Store scan results in database
- * 5. Return scan_id and recognized books
- */
+// =============================================================================
+// api/upload-image.js
+// Purpose: Accept image upload, process with AI, enrich with Google Books, store.
+//
+// ENDPOINT: POST /api/upload-image
+// CONTENT-TYPE: multipart/form-data
+//
+// FORM FIELDS:
+//   image     (File)   - The bookshelf photo (JPEG, PNG, or HEIC, max 10MB)
+//   device_id (String) - UUID v4 identifying the device/session
+// =============================================================================
 
+// -----------------------------------------------------------------------------
+// IMPORT: IncomingForm from formidable
+// WHY: Formidable parses multipart/form-data requests (file uploads).
+//      We use Formidable instead of Multer because Multer has stream handling
+//      issues in Vercel's serverless environment (see project context: Critical
+//      Setup Issues #6). Formidable works reliably with serverless.
+// WHY IncomingForm specifically: It's the class that creates a form parser
+//      instance. We configure it with options like uploadDir and maxFileSize.
+// -----------------------------------------------------------------------------
 import { IncomingForm } from "formidable";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
@@ -20,12 +26,19 @@ import path from "path";
 import { query } from "./lib/database.js";
 import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
 import { recognizeBooks as recognizeBooksReal } from "./lib/qwenAI.js";
+import { enrichBooks } from "./lib/googleBooks.js";
 
-/**
- * Critical: Disable Vercel's built-in body parser
- * Formidable needs access to the raw request stream
- * Without this, multipart parsing fails with "Unexpected end of form"
- */
+// =============================================================================
+// VERCEL CONFIG: Disable body parsing.
+// WHY: Vercel's default body parser reads the request body as JSON or text.
+//      But file uploads use multipart/form-data, which is a binary stream.
+//      If Vercel's parser reads it first, Formidable gets an empty/corrupted
+//      stream and throws "Unexpected end of form" errors.
+//      Setting bodyParser: false tells Vercel to leave the raw stream untouched
+//      so Formidable can parse it correctly.
+// CRITICAL: Without this config, file uploads WILL fail silently or with
+//           confusing error messages.
+// =============================================================================
 export const config = {
   api: {
     bodyParser: false,
@@ -172,6 +185,33 @@ export default async function handler(req, res) {
 
         console.log(`AI recognized ${recognizedBooks.books.length} books`);
 
+        // -------------------------------------------------------------------------
+        // STEP 6 (Phase 2D): Populate the book_cache with Google Books metadata.
+        //
+        // WHY we call enrichBooks here:
+        //   This is the moment we have book titles and authors fresh from the AI.
+        //   enrichBooks() checks the cache for each book, and for cache misses,
+        //   calls Google Books API and stores the result in book_cache.
+        //
+        // WHY we do NOT save the enriched data in the scans table:
+        //   The scans table stores only the raw AI output (title, author, confidence).
+        //   The enriched metadata (covers, ISBN, description, categories) lives
+        //   exclusively in book_cache. When the frontend requests scan results,
+        //   the GET /api/scan/:scanId endpoint joins the two at read time.
+        //
+        //   This avoids duplicating the same metadata across every scan that
+        //   detects the same book. 50 users scanning "The Great Gatsby" means
+        //   1 row in book_cache, not 50 copies of the same cover URL in scans.
+        //
+        // We discard the return value because we only care about the side effect
+        // (populating the cache). The enriched data is not stored in scans.
+        // -------------------------------------------------------------------------
+        console.log(
+          "[upload] Populating book cache with Google Books metadata...",
+        );
+        await enrichBooks(recognizedBooks.books);
+        console.log("[upload] Cache population complete.");
+
         /**
          * Store scan results in database
          *
@@ -188,13 +228,12 @@ export default async function handler(req, res) {
          * - WHERE recognized_books->'metadata'->>'model_used' = 'florence-2'
          */
         await query(
-          `INSERT INTO scans (scan_id, device_id, image_url, recognized_books)
-           VALUES ($1, $2, $3, $4)`,
+          `INSERT INTO scans (scan_id, device_id, recognized_books)
+           VALUES ($1, $2, $3)`,
           [
             scanId, // $1: Unique scan identifier
             deviceId, // $2: User's device ID
-            "", // $3: No image storage (privacy + cost)
-            JSON.stringify(recognizedBooks), // $4: AI results as JSONB
+            JSON.stringify(recognizedBooks), // $3: AI results as JSONB
           ],
         );
 
