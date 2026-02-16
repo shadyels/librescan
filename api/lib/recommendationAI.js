@@ -26,7 +26,7 @@ const MODEL_ID = "meta-llama/Llama-3.1-8B-Instruct";
  * Free tier providers may have cold starts, so we allow extra time.
  */
 const REQUEST_TIMEOUT_MS = 60000;
-const NUM_RECOMMENDATIONS = 5;
+const NUM_RECOMMENDATIONS = 8;
 /**
  * Maximum tokens for the LLM response.
  * 5 recommendations with title + author + reason ≈ 400-600 tokens.
@@ -365,12 +365,26 @@ function validateAndClean(recommendations) {
         rec.title.trim().length > 0,
     )
     // map to response fields
-    .map((rec) => ({
-      title: rec.title.trim(),
-      author: (rec.author || "Unknown").trim(),
-      // Truncat reason to 200 character
-      reason: truncateReason(rec.reason || ""),
-    }))
+    .map((rec) => {
+      let title = rec.title.trim();
+      const author = (rec.author || "Unknown").trim();
+
+      // LLM sometimes includes "by Author" in the title field.
+      // Strip it if the title ends with " by <author>" (case-insensitive).
+      if (author !== "Unknown") {
+        const suffix = ` by ${author}`;
+        if (title.toLowerCase().endsWith(suffix.toLocaleLowerCase())) {
+          title = title.slice(0, -suffix.length).trim();
+        }
+      }
+
+      return {
+        title,
+        author,
+        // Truncat reason to 200 character
+        reason: truncateReason(rec.reason || ""),
+      };
+    })
     // cap the number of recommendations to NUM_RECOMMENDATIONS
     .slice(0, NUM_RECOMMENDATIONS);
 
