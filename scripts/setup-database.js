@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS recommendations (
   device_id UUID references sessions(device_id) ON DELETE CASCADE, --fk to sessions
   scan_id UUID references scans(scan_id) ON DELETE CASCADE, --fk to scans
   book_data JSONB,
-  create_at TIMESTAMP default CURRENT_TIMESTAMP,
+  created_at TIMESTAMP default CURRENT_TIMESTAMP,
   saved BOOLEAN default FALSE
 );
 
@@ -83,8 +83,8 @@ CREATE TABLE IF NOT EXISTS api_usage_tracking (
 CREATE INDEX IF NOT EXISTS idx_sessions_last_active ON sessions(last_active);
 CREATE INDEX IF NOT EXISTS idx_scans_device_id ON scans(device_id);
 CREATE INDEX IF NOT EXISTS idx_scans_scan_date ON scans(scan_date);
-CREATE INDEX IF NOT EXISTS idx_recommendations_device_id ON recommendations(device_id);
-CREATE INDEX IF NOT EXISTS idx_recommendations_saved ON recommendations(saved);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_recommendations_scan_id_unique ON recommendations(scan_id);
+CREATE INDEX IF NOT EXISTS idx_recommendations_saved_created_at ON recommendations(saved, created_at);
 CREATE INDEX IF NOT EXISTS idx_api_usage_tracking_date ON api_usage_tracking(date);
 
 --Book cache indexes

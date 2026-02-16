@@ -202,7 +202,7 @@ export default function BookCard({ book }) {
         {/* real cover is ready. CSS transition handles the animation.         */}
         {/* ----------------------------------------------------------------- */}
         <div
-          // className={`transition-opacity duration-300 ${showRealCover ? "opacity-100" : "opacity-100"}`} //TODO: figure out this line
+          className={`transition-opacity duration-300 ${showRealCover ? "opacity-0" : "opacity-100"}`} //TODO: figure out this line
         >
           <BookIcon title={title} size={120} />
         </div>

@@ -12,6 +12,7 @@
     "db:setup": "node scripts/setup-database.js",
     "db:check": "node scripts/check-sessions.js",
     "db:clear-cache": "node scripts/clear-cache.js",
+    "db:cleanup-recommendations": "node scripts/cleanup-recommendations.js",
     "test:upload": "node scripts/test-upload.js",
     "download:test-image": "node scripts/download-test-image.js"
   },

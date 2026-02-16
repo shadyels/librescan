@@ -11,8 +11,8 @@
  * Route: /results/:scanId
  */
 
-import { useState, useEffect, use } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import SkeletonCard from "../components/SkeletonCard";
 
@@ -376,6 +376,53 @@ function Results() {
         ))}
       </div>
 
+      {/* ================================================================== */}
+      {/* Recommendation CTA.                                                */}
+      {/*                                                                    */}
+      {/* This section only renders when books.length > 0, which is          */}
+      {/* guaranteed because we're inside the success state block (the       */}
+      {/* empty state returns early above).                                  */}
+      {/* ================================================================== */}
+      <div className="mt-8 text-center">
+        {/* Divider line with centered text.
+            Uses the absolute positioning + background technique:
+            - A full-width border-top line is positioned absolutely
+            - The text span sits on top with a background that "covers" 
+              the line behind it, creating the illusion of a gap
+            - bg-gray-50 matches the page background (set in App.jsx) */}
+        <div className="relative my-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-gray-50 px-4 text-sm text-gray-500">
+              Want to discover more?
+            </span>
+          </div>
+        </div>
+
+        {/* The recommendation button.
+            Uses <Link> (not <button> + navigate()) because:
+            - Renders as an <a> tag: accessible, shows URL on hover
+            - Supports cmd+click / ctrl+click to open in new tab
+            - Screen readers announce it as a link (correct semantics)
+            
+            Purple gradient to match the app's design system.
+            Sparkle emoji (✨) for visual appeal.
+            shadow-lg + hover:shadow-xl adds depth on hover. */}
+        <Link
+          to={`/recommendations/${scanId}`}
+          className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl text-lg font-semibold"
+        >
+          <span>✨</span>
+          <span>View Recommendations</span>
+        </Link>
+
+        <p className="text-gray-400 text-sm mt-3">
+          Get personalized book suggestions based on your shelf
+        </p>
+      </div>
+
       {/* Action Buttons */}
       <div className="flex justify-center gap-4">
         <button
@@ -418,21 +465,21 @@ function Results() {
 
 /**
  * REACT HOOKS SUMMARY:
- * 
+ *
  * useState(initialValue):
  * - Returns [value, setValue]
  * - Re-renders component when value changes
  * - Example: const [count, setCount] = useState(0)
- * 
+ *
  * useEffect(callback, dependencies):
  * - Runs callback after render
  * - Runs again if dependencies change
  * - Example: useEffect(() => { fetch() }, [id])
- * 
+ *
  * useParams():
  * - Returns URL parameters as object
  * - Example: /results/123 → { scanId: '123' }
- * 
+ *
  * useNavigate():
  * - Returns function to navigate programmatically
  * - Example: navigate('/home')

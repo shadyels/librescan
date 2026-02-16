@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Preferences from "./pages/Preferences";
 import Results from "./pages/Results";
 import Saved from "./pages/Saved";
+import Recommendations from './pages/Recommendations'
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/preferences" element={<Preferences />} />
+            <Route path="/recommendations/:scanId" element={<Recommendations />} />
             <Route path="/results/:scanId" element={<Results />} />
             <Route path="/saved" element={<Saved />} />
           </Routes>
