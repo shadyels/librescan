@@ -6,13 +6,22 @@
  *
  * Architecture:
  * - Receives an array of recognized books (title, author, confidence, categories, description)
+ * - Optionally receives user preferences (genres, authors, language, reading level) [Phase 4]
  * - Builds a structured prompt that asks the LLM to:
  *     1. Detect reading patterns from the user's bookshelf
- *     2. Generate 5 similar book recommendations
- *     3. Provide a short personalized reason for each recommendation
+ *     2. Consider the user's stated preferences (if any)
+ *     3. Generate 8 similar book recommendations
+ *     4. Provide a short personalized reason for each recommendation
  * - Sends the prompt to the HuggingFace router (OpenAI-compatible chat completions API)
  * - Parses the JSON response with multiple fallback strategies
- * - Returns an array of 5 recommended books with title, author, and reason
+ * - Returns an array of 8 recommended books with title, author, and reason
+ *
+ * Phase 4 changes:
+ * - generateRecommendations() now accepts an optional `preferences` parameter
+ * - buildPrompt() now accepts an optional `preferences` parameter
+ * - New helper: buildPreferencesSection() formats preferences into natural language
+ * - Preferences are injected into the USER message (not system message) because
+ *   they are per-request context, not role definition
  */
 
 import { validate } from "uuid";
@@ -29,7 +38,7 @@ const REQUEST_TIMEOUT_MS = 60000;
 const NUM_RECOMMENDATIONS = 8;
 /**
  * Maximum tokens for the LLM response.
- * 5 recommendations with title + author + reason ≈ 400-600 tokens.
+ * 8 recommendations with title + author + reason ≈ 400-600 tokens.
  * We set 1024 to give the model breathing room for JSON formatting.
  */
 const MAX_TOKENS = 1024;
@@ -38,7 +47,8 @@ const MAX_TOKENS = 1024;
 // MAIN EXPORT: generateRecommendations
 // ============================================================================
 /**
- * Generates personalized book recommendations based on recognized books.
+ * Generates personalized book recommendations based on recognized books
+ * and optional user preferences.
  *
  * @param {Array<Object>} books - Array of recognized book objects. Each should have:
  *   - title {string}: Book title (e.g., "The Kite Runner")
@@ -46,6 +56,13 @@ const MAX_TOKENS = 1024;
  *   - confidence {number}: AI confidence score 0.0-1.0 (used to weight importance)
  *   - categories {Array<string>}: Genre categories from Google Books (optional)
  *   - description {string}: Book synopsis from Google Books (optional)
+ *
+ * @param {Object|null} preferences - Optional user preferences from the preferences table.
+ *   If null or empty, recommendations are based solely on the bookshelf.
+ *   - genres {Array<string>}: Preferred genres (e.g., ["Science Fiction", "Fantasy"])
+ *   - authors {Array<string>}: Preferred authors (e.g., ["Isaac Asimov"])
+ *   - language {string}: Preferred language (e.g., "English")
+ *   - reading_level {string}: Preferred level (e.g., "Intermediate")
  *
  * @returns {Object} Result object with:
  *   - recommendations {Array<Object>}: Array of recommended books, each with:
@@ -56,10 +73,11 @@ const MAX_TOKENS = 1024;
  *       - model_used {string}: The model ID that was called
  *       - processing_time_ms {number}: Total time for the LLM call
  *       - prompt_books_count {number}: How many books were sent to the LLM
+ *       - preferences_used {boolean}: Whether user preferences were included in the prompt
  *
  * @throws {Error} If the API call fails or response cannot be parsed
  */
-export async function generateRecommendations(books) {
+export async function generateRecommendations(books, preferences = null) {
   const startTime = Date.now();
 
   if (!books || books.length === 0) {
@@ -79,9 +97,20 @@ export async function generateRecommendations(books) {
   // ---- Step 2: Build the prompt ----
   // This is the most critical part. The prompt structure directly determines
   // the quality of recommendations.
-  const prompt = buildPrompt(books);
+  // Phase 4: preferences are now passed to buildPrompt for injection into the user message.
+  const prompt = buildPrompt(books, preferences);
   console.log(
     `[recommendationAI] Generating recommendations from ${books.length} books using ${MODEL_ID}`,
+  );
+
+  // Determine if preferences were actually included (non-null and non-empty).
+  // This is tracked in metadata so the frontend or logs can distinguish
+  // preference-influenced recommendations from bookshelf-only ones.
+  const preferencesUsed = hasAnyPreferences(preferences);
+
+  console.log(
+    `[recommendationAI] Generating recommendations from ${books.length} books using ${MODEL_ID}` +
+      (preferencesUsed ? " (with user preferences)" : " (no preferences)"),
   );
 
   // ---- Step 3: Call the HuggingFace router ----
@@ -191,6 +220,11 @@ export async function generateRecommendations(books) {
  * - Llama 3.1 Instruct models are trained to follow system instructions carefully
  * - Separating "who you are" from "what to do" improves JSON compliance
  * - The system message stays constant; the user message changes per scan
+ *
+ * Phase 4 note: Preferences are NOT in the system message. They belong in the
+ * user message because they are per-request context (different for each user),
+ * not role definition (same for all users). The system message defines the LLM's
+ * behavior; the user message provides the data to act on.
  */
 function buildSystemMessage() {
   return `You are a knowledgeable book recommendation assistant. Your job is to analyze a user's bookshelf and recommend similar books they would enjoy.
@@ -215,18 +249,27 @@ OOUTPUT FORMAT (strict JSON array):
 }
 
 /**
- * Builds the user-facing prompt that describes the bookshelf.
+ * Builds the user-facing prompt that describes the bookshelf and preferences.
  *
  * Strategy:
- * - Sort books by confidence score (highest first) so the LLM treats high-confidence books as stronger signals of the user's taste
+ * - Sort books by confidence score (highest first) so the LLM treats
+ *   high-confidence books as stronger signals of the user's taste
  * - Include categories and descriptions when available (richer context = better recs)
  * - Keep descriptions short (first 150 chars) to avoid blowing up token count
  * - Mark which books have low confidence so the LLM doesn't over-index on them
+ * - Phase 4: Append preferences section after the bookshelf if preferences exist
+ *
+ * Why preferences go in the user message (not system message):
+ * - The system message defines the LLM's role and rules (constant across all users)
+ * - The user message provides the data for this specific request (varies per user)
+ * - Preferences are user-specific data, so they belong alongside the bookshelf listing
+ * - This also keeps the system message stable and testable
  *
  * @param {Array<Object>} books - Recognized books array
+ * @param {Object|null} preferences - Optional user preferences (Phase 4)
  * @returns {string} The formatted user prompt
  */
-function buildPrompt(books) {
+function buildPrompt(books, preferences = null) {
   // Array.sort mutates in place, so we spread into a new array to avoid modifying the caller's data.
   const sortedBooks = [...books].sort(
     (a, b) => (b.confidence || 0) - (a.confidence || 0),
@@ -258,9 +301,120 @@ function buildPrompt(books) {
     return entry;
   });
 
-  return `Here are the books on my shelf:
-            ${bookDescriptions.join("\n\n")}
-        Based on these ${books.length} books, recommend ${NUM_RECOMMENDATIONS} similar books I would enjoy. Remember: respond ONLY with a JSON array, no other text.`;
+  // ---- Build the full prompt ----
+  // Start with the bookshelf listing
+  let prompt = `Here are the books on my shelf:
+            ${bookDescriptions.join("\n\n")}`;
+
+  // Phase 4: Append preferences section if the user has set any.
+  // The preferences section is phrased as natural language so the LLM
+  // can interpret it conversationally (not as rigid filter rules).
+  const preferencesSection = buildPreferencesSection(preferences);
+  if (preferencesSection) {
+    prompt += `\n\n${preferencesSection}`;
+  }
+
+  // Final instruction
+  prompt += `\n\nBased on these ${books.length} books${hasAnyPreferences(preferences) ? " and my reading preferences" : ""}, recommend ${NUM_RECOMMENDATIONS} similar books I would enjoy. Remember: respond ONLY with a JSON array, no other text.`;
+
+  return prompt;
+}
+
+// ============================================================================
+// PREFERENCES HELPERS (Phase 4)
+// ============================================================================
+
+/**
+ * Checks whether the preferences object contains any non-empty values.
+ *
+ * Used to decide whether to include the preferences section in the prompt
+ * and to set the `preferences_used` flag in metadata.
+ *
+ * @param {Object|null} preferences - The preferences object from the DB
+ * @returns {boolean} True if at least one preference field has content
+ */
+function hasAnyPreferences(preferences) {
+  if (!preferences) return false;
+
+  // Check each field: arrays must have length > 0, strings must be non-empty
+  const hasGenres =
+    Array.isArray(preferences.genres) && preferences.genres.length > 0;
+  const hasAuthors =
+    Array.isArray(preferences.authors) && preferences.authors.length > 0;
+  const hasLanguage =
+    typeof preferences.language === "string" &&
+    preferences.language.trim().length > 0;
+  const hasReadingLevel =
+    typeof preferences.reading_level === "string" &&
+    preferences.reading_level.trim().length > 0;
+
+  return hasGenres || hasAuthors || hasLanguage || hasReadingLevel;
+}
+
+/**
+ * Formats user preferences into a natural-language section for the prompt.
+ *
+ * Why natural language instead of structured data:
+ * - LLMs interpret conversational context better than key-value pairs
+ * - "I enjoy science fiction and fantasy" is clearer to the model than
+ *   "genres: [Science Fiction, Fantasy]"
+ * - Natural phrasing allows the model to weigh preferences flexibly
+ *   (e.g., it might recommend a sci-fi book by a non-preferred author
+ *   if it strongly matches the shelf)
+ *
+ * Phrasing choices:
+ * - "I enjoy..." (genres) — soft preference, not a hard filter
+ * - "Some of my favorite authors include..." — hints, not requirements
+ * - "I prefer books in..." (language) — guides but doesn't exclude
+ * - "My reading level is..." — adjusts complexity, not genre
+ *
+ * @param {Object|null} preferences - The preferences object from the DB
+ * @returns {string|null} Formatted preferences text, or null if no preferences
+ */
+function buildPreferencesSection(preferences) {
+  // Return null if no preferences at all — prompt will not include the section
+  if (!hasAnyPreferences(preferences)) return null;
+
+  // Build individual sentences for each non-empty preference field.
+  // We collect them in an array and join at the end.
+  const parts = [];
+
+  // ---- Genres ----
+  if (Array.isArray(preferences.genres) && preferences.genres.length > 0) {
+    parts.push(
+      `I enjoy reading these genres: ${preferences.genres.join(", ")}.`,
+    );
+  }
+
+  // ---- Authors ----
+  if (Array.isArray(preferences.authors) && preferences.authors.length > 0) {
+    parts.push(
+      `Some of my favorite authors include: ${preferences.authors.join(", ")}.`,
+    );
+  }
+
+  // ---- Language ----
+  if (
+    typeof preferences.language === "string" &&
+    preferences.language.trim().length > 0
+  ) {
+    parts.push(`I prefer books in ${preferences.language.trim()}.`);
+  }
+
+  // ---- Reading Level ----
+  if (
+    typeof preferences.reading_level === "string" &&
+    preferences.reading_level.trim().length > 0
+  ) {
+    parts.push(`My reading level is ${preferences.reading_level.trim()}.`);
+  }
+
+  // If somehow all fields were empty after trimming, return null
+  if (parts.length === 0) return null;
+
+  // Join with a header line. The header signals to the LLM that this section
+  // is distinct from the bookshelf listing.
+  return `My reading preferences:\n${parts.join("\n")}`;
 }
 
 /**

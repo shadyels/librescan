@@ -9,14 +9,17 @@
  *
  * Full pipeline:
  * 1. Receive scan_id and device_id from the request body
- * 2. Fetch the scan data from the database (recognized books)
- * 3. Enrich recognized books with cached metadata (covers, categories, descriptions)
+ * 2. Check if recommendations already exist for this scan (prevent duplicate LLM calls)
+ * 3. Fetch the scan data from the database (recognized books)
+ * 4. Enrich recognized books with cached metadata (covers, categories, descriptions)
  *    — needed because the LLM uses descriptions + categories for better recommendations
- * 4. Call the recommendation LLM (Llama 3.1 8B) with the enriched book list
- * 5. Enrich the RECOMMENDED books with Google Books (covers, ISBN, etc.)
+ * 4.5. Fetch user preferences from the preferences table (Phase 4)
+ *    — genres, authors, language, reading level are injected into the LLM prompt
+ * 5. Call the recommendation LLM (Llama 3.1 8B) with the enriched book list + preferences
+ * 6. Enrich the RECOMMENDED books with Google Books (covers, ISBN, etc.)
  *    — so the frontend can display real covers for recommendations too
- * 6. Store everything in the recommendations table (one row per scan)
- * 7. Return the recommendations to the frontend
+ * 7. Store everything in the recommendations table (one row per scan)
+ * 8. Return the recommendations to the frontend
  *
  * Side effects:
  * - Populates book_cache with metadata for recommended books (via enrichBooks)
@@ -27,6 +30,12 @@
  * - recommendationAI.js: LLM call
  * - googleBooks.js: Cover/metadata enrichment + cache
  * - uuid: Generating recommendation_id
+ *
+ * Phase 4 changes:
+ * - Added Step 4.5: fetch preferences from the preferences table
+ * - Pass preferences to generateRecommendations() as second argument
+ * - Preferences are optional — if the user hasn't set any, the LLM works with
+ *   just the bookshelf (same behavior as Phase 3)
  */
 
 import { query } from "./lib/database.js";
@@ -142,19 +151,68 @@ export default async function handler(req, res) {
     // The LLM needs descriptions and categories to make good recommendations.
     // These are stored in book_cache (populated during Phase 2D upload).
     // We join them here the same way the scan endpoint does.
-    const enrichedRecognizedBooks = await enrichBooksFromCache(recognizedBooks)
+    const enrichedRecognizedBooks = await enrichBooksFromCache(recognizedBooks);
 
-    console.log('[generate-recommendations] Enriched recognized books with cache data')
+    console.log(
+      "[generate-recommendations] Enriched recognized books with cache data",
+    );
 
     console.log(
       `[generate-recommendations] Found ${recognizedBooks.length} recognized books`,
     );
 
+    // ---- Step 4.5: Fetch user preferences ----
+    // Query the preferences table for this device's reading preferences.
+    // These are optional — if the user hasn't set preferences, we pass null
+    // to generateRecommendations(), and the LLM works with just the bookshelf.
+    //
+    // Why fetch here instead of in recommendationAI.js:
+    // - recommendationAI.js is a pure library (takes data in, returns data out).
+    //   It should not have database access — that's the handler's job.
+    // - This separation of concerns keeps recommendationAI.js testable without
+    //   a database connection.
+    let preferences = null;
+
+    try {
+      const prefResult = await query(
+        "SELECT genres, authors, language, reading_level FROM preferences WHERE device_id = $1",
+        [device_id],
+      );
+
+      if (prefResult.rows.length > 0) {
+        // User has saved preferences — pass them to the LLM
+        preferences = {
+          genres: prefResult.rows[0].genres || [],
+          authors: prefResult.rows[0].authors || [],
+          language: prefResult.rows[0].language || "",
+          reading_level: prefResult.rows[0].reading_level || "",
+        };
+        console.log(
+          `[generate-recommendations] Found user preferences: ` +
+            `${preferences.genres.length} genres, ` +
+            `${preferences.authors.length} authors, ` +
+            `language="${preferences.language}", ` +
+            `level="${preferences.reading_level}"`,
+        );
+      } else {
+        console.log(
+          "[generate-recommendations] No user preferences found (using bookshelf only)",
+        );
+      }
+    } catch (prefError) {
+      // If preferences fetch fails, continue without them.
+      // The LLM can still generate good recommendations from just the bookshelf.
+      // This is a graceful degradation — preferences are an enhancement, not a requirement.
+      console.error(
+        `[generate-recommendations] Failed to fetch preferences (non-blocking): ${prefError.message}`,
+      );
+    }
+
     // ---- Step 5: Call the recommendation LLM ----
     console.log(
       "[generate-recommendations] Calling LLM for recommendations...",
     );
-    const llmResult = await generateRecommendations(enrichedRecognizedBooks);
+    const llmResult = await generateRecommendations(enrichedRecognizedBooks,preferences);
 
     if (llmResult.recommendations.length === 0) {
       return res.status(500).json({
@@ -238,12 +296,12 @@ export default async function handler(req, res) {
 
 /**
  * Joins book_cache metadata into recognized books for LLM context.
- * 
+ *
  * This is the same logic used by api/scan/[scanId].js to enrich scan results.
  * We duplicate it here rather than importing from [scanId].js because:
  * - [scanId].js is an API handler, not a library (export default function)
  * - Extracting shared logic into a library would be a refactor for later
- * 
+ *
  * @param {Array<Object>} books - Raw recognized books from scans table
  * @returns {Array<Object>} Books enriched with cache data (categories, description, etc.)
  */
@@ -252,39 +310,41 @@ async function enrichBooksFromCache(books) {
   for (const book of books) {
     // Lowercase for case-insensitive cache lookup.
     // This matches the book_cache table's title_lower + author_lower index.
-    const titleLower = (book.title || '').toLowerCase().trim()
-    const authorLower = (book.author || '').toLowerCase().trim()
+    const titleLower = (book.title || "").toLowerCase().trim();
+    const authorLower = (book.author || "").toLowerCase().trim();
 
     try {
       const cacheResult = await query(
         `SELECT isbn, cover_url, description, categories
          FROM book_cache
          WHERE title_lower = $1 AND COALESCE(author_lower, '') = $2`,
-        [titleLower, authorLower]
-      )
+        [titleLower, authorLower],
+      );
 
       if (cacheResult.rows.length > 0) {
         // Cache hit: merge the cached fields into the book object
-        const cached = cacheResult.rows[0]
-        book.isbn = cached.isbn || null
-        book.cover_url = cached.cover_url || null
-        book.description = cached.description || null
-        book.categories = cached.categories || []
-        book.enriched = true
+        const cached = cacheResult.rows[0];
+        book.isbn = cached.isbn || null;
+        book.cover_url = cached.cover_url || null;
+        book.description = cached.description || null;
+        book.categories = cached.categories || [];
+        book.enriched = true;
       } else {
         // Cache miss: mark as not enriched so the LLM knows this book
         // has less context available
-        book.enriched = false
+        book.enriched = false;
       }
     } catch (error) {
       // If cache lookup fails for one book, continue with the rest.
       // The LLM can still work with title + author alone.
-      console.error(`[generate-recommendations] Cache lookup failed for "${book.title}": ${error.message}`)
-      book.enriched = false
+      console.error(
+        `[generate-recommendations] Cache lookup failed for "${book.title}": ${error.message}`,
+      );
+      book.enriched = false;
     }
   }
 
-  return books
+  return books;
 }
 
 // ============================================================================
@@ -295,29 +355,31 @@ async function enrichBooksFromCache(books) {
  * Deletes recommendations that are:
  * - NOT saved by the user (saved = FALSE)
  * - Older than 24 hours (created_at < NOW() - INTERVAL '24 hours')
- * 
+ *
  * Why this approach:
  * - Runs as a side effect on each POST, not a cron job (serverless-friendly)
  * - Only deletes unsaved recommendations (saved ones persist forever)
  * - 24-hour window gives users time to come back and save
  * - The column is named created_at (not created_at) — matching the existing schema
- * 
+ *
  * Note: A separate npm script (cleanup-recommendations.js) also exists
  * for manual cleanup if needed.
- * 
+ *
  * @returns {number} Number of rows deleted
  */
 async function cleanupOldRecommendations() {
   const result = await query(
     `DELETE FROM recommendations
      WHERE saved = FALSE
-     AND created_at < NOW() - INTERVAL '24 hours'`
-  )
+     AND created_at < NOW() - INTERVAL '24 hours'`,
+  );
 
-  const deletedCount = result.rowCount || 0
+  const deletedCount = result.rowCount || 0;
   if (deletedCount > 0) {
-    console.log(`[generate-recommendations] Cleaned up ${deletedCount} old unsaved recommendations`)
+    console.log(
+      `[generate-recommendations] Cleaned up ${deletedCount} old unsaved recommendations`,
+    );
   }
 
-  return deletedCount
+  return deletedCount;
 }
