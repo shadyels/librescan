@@ -441,23 +441,6 @@ function Results() {
         >
           📸 Scan Another Bookshelf
         </button>
-
-        {/* Save Recommendations button (disabled for now) */}
-        <button
-          disabled
-          className="
-            px-6
-            py-3
-            bg-gray-300
-            text-gray-500
-            rounded-lg
-            cursor-not-allowed
-            font-medium
-        "
-          title="Coming soon! Recommendations will be available after Phase 2D"
-        >
-          💾 Save Recommendations (Coming Soon)
-        </button>
       </div>
     </div>
   );
