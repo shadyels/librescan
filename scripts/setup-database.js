@@ -13,7 +13,7 @@ const pool = new Pool({
 });
 
 console.log('Dropping existing tables...')
-  await pool.query('DROP TABLE IF EXISTS usage_tracking CASCADE')
+  await pool.query('DROP TABLE IF EXISTS api_usage_tracking CASCADE')
   await pool.query('DROP TABLE IF EXISTS book_cache CASCADE')
   await pool.query('DROP TABLE IF EXISTS recommendations CASCADE')
   await pool.query('DROP TABLE IF EXISTS preferences CASCADE')
@@ -71,10 +71,12 @@ CREATE TABLE IF NOT EXISTS book_cache (
   cached_at TIMESTAMP default CURRENT_TIMESTAMP
 );
 
--- Usage tracking table (track API usage per device)
+-- Usage tracking table (track API usage per day, separate counters per external API)
 CREATE TABLE IF NOT EXISTS api_usage_tracking (
-    date DATE PRIMARY KEY,    
-    total_requests INT default 0,
+    date DATE PRIMARY KEY,
+    qwen_requests INT default 0,
+    llama_requests INT default 0,
+    google_books_requests INT default 0,
     total_cost NUMERIC(10,4) default 0,
     daily_limit_hit BOOLEAN default FALSE
 );
@@ -85,7 +87,6 @@ CREATE INDEX IF NOT EXISTS idx_scans_device_id ON scans(device_id);
 CREATE INDEX IF NOT EXISTS idx_scans_scan_date ON scans(scan_date);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_recommendations_scan_id_unique ON recommendations(scan_id);
 CREATE INDEX IF NOT EXISTS idx_recommendations_saved_created_at ON recommendations(saved, created_at);
-CREATE INDEX IF NOT EXISTS idx_api_usage_tracking_date ON api_usage_tracking(date);
 
 --Book cache indexes
 --Unique composite index: enables fast cache lookups by title+author and prevents duplicate entries

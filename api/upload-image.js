@@ -27,6 +27,7 @@ import { query } from "./lib/database.js";
 //import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
 import { recognizeBooks as recognizeBooksReal } from "./lib/qwenAI.js";
 import { enrichBooks } from "./lib/googleBooks.js";
+import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
 
 // =============================================================================
 // VERCEL CONFIG: Disable body parsing.
@@ -161,6 +162,20 @@ export default async function handler(req, res) {
 
         let recognizedBooks;
 
+        // --- Phase 6: Check Qwen daily limit before calling AI ---
+        // We check BEFORE the expensive API call to avoid wasting the user's
+        // time (Qwen calls take 5-60 seconds). Better to fail fast.
+        const qwenLimit = await checkLimit("qwen");
+        if (qwenLimit.limited) {
+          console.log(
+            `[upload] Qwen daily limit reached (${qwenLimit.count}). Blocking scan.`,
+          );
+          return res.status(429).json({
+            success: false,
+            error: qwenLimit.reason,
+          });
+        }
+
         if (useMockAI) {
           /**
            * Mock AI Processing
@@ -184,6 +199,12 @@ export default async function handler(req, res) {
         }
 
         console.log(`AI recognized ${recognizedBooks.books.length} books`);
+
+        // --- Phase 6: Increment Qwen usage counter ---
+        // Only increment on SUCCESS. If the AI call threw an error, the
+        // catch block runs instead, and we don't count failed requests
+        // against the limit.
+        if (!useMockAI) { await incrementUsage("qwen"); }
 
         // -------------------------------------------------------------------------
         // STEP 6 (Phase 2D): Populate the book_cache with Google Books metadata.

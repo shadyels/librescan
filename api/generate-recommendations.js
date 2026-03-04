@@ -42,6 +42,7 @@ import { query } from "./lib/database.js";
 import { generateRecommendations } from "./lib/recommendationAI.js";
 import { enrichBooks } from "./lib/googleBooks.js";
 import { v4 as uuidv4 } from "uuid";
+import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
 
 /**
  * Why export default: Vercel requires default exports to detect handlers.
@@ -212,7 +213,26 @@ export default async function handler(req, res) {
     console.log(
       "[generate-recommendations] Calling LLM for recommendations...",
     );
-    const llmResult = await generateRecommendations(enrichedRecognizedBooks,preferences);
+
+    // --- Phase 6: Check Llama daily limit before calling LLM ---
+    const llamaLimit = await checkLimit("llama");
+    if (llamaLimit.limited) {
+      console.log(
+        `[generate-recommendations] Llama daily limit reached (${llamaLimit.count}). Blocking.`,
+      );
+      return res.status(429).json({
+        success: false,
+        error: llamaLimit.reason,
+      });
+    }
+    console.log(
+      "[generate-recommendations] Calling LLM for recommendations...",
+    );
+
+    const llmResult = await generateRecommendations(
+      enrichedRecognizedBooks,
+      preferences,
+    );
 
     if (llmResult.recommendations.length === 0) {
       return res.status(500).json({
@@ -225,6 +245,9 @@ export default async function handler(req, res) {
     console.log(
       `[generate-recommendations] LLM returned ${llmResult.recommendations.length} recommendations`,
     );
+
+    // --- Phase 6: Increment Llama usage counter before enriching the recommendations---
+    await incrementUsage("llama");
 
     // ---- Step 6: Enrich recommended books with Google Books ----
     // This populates book_cache with covers, ISBNs, descriptions for the

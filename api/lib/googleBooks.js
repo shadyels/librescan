@@ -33,7 +33,7 @@
 //      queries for us. We don't create our own Pool here to avoid duplicate
 //      connections.
 // -----------------------------------------------------------------------------
-import { query } from './database.js'
+import { query } from "./database.js";
 
 // -----------------------------------------------------------------------------
 // IMPORT: v4 as uuidv4 from the uuid package.
@@ -41,7 +41,9 @@ import { query } from './database.js'
 //      inserting new entries into book_cache. We use v4 (random) UUIDs
 //      consistently across the project (session IDs, scan IDs, etc.).
 // -----------------------------------------------------------------------------
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from "uuid";
+
+import { checkLimit, incrementUsage } from "../../lib/usageTracking.js";
 
 // =============================================================================
 // CONSTANTS
@@ -53,7 +55,7 @@ import { v4 as uuidv4 } from 'uuid'
 //      because we're searching for books by title and author.
 //      Docs: https://developers.google.com/books/docs/v1/using#PerformingSearch
 // -----------------------------------------------------------------------------
-const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes'
+const GOOGLE_BOOKS_API_URL = "https://www.googleapis.com/books/v1/volumes";
 
 // -----------------------------------------------------------------------------
 // REQUEST_TIMEOUT_MS
@@ -61,7 +63,7 @@ const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes'
 //      to prevent a single slow request from blocking the entire scan.
 //      5 seconds is generous - if it takes longer, something is wrong.
 // -----------------------------------------------------------------------------
-const REQUEST_TIMEOUT_MS = 5000
+const REQUEST_TIMEOUT_MS = 5000;
 
 // -----------------------------------------------------------------------------
 // DELAY_BETWEEN_REQUESTS_MS
@@ -70,7 +72,7 @@ const REQUEST_TIMEOUT_MS = 5000
 //      per-second rate limits and is polite to the API.
 //      100ms means 10 books take about 1 second of delay (plus actual API time).
 // -----------------------------------------------------------------------------
-const DELAY_BETWEEN_REQUESTS_MS = 100
+const DELAY_BETWEEN_REQUESTS_MS = 100;
 
 // =============================================================================
 // enrichBooks(books)
@@ -107,18 +109,20 @@ export async function enrichBooks(books) {
   //      you just get the AI-recognized titles without covers. This is important
   //      for development - you might not have the API key set up yet.
   // ---------------------------------------------------------------------------
-  const apiKey = process.env.GOOGLE_BOOKS_API_KEY
+  const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
 
   if (!apiKey) {
-    console.warn('[googleBooks] GOOGLE_BOOKS_API_KEY is not set. Skipping enrichment.')
-    return books.map(book => ({
+    console.warn(
+      "[googleBooks] GOOGLE_BOOKS_API_KEY is not set. Skipping enrichment.",
+    );
+    return books.map((book) => ({
       ...book,
       isbn: null,
       cover_url: null,
       description: null,
       categories: [],
       enriched: false,
-    }))
+    }));
   }
 
   // ---------------------------------------------------------------------------
@@ -126,11 +130,11 @@ export async function enrichBooks(books) {
   // WHY: Avoids unnecessary work and potential edge cases with empty arrays.
   // ---------------------------------------------------------------------------
   if (!books || books.length === 0) {
-    console.log('[googleBooks] No books to enrich.')
-    return []
+    console.log("[googleBooks] No books to enrich.");
+    return [];
   }
 
-  console.log(`[googleBooks] Enriching ${books.length} books...`)
+  console.log(`[googleBooks] Enriching ${books.length} books...`);
 
   // ---------------------------------------------------------------------------
   // Process each book sequentially (not in parallel).
@@ -142,10 +146,10 @@ export async function enrichBooks(books) {
   //   - The user is already waiting for AI processing (5-60s), so an extra
   //     1-3 seconds for enrichment is barely noticeable.
   // ---------------------------------------------------------------------------
-  const enrichedBooks = []
+  const enrichedBooks = [];
 
   for (let i = 0; i < books.length; i++) {
-    const book = books[i]
+    const book = books[i];
 
     try {
       // -----------------------------------------------------------------------
@@ -154,10 +158,10 @@ export async function enrichBooks(books) {
       //      we skip the Google Books API call entirely. This saves quota and
       //      makes the response faster.
       // -----------------------------------------------------------------------
-      const cached = await checkCache(book.title, book.author)
+      const cached = await checkCache(book.title, book.author);
 
       if (cached) {
-        console.log(`[googleBooks] Cache HIT: "${book.title}"`)
+        console.log(`[googleBooks] Cache HIT: "${book.title}"`);
         enrichedBooks.push({
           ...book,
           isbn: cached.isbn,
@@ -165,23 +169,48 @@ export async function enrichBooks(books) {
           description: cached.description,
           categories: cached.categories || [],
           enriched: true,
-        })
+        });
         // No delay needed for cache hits - we didn't call the API
-        continue
+        continue;
+      }
+
+      // --- Phase 6: Check Google Books daily limit before API call ---
+      // This check only runs on cache MISSES (cache hits already
+      // used `continue` to skip to the next book). So we only consume
+      // quota when we actually need to call the external API.
+      const gbLimit = await checkLimit("google_books");
+      if (gbLimit.limited) {
+        console.log(
+          `[googleBooks] Daily limit reached (${gbLimit.count}). Skipping remaining enrichment.`,
+        );
+        // Mark this book as not enriched and stop processing further books.
+        // The `break` exits the for loop. Remaining books will have
+        // enriched: false, which makes BookCard show the SVG fallback icon.
+        book.enriched = false;
+        break;
       }
 
       // -----------------------------------------------------------------------
       // Step 2: Cache miss - call Google Books API.
       // -----------------------------------------------------------------------
-      console.log(`[googleBooks] Cache MISS: "${book.title}" - calling API...`)
-      const metadata = await fetchFromGoogleBooks(book.title, book.author, apiKey)
+      console.log(`[googleBooks] Cache MISS: "${book.title}" - calling API...`);
+      const metadata = await fetchFromGoogleBooks(
+        book.title,
+        book.author,
+        apiKey,
+      );
+
+      // --- Phase 6: Increment Google Books usage counter ---
+      // Only counted when the API was actually called (cache misses).
+      // Cache hits don't reach this code path.
+      await incrementUsage("google_books");
 
       if (metadata) {
         // ---------------------------------------------------------------------
         // Step 3: Store the result in the cache for future lookups.
         // WHY: Next time any user scans a shelf with this book, we skip the API.
         // ---------------------------------------------------------------------
-        await storeInCache(book.title, book.author, metadata)
+        await storeInCache(book.title, book.author, metadata);
 
         enrichedBooks.push({
           ...book,
@@ -190,20 +219,20 @@ export async function enrichBooks(books) {
           description: metadata.description,
           categories: metadata.categories || [],
           enriched: true,
-        })
+        });
       } else {
         // ---------------------------------------------------------------------
         // Google Books had no results for this book.
         // WHY we still cache "no result": To avoid calling the API again for
         // the same book that Google doesn't have. We store it with null fields.
         // ---------------------------------------------------------------------
-        console.log(`[googleBooks] No results found for: "${book.title}"`)
+        console.log(`[googleBooks] No results found for: "${book.title}"`);
         await storeInCache(book.title, book.author, {
           isbn: null,
           cover_url: null,
           description: null,
           categories: [],
-        })
+        });
 
         enrichedBooks.push({
           ...book,
@@ -212,7 +241,7 @@ export async function enrichBooks(books) {
           description: null,
           categories: [],
           enriched: false,
-        })
+        });
       }
     } catch (error) {
       // -----------------------------------------------------------------------
@@ -221,7 +250,10 @@ export async function enrichBooks(books) {
       //      is down or returns an error for one specific book.
       // We do NOT cache errors - the next scan might succeed.
       // -----------------------------------------------------------------------
-      console.error(`[googleBooks] Error enriching "${book.title}":`, error.message)
+      console.error(
+        `[googleBooks] Error enriching "${book.title}":`,
+        error.message,
+      );
       enrichedBooks.push({
         ...book,
         isbn: null,
@@ -229,7 +261,7 @@ export async function enrichBooks(books) {
         description: null,
         categories: [],
         enriched: false,
-      })
+      });
     }
 
     // -------------------------------------------------------------------------
@@ -239,7 +271,9 @@ export async function enrichBooks(books) {
     // We skip the delay after the last book (no point waiting after we're done).
     // -------------------------------------------------------------------------
     if (i < books.length - 1) {
-      await new Promise(resolve => setTimeout(resolve, DELAY_BETWEEN_REQUESTS_MS))
+      await new Promise((resolve) =>
+        setTimeout(resolve, DELAY_BETWEEN_REQUESTS_MS),
+      );
     }
   }
 
@@ -247,10 +281,12 @@ export async function enrichBooks(books) {
   // Count how many books were successfully enriched for logging.
   // WHY: Gives us a quick summary in the server logs for debugging.
   // ---------------------------------------------------------------------------
-  const enrichedCount = enrichedBooks.filter(b => b.enriched).length
-  console.log(`[googleBooks] Enrichment complete: ${enrichedCount}/${books.length} books enriched.`)
+  const enrichedCount = enrichedBooks.filter((b) => b.enriched).length;
+  console.log(
+    `[googleBooks] Enrichment complete: ${enrichedCount}/${books.length} books enriched.`,
+  );
 
-  return enrichedBooks
+  return enrichedBooks;
 }
 
 // =============================================================================
@@ -284,8 +320,8 @@ async function checkCache(title, author) {
   // trim() removes leading/trailing whitespace that could cause mismatches.
   // If author is falsy (null, undefined, empty string), we normalize to ''.
   // ---------------------------------------------------------------------------
-  const titleLower = title.toLowerCase().trim()
-  const authorLower = (author || '').toLowerCase().trim()
+  const titleLower = title.toLowerCase().trim();
+  const authorLower = (author || "").toLowerCase().trim();
 
   // ---------------------------------------------------------------------------
   // Query the cache using the composite unique index (title_lower, author_lower).
@@ -299,18 +335,18 @@ async function checkCache(title, author) {
     `SELECT isbn, cover_url, description, categories
      FROM book_cache
      WHERE title_lower = $1 AND COALESCE(author_lower, '') = $2`,
-    [titleLower, authorLower]
-  )
+    [titleLower, authorLower],
+  );
 
   // ---------------------------------------------------------------------------
   // result.rows is an array. If empty, the book is not in the cache.
   // If found, return the first (and only, due to unique index) row.
   // ---------------------------------------------------------------------------
   if (result.rows.length === 0) {
-    return null
+    return null;
   }
 
-  return result.rows[0]
+  return result.rows[0];
 }
 
 // =============================================================================
@@ -337,9 +373,9 @@ async function checkCache(title, author) {
 //     The unique index is on the lowercase columns.
 // =============================================================================
 async function storeInCache(title, author, metadata) {
-  const cacheId = uuidv4()
-  const titleLower = title.toLowerCase().trim()
-  const authorLower = (author || '').toLowerCase().trim()
+  const cacheId = uuidv4();
+  const titleLower = title.toLowerCase().trim();
+  const authorLower = (author || "").toLowerCase().trim();
 
   // ---------------------------------------------------------------------------
   // INSERT with ON CONFLICT (upsert pattern).
@@ -377,15 +413,15 @@ async function storeInCache(title, author, metadata) {
     [
       cacheId,
       title,
-      author || '',
+      author || "",
       titleLower,
       authorLower,
       metadata.isbn || null,
       metadata.cover_url || null,
       metadata.description || null,
       metadata.categories || [],
-    ]
-  )
+    ],
+  );
 }
 
 // =============================================================================
@@ -430,13 +466,13 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
   //   these, searching "Gatsby Fitzgerald" might return books ABOUT Fitzgerald
   //   rather than the novel itself.
   // ---------------------------------------------------------------------------
-  let searchQuery = `intitle:${encodeURIComponent(title)}`
+  let searchQuery = `intitle:${encodeURIComponent(title)}`;
 
-  if (author && author.trim() !== '' && author.toLowerCase() !== 'unknown') {
-    searchQuery += `+inauthor:${encodeURIComponent(author)}`
+  if (author && author.trim() !== "" && author.toLowerCase() !== "unknown") {
+    searchQuery += `+inauthor:${encodeURIComponent(author)}`;
   }
 
-  const url = `${GOOGLE_BOOKS_API_URL}?q=${searchQuery}&maxResults=1&key=${apiKey}`
+  const url = `${GOOGLE_BOOKS_API_URL}?q=${searchQuery}&maxResults=1&key=${apiKey}`;
 
   // ---------------------------------------------------------------------------
   // Create an AbortController for request timeout.
@@ -446,15 +482,15 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
   // HOW: We pass controller.signal to fetch(). When setTimeout fires,
   //      controller.abort() cancels the fetch, which throws an AbortError.
   // ---------------------------------------------------------------------------
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
   try {
     // -------------------------------------------------------------------------
     // Make the HTTP request to Google Books API.
     // WHY signal: Connects the AbortController so we can cancel on timeout.
     // -------------------------------------------------------------------------
-    const response = await fetch(url, { signal: controller.signal })
+    const response = await fetch(url, { signal: controller.signal });
 
     // -------------------------------------------------------------------------
     // Check for HTTP errors.
@@ -468,15 +504,15 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     // -------------------------------------------------------------------------
     if (!response.ok) {
       console.error(
-        `[googleBooks] API error: ${response.status} ${response.statusText}`
-      )
-      return null
+        `[googleBooks] API error: ${response.status} ${response.statusText}`,
+      );
+      return null;
     }
 
     // -------------------------------------------------------------------------
     // Parse the JSON response body.
     // -------------------------------------------------------------------------
-    const data = await response.json()
+    const data = await response.json();
 
     // -------------------------------------------------------------------------
     // Check if Google Books returned any results.
@@ -484,7 +520,7 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     //      are no matches. We check both totalItems and items existence.
     // -------------------------------------------------------------------------
     if (!data.items || data.items.length === 0 || data.totalItems === 0) {
-      return null
+      return null;
     }
 
     // -------------------------------------------------------------------------
@@ -493,7 +529,7 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     //   "intitle:The Great Gatsby+inauthor:Fitzgerald" is almost always the
     //   correct edition.
     // -------------------------------------------------------------------------
-    const volumeInfo = data.items[0].volumeInfo
+    const volumeInfo = data.items[0].volumeInfo;
 
     // -------------------------------------------------------------------------
     // Extract ISBN.
@@ -504,18 +540,18 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     //   We prefer ISBN_13 but fall back to ISBN_10.
     //   Some books (very old or obscure) may have no ISBN at all.
     // ---------------------------------------------------------------------------
-    let isbn = null
+    let isbn = null;
     if (volumeInfo.industryIdentifiers) {
       // First, try to find ISBN_13 (preferred)
       const isbn13 = volumeInfo.industryIdentifiers.find(
-        id => id.type === 'ISBN_13'
-      )
+        (id) => id.type === "ISBN_13",
+      );
       // If no ISBN_13, try ISBN_10
       const isbn10 = volumeInfo.industryIdentifiers.find(
-        id => id.type === 'ISBN_10'
-      )
+        (id) => id.type === "ISBN_10",
+      );
       // Use ISBN_13 if available, otherwise ISBN_10, otherwise null
-      isbn = isbn13?.identifier || isbn10?.identifier || null
+      isbn = isbn13?.identifier || isbn10?.identifier || null;
     }
 
     // -------------------------------------------------------------------------
@@ -530,14 +566,15 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     //   Our app will be served over HTTPS in production, so we need HTTPS URLs
     //   for the cover images to load correctly.
     // -------------------------------------------------------------------------
-    let coverUrl = null
+    let coverUrl = null;
     if (volumeInfo.imageLinks) {
-      coverUrl = volumeInfo.imageLinks.thumbnail
-        || volumeInfo.imageLinks.smallThumbnail
-        || null
+      coverUrl =
+        volumeInfo.imageLinks.thumbnail ||
+        volumeInfo.imageLinks.smallThumbnail ||
+        null;
       // Force HTTPS
       if (coverUrl) {
-        coverUrl = coverUrl.replace('http://', 'https://')
+        coverUrl = coverUrl.replace("http://", "https://");
       }
     }
 
@@ -548,7 +585,7 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     //   let the frontend decide how much to show (e.g., truncate with "...").
     //   Some books don't have descriptions - we return null in that case.
     // -------------------------------------------------------------------------
-    const description = volumeInfo.description || null
+    const description = volumeInfo.description || null;
 
     // -------------------------------------------------------------------------
     // Extract categories.
@@ -558,9 +595,9 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     //   We store the full array and let the frontend display them as needed.
     //   Some books don't have categories - we return an empty array.
     // -------------------------------------------------------------------------
-    const categories = volumeInfo.categories || []
+    const categories = volumeInfo.categories || [];
 
-    return { isbn, cover_url: coverUrl, description, categories }
+    return { isbn, cover_url: coverUrl, description, categories };
   } catch (error) {
     // -------------------------------------------------------------------------
     // Handle specific error types.
@@ -568,18 +605,18 @@ async function fetchFromGoogleBooks(title, author, apiKey) {
     // Other errors: Network issues, DNS failures, etc.
     // In all cases, we return null (no metadata) rather than crashing.
     // -------------------------------------------------------------------------
-    if (error.name === 'AbortError') {
-      console.error(`[googleBooks] Request timed out for: "${title}"`)
+    if (error.name === "AbortError") {
+      console.error(`[googleBooks] Request timed out for: "${title}"`);
     } else {
-      console.error(`[googleBooks] Fetch error for "${title}":`, error.message)
+      console.error(`[googleBooks] Fetch error for "${title}":`, error.message);
     }
-    return null
+    return null;
   } finally {
     // -------------------------------------------------------------------------
     // Always clear the timeout to prevent memory leaks.
     // WHY: If the request completes before the timeout fires, the setTimeout
     //      callback is still scheduled. clearTimeout cancels it.
     // -------------------------------------------------------------------------
-    clearTimeout(timeout)
+    clearTimeout(timeout);
   }
 }
