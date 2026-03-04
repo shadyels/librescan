@@ -276,8 +276,8 @@ function Preferences() {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-center py-20">
-          {/* Animated spinner — matches the purple theme */}
-          <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+          {/* Animated spinner — matches the blue theme */}
+          <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
           <span className="ml-3 text-gray-600">Loading preferences...</span>
         </div>
       </div>
@@ -356,7 +356,7 @@ function Preferences() {
                   onClick={() => handleGenreToggle(genre)}
                   className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors text-left ${
                     isSelected
-                      ? "bg-purple-100 border-purple-400 text-purple-800"
+                      ? "bg-blue-100 border-blue-400 text-blue-800"
                       : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300"
                   }`}
                 >
@@ -369,7 +369,7 @@ function Preferences() {
           </div>
           {/* Selection count feedback */}
           {genres.length > 0 && (
-            <p className="text-sm text-purple-600 mt-2">
+            <p className="text-sm text-blue-600 mt-2">
               {genres.length} genre{genres.length !== 1 ? "s" : ""} selected
             </p>
           )}
@@ -399,13 +399,13 @@ function Preferences() {
               onChange={(e) => setAuthorInput(e.target.value)}
               onKeyDown={handleAuthorKeyDown}
               placeholder="e.g. Isaac Asimov"
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             <button
               type="button"
               onClick={handleAddAuthor}
               disabled={authorInput.trim().length === 0}
-              className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               Add
             </button>
@@ -417,14 +417,14 @@ function Preferences() {
               {authors.map((author, index) => (
                 <span
                   key={`${author}-${index}`}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-purple-50 text-purple-700 text-sm rounded-full border border-purple-200"
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full border border-blue-200"
                 >
                   {author}
                   {/* Remove button — calls handleRemoveAuthor with this tag's index */}
                   <button
                     type="button"
                     onClick={() => handleRemoveAuthor(index)}
-                    className="ml-1 text-purple-400 hover:text-purple-700 font-bold"
+                    className="ml-1 text-blue-400 hover:text-blue-700 font-bold"
                   >
                     ×
                   </button>
@@ -459,7 +459,7 @@ function Preferences() {
             id="language-select"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            className="w-full max-w-sm px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full max-w-sm px-4 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             {/* Default option: no preference */}
             <option value="">No preference</option>
@@ -493,7 +493,7 @@ function Preferences() {
                   key={level}
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                     isSelected
-                      ? "bg-purple-50 border-purple-400"
+                      ? "bg-blue-50 border-blue-400"
                       : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                   }`}
                 >
@@ -504,7 +504,7 @@ function Preferences() {
                     value={level}
                     checked={isSelected}
                     onChange={(e) => setReadingLevel(e.target.value)}
-                    className="mt-0.5 accent-purple-600"
+                    className="mt-0.5 accent-blue-600"
                   />
                   <div>
                     <span className="font-medium text-gray-800">{level}</span>
@@ -540,7 +540,7 @@ function Preferences() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="px-8 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 disabled:bg-purple-300 disabled:cursor-not-allowed transition-colors"
+            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors"
           >
             {saving ? (
               <span className="flex items-center gap-2">

@@ -1,13 +1,102 @@
 # librescan
-LibreScan - AI-powered bookshelf scanner and book recommendation engine
+# LibreScan
 
-This my pet project to learn some AI stuff as I go, full of useless commentary because of that.
+**Scan your bookshelf. Discover your next read.**
 
-I will upload a proper ReadMe anyway at some point.
+LibreScan is a full-stack web app that uses AI vision to recognize books from a photo of your bookshelf, then generates personalized reading recommendations based on what you already own and your reading preferences.
 
-React and Vite
-Deployed on Vercel Serverless 
+**Live Demo:** [librescan.vercel.app](https://librescan.vercel.app/)
 
-I used Qwen2.5-VL-7B as my vision model (future plan to add 72B option)
-Pulled book caches from Google Books
-Model for recommendations TBD
+---
+
+## How It Works
+
+1. **Snap a photo** of your bookshelf from your phone or upload an image from your desktop.
+2. **AI vision** reads the spines and covers, identifying titles and authors with confidence scoring.
+3. **Book metadata** is enriched automatically — real covers, descriptions, genres, and ISBNs from Google Books.
+4. **Set your preferences** — favorite genres, authors, preferred language, and reading level.
+5. **Get recommendations** — a second AI model analyzes your shelf and preferences to suggest 8 books you'd enjoy, each with a personalized reason.
+6. **Save and revisit** — bookmark recommendation sets to come back to later.
+
+---
+
+## Tech Stack
+
+**Frontend**
+- React 18 with Vite 6
+- Tailwind CSS v4
+- React Router DOM v7
+- IndexedDB for client-side session persistence
+
+**Backend**
+- Node.js serverless functions on Vercel
+- PostgreSQL via Neon (serverless)
+- Formidable for multipart file uploads
+
+**AI & APIs**
+- Qwen2.5-VL-7B-Instruct (HuggingFace) — vision model for book recognition from bookshelf photos
+- Llama 3.1 8B Instruct (HuggingFace) — language model for generating personalized recommendations
+- Google Books API — metadata enrichment (covers, ISBNs, descriptions, categories)
+
+---
+
+## Architecture Highlights
+
+- **Write-time cache, read-time join** — Book metadata is fetched from Google Books once and cached in a dedicated `book_cache` table. Scan results join from cache at read time, so 50 users scanning the same book don't create 50 copies of the same cover URL.
+
+- **Two-phase recommendation loading** — The recommendations page first checks the database for existing results (instant). Only if none exist does it trigger the LLM (10–30 seconds). Revisits are always fast.
+
+- **Preferences as natural language prompt injection** — User reading preferences are formatted as conversational sentences and injected into the LLM's user message, letting the model weigh them flexibly alongside bookshelf analysis rather than treating them as hard filters.
+
+- **Daily usage tracking with per-API counters** — Each external API (Qwen, Llama, Google Books) has its own daily request counter with a configurable limit. When any API hits its ceiling, all operations are blocked to prevent unexpected costs.
+
+- **Serverless function budgeting** — Shared libraries live outside the `api/` directory to avoid Vercel's per-file serverless function count. Imported files are bundled automatically at deploy time.
+
+---
+
+## Project Structure
+
+```
+librescan/
+├── src/                          # React frontend
+│   ├── components/               # BookCard, RecommendationCard, CameraCapture, etc.
+│   ├── pages/                    # Home, Results, Recommendations, Preferences, Saved
+│   ├── contexts/                 # Session management (React Context + IndexedDB)
+│   └── styles/                   # Tailwind entry point
+├── api/                          # Vercel serverless functions
+│   ├── lib/                      # Database, AI clients, Google Books wrapper
+│   ├── scan/[scanId].js          # Dynamic route for scan results
+│   └── recommendations/[scanId].js
+├── lib/                          # Shared libraries (outside api/ for function budgeting)
+└── scripts/                      # Database setup and maintenance
+```
+
+---
+
+## Key Technical Decisions
+
+| Decision | Why |
+|---|---|
+| Qwen2.5-VL over Florence-2 | Florence-2 isn't deployed on any HuggingFace Inference Provider. Qwen has built-in OCR and returns structured JSON directly. |
+| Llama 3.1 8B over larger models | Free tier on HuggingFace, Apache 2.0 license, good at structured JSON output. Upgrade path to 70B by changing one constant. |
+| Formidable over Multer | Multer caused "Unexpected end of form" errors in Vercel's serverless environment. Formidable is built for it. |
+| JSONB for recommendations | All 8 recommendations stored as one blob per scan. Users save/delete entire sets, not individual books — one row, one operation. |
+| Raw AI output in scans, metadata in cache | Avoids duplicating cover URLs and descriptions across every scan that detects the same book. |
+
+---
+
+## Status
+
+The core feature set is complete: scan → recognize → enrich → recommend → save. The app is deployed and functional at the demo link above.
+
+---
+
+## Author
+
+**Shadi El Sangedy**
+
+---
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

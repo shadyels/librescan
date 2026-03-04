@@ -221,7 +221,7 @@ function Results() {
           {/* Action button */}
           <button
             onClick={handleGoHome}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-colors"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
           >
             Go Back Home
           </button>
@@ -257,7 +257,7 @@ function Results() {
           {/* Action button */}
           <button
             onClick={handleScanAnother}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium transition-colors"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
           >
             Scan Another Bookshelf
           </button>
@@ -327,7 +327,7 @@ function Results() {
                 text-sm
                 focus:outline-none
                 focus:ring-2
-                focus:ring-purple-500
+                focus:ring-blue-500
                 focus:border-transparent
                 cursor-pointer
                 "
@@ -335,7 +335,7 @@ function Results() {
               FOCUS STYLES:
               focus:outline-none - Remove default outline
               focus:ring-2 - Add 2px ring on focus
-              focus:ring-purple-500 - Purple ring color
+              focus:ring-blue-500 - blue ring color
               focus:border-transparent - Hide border on focus (ring replaces it)              
             */
           >
@@ -407,12 +407,12 @@ function Results() {
             - Supports cmd+click / ctrl+click to open in new tab
             - Screen readers announce it as a link (correct semantics)
             
-            Purple gradient to match the app's design system.
+            blue gradient to match the app's design system.
             Sparkle emoji (✨) for visual appeal.
             shadow-lg + hover:shadow-xl adds depth on hover. */}
         <Link
           to={`/recommendations/${scanId}`}
-          className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl text-lg font-semibold"
+          className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl text-lg font-semibold"
         >
           <span>✨</span>
           <span>View Recommendations</span>
@@ -430,10 +430,10 @@ function Results() {
           className="
             px-6 
             py-3 
-            bg-purple-600 
+            bg-blue-600 
             text-white
             rounded-lg 
-            hover:bg-purple-700
+            hover:bg-blue-700
             font-medium
             transition-colors
             duration-200
