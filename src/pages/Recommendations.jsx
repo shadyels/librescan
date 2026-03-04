@@ -130,6 +130,7 @@ export default function Recommendations() {
     setError(null);
     setLoading(true);
     setRecommendations(null);
+    setSaved(null);
     setRetryCount((prev) => prev + 1);
   };
 

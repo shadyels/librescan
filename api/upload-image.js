@@ -24,7 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import { query } from "./lib/database.js";
-import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
+//import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
 import { recognizeBooks as recognizeBooksReal } from "./lib/qwenAI.js";
 import { enrichBooks } from "./lib/googleBooks.js";
 
