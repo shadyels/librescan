@@ -322,8 +322,8 @@ export default function Saved() {
       {/* ── Loading state ── */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-16">
-          {/* Spinning purple ring, same animation style as Recommendations.jsx */}
-          <div className="w-10 h-10 border-4 border-purple-200 rounded-full animate-spin border-t-purple-600"></div>
+          {/* Spinning blue ring, same animation style as Recommendations.jsx */}
+          <div className="w-10 h-10 border-4 border-blue-200 rounded-full animate-spin border-t-blue-600"></div>
           <p className="text-gray-500 mt-4">Loading saved scans...</p>
         </div>
       )}
@@ -353,7 +353,7 @@ export default function Saved() {
           <p className="text-gray-500 mt-2 text-center max-w-md">{error}</p>
           <button
             onClick={fetchSavedSets}
-            className="mt-6 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Try Again
           </button>
@@ -375,7 +375,7 @@ export default function Saved() {
             </p>
             <button
               onClick={() => navigate("/")}
-              className="mt-6 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Scan a Bookshelf
             </button>
@@ -400,7 +400,7 @@ export default function Saved() {
                     savedSets.length > 0
                   }
                   onChange={toggleSelectAll}
-                  className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 {/* Dynamic label */}
                 {selectedIds.size === savedSets.length
@@ -443,14 +443,14 @@ export default function Saved() {
 
           {/* ── Saved set cards ── */}
           {/* Each card has: checkbox, scan info (date + book preview + rec count), View link.
-              Cards highlight purple when selected to give visual feedback. */}
+              Cards highlight blue when selected to give visual feedback. */}
           <div className="space-y-3">
             {savedSets.map((set) => (
               <div
                 key={set.scan_id}
                 className={`bg-white rounded-lg shadow-sm border-2 transition-colors ${
                   selectedIds.has(set.scan_id)
-                    ? "border-purple-400 bg-purple-50"
+                    ? "border-blue-400 bg-blue-50"
                     : "border-transparent hover:border-gray-200"
                 }`}
               >
@@ -460,7 +460,7 @@ export default function Saved() {
                     type="checkbox"
                     checked={selectedIds.has(set.scan_id)}
                     onChange={() => toggleSelection(set.scan_id)}
-                    className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 shrink-0"
+                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 shrink-0"
                   />
 
                   {/* ── Card content ── */}
@@ -503,7 +503,7 @@ export default function Saved() {
                       declarative navigation (same pattern as Results.jsx). */}
                   <Link
                     to={`/recommendations/${set.scan_id}`}
-                    className="shrink-0 px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="shrink-0 px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     View
                   </Link>

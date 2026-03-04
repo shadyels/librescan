@@ -246,7 +246,7 @@ export default async function handler(req, res) {
       `[generate-recommendations] LLM returned ${llmResult.recommendations.length} recommendations`,
     );
 
-    // --- Phase 6: Increment Llama usage counter before enriching the recommendations---
+    // --- Phase 6: Increment Llama usage counter before enriching the recommendations ---
     await incrementUsage("llama");
 
     // ---- Step 6: Enrich recommended books with Google Books ----

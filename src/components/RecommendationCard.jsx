@@ -83,10 +83,10 @@ export default function RecommendationCard({ book }) {
   }
 
   return (
-    // Card container: white background, rounded corners, shadow, purple left border.
+    // Card container: white background, rounded corners, shadow, blue left border.
     // The left border visually distinguishes recommendation cards from
     // the recognized book cards (which don't have a left border).
-    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 border-l-4 border-l-purple-500 flex flex-col">
+    <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 border-l-4 border-l-blue-500 flex flex-col">
 
       {/* ---- Top section: Cover + Book Info side by side ---- */}
       {/* We use a horizontal layout (flex-row) so the cover sits next to the text.
@@ -142,14 +142,14 @@ export default function RecommendationCard({ book }) {
             by {author}
           </p>
 
-          {/* Categories: Purple pill tags, same style as BookCard.jsx.
+          {/* Categories: blue pill tags, same style as BookCard.jsx.
               Max 3 shown to avoid cluttering the card. */}
           {categories.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {categories.slice(0, 3).map((category, index) => (
                 <span
                   key={index}
-                  className="text-xs bg-purple-50 text-purple-700 rounded-full px-2 py-0.5"
+                  className="text-xs bg-blue-50 text-blue-700 rounded-full px-2 py-0.5"
                 >
                   {category}
                 </span>
@@ -165,13 +165,13 @@ export default function RecommendationCard({ book }) {
           out as the key value proposition of each recommendation. */}
       {reason && (
         <div className="px-4 pb-3">
-          <div className="bg-purple-50 rounded-lg p-3">
+          <div className="bg-blue-50 rounded-lg p-3">
             {/* Label */}
-            <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide mb-1">
+            <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-1">
               Why you'll like this
             </p>
             {/* Reason text: small but readable */}
-            <p className="text-sm text-purple-900 leading-relaxed">
+            <p className="text-sm text-blue-900 leading-relaxed">
               {reason}
             </p>
           </div>

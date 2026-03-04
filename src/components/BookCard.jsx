@@ -277,14 +277,14 @@ export default function BookCard({ book }) {
             {/* slice(0, 3): Show max 3 categories to avoid visual clutter.     */}
             {/*   Google Books sometimes returns 5+ very specific categories.   */}
             {/* text-xs: Extra small text (categories are supplementary info)    */}
-            {/* bg-purple-50 text-purple-700: Matches the app's purple theme    */}
+            {/* bg-blue-50 text-blue-700: Matches the app's blue theme    */}
             {/* rounded-full: Fully rounded "pill" shape                        */}
             {/* px-2 py-0.5: Tight horizontal padding, minimal vertical padding */}
             {/* --------------------------------------------------------------- */}
             {categories.slice(0, 3).map((category, idx) => (
               <span
                 key={idx}
-                className="text-xs bg-purple-50 text-purple-700 rounded-full px-2 py-0.5"
+                className="text-xs bg-blue-50 text-blue-700 rounded-full px-2 py-0.5"
               >
                 {category}
               </span>
