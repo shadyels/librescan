@@ -1,4 +1,3 @@
-# librescan
 # LibreScan
 
 **Scan your bookshelf. Discover your next read.**
