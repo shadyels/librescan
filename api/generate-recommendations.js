@@ -131,7 +131,7 @@ export default async function handler(req, res) {
     const scan = scanResult.rows[0];
     if (scan.device_id !== device_id) {
       return res.status(403).json({
-        succes: false,
+        success: false,
         error: "This scan does not belong to your device",
       });
     }

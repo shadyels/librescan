@@ -1,4 +1,3 @@
-import { all } from 'axios'
 import { query } from './lib/database.js'
 
 /**
@@ -35,47 +34,30 @@ export default async function handler(req, res) {
       })
     }
     
-    // Check if session already exists
-    const existingSession = await query(
-      'SELECT device_id, created_at, last_active FROM sessions WHERE device_id = $1',
+    // Upsert: create new session or update last_active if it already exists.
+    // xmax = 0 is a PostgreSQL trick to detect whether the row was inserted
+    // (xmax is 0 for a fresh insert, non-zero for an update).
+    const result = await query(
+      `INSERT INTO sessions (device_id, created_at, last_active)
+       VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+       ON CONFLICT (device_id) DO UPDATE SET last_active = CURRENT_TIMESTAMP
+       RETURNING device_id, created_at, last_active, (xmax = 0) AS is_new`,
       [device_id]
     )
-    
-    if (existingSession.rows.length > 0) {
-      // Update last_active timestamp for existing session
-      await query(
-        'UPDATE sessions SET last_active = CURRENT_TIMESTAMP WHERE device_id = $1',
-        [device_id]
-      )
-      
-      return res.status(200).json({
-        success: true,
-        message: 'Session updated',
-        session: {
-          device_id: device_id,
-          created_at: existingSession.rows[0].created_at,
-          last_active: new Date().toISOString(),
-          is_new: false
-        }
-      })
-    } else {
-      // Create new session
-      const result = await query(
-        'INSERT INTO sessions (device_id, created_at, last_active) VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP) RETURNING *',
-        [device_id]
-      )
-      
-      return res.status(201).json({
-        success: true,
-        message: 'Session created',
-        session: {
-          device_id: device_id,
-          created_at: result.rows[0].created_at,
-          last_active: result.rows[0].last_active,
-          is_new: true
-        }
-      })
-    }
+
+    const session = result.rows[0]
+    const statusCode = session.is_new ? 201 : 200
+
+    return res.status(statusCode).json({
+      success: true,
+      message: session.is_new ? 'Session created' : 'Session updated',
+      session: {
+        device_id: session.device_id,
+        created_at: session.created_at,
+        last_active: session.last_active,
+        is_new: session.is_new,
+      }
+    })
   } catch (error) {
     console.error('Session API error:', error)
     return res.status(500).json({

@@ -74,11 +74,11 @@ const VALID_READING_LEVELS = ["Beginner", "Intermediate", "Advanced"];
  * @param {Object} res - HTTP response object (Vercel)
  */
 export default async function handler(req, res) {
-  if (req.method == "GET") {
+  if (req.method === "GET") {
     return handleGet(req, res);
   }
 
-  if (req.method == "PUT") {
+  if (req.method === "PUT") {
     return handlePut(req, res);
   }
 
@@ -205,10 +205,8 @@ async function handlePut(req, res) {
         .slice(0, 15); // Cap at 15 (can't exceed the total list anyway)
     }
 
-    // ---- Validate and sanitize genres ----
-    // Must be an array. Each entry must be a string from VALID_GENRES.
-    // Unknown genres are silently filtered out (not rejected) — this is forgiving
-    // if the frontend list ever gets slightly out of sync with the backend.
+    // ---- Validate and sanitize authors ----
+    // Must be an array of non-empty strings. Free-text, user-typed.
     let cleanAuthors = [];
     if (Array.isArray(authors)) {
       cleanAuthors = authors
@@ -265,7 +263,7 @@ async function handlePut(req, res) {
         authors = $3,
         language = $4,
         reading_level = $5`,
-      [device_id, genres, cleanAuthors, cleanLanguage, cleanReadingLevel],
+      [device_id, cleanGenres, cleanAuthors, cleanLanguage, cleanReadingLevel],
     );
 
     console.log(

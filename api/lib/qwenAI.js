@@ -12,7 +12,7 @@
 //   - It supports structured JSON output natively
 //   - The 7B variant balances accuracy with speed on free tier
 //   - Uses OpenAI-compatible chat completions API (standard format)
-//
+///Users/shadielsangedy/Documents/git/packvote/.claude
 // HOW IT WORKS:
 //   1. Read the uploaded image file from /tmp as raw bytes
 //   2. Convert those bytes to a base64-encoded string
@@ -42,9 +42,7 @@
 //      We use the promises version (fs/promises) because our function is async
 //      and we want to use await instead of callbacks.
 // -----------------------------------------------------------------------------
-import { clear } from "console";
 import fs from "fs/promises";
-import { type } from "os";
 
 // -----------------------------------------------------------------------------
 // IMPORT: path (Node.js built-in path module)

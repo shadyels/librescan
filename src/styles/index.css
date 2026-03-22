@@ -1,1 +1,103 @@
 @import "tailwindcss";
+
+@theme {
+  /* Backgrounds */
+  --color-bg-primary: #f6f1ea;
+  --color-bg-elevated: #ffffff;
+  --color-bg-surface: #ece5db;
+  --color-bg-hover: #e3dbd0;
+
+  /* Warm brown accent */
+  --color-accent: #7c5e36;
+  --color-accent-hover: #6b4f2b;
+  --color-accent-muted: #7c5e3615;
+  --color-accent-glow: #7c5e3620;
+
+  /* Text */
+  --color-text-primary: #2a2017;
+  --color-text-secondary: #6b5c4b;
+  --color-text-muted: #9c8d7c;
+
+  /* Borders */
+  --color-border: #ddd4c7;
+  --color-border-accent: #7c5e3630;
+
+  /* Feedback */
+  --color-danger: #c44133;
+  --color-danger-muted: #c4413312;
+  --color-success: #3a7d56;
+  --color-success-muted: #3a7d5612;
+
+  /* Body font override */
+  --font-sans: "Outfit", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: "Fraunces", Georgia, serif;
+  }
+
+  .glass-card {
+    background-color: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(42, 32, 23, 0.06);
+  }
+
+  .glass-card-hover {
+    transition:
+      transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      border-color 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-border-accent);
+      box-shadow: 0 8px 24px rgba(42, 32, 23, 0.08);
+    }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.5s ease-out both;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      var(--color-bg-surface) 25%,
+      var(--color-bg-hover) 50%,
+      var(--color-bg-surface) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
