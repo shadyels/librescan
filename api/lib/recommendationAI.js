@@ -24,7 +24,6 @@
  *   they are per-request context, not role definition
  */
 
-import { validate } from "uuid";
 
 const HUGGINGFACE_ROUTER_URL =
   "https://router.huggingface.co/v1/chat/completions";
@@ -99,9 +98,6 @@ export async function generateRecommendations(books, preferences = null) {
   // the quality of recommendations.
   // Phase 4: preferences are now passed to buildPrompt for injection into the user message.
   const prompt = buildPrompt(books, preferences);
-  console.log(
-    `[recommendationAI] Generating recommendations from ${books.length} books using ${MODEL_ID}`,
-  );
 
   // Determine if preferences were actually included (non-null and non-empty).
   // This is tracked in metadata so the frontend or logs can distinguish
@@ -193,7 +189,7 @@ export async function generateRecommendations(books, preferences = null) {
     };
   } catch (error) {
     // Clear timeout in case of error (prevents memory leak)
-    clearTimeout();
+    clearTimeout(timeoutId);
 
     // AbortError means our timeout fired before the response arrived
     if (error.name === "AbortError") {
@@ -238,7 +234,7 @@ RULES:
 6. Prefer well-known, highly-regarded books that are easy to find.
 7. Respond ONLY with a valid JSON array. No extra text, no markdown, no explanations outside the JSON.
 
-OOUTPUT FORMAT (strict JSON array):
+OUTPUT FORMAT (strict JSON array):
 [
   {
     "title": "Book Title",

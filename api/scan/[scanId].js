@@ -189,7 +189,6 @@ export default async function handler(req, res) {
     // Step 5: Query database for scan record
     // Using parameterized query ($1) to prevent SQL injection
     console.log(`Fetching scan data for scanId: ${scanId}`);
-    console.log(``)
 
     const result = await query(
       "SELECT scan_id, device_id, scan_date, recognized_books FROM scans WHERE scan_id = $1",
@@ -245,7 +244,7 @@ export default async function handler(req, res) {
         scan_date: scan.scan_date,
         recognized_books: {
           books: enrichedBooks,
-          metada: scan.recognized_books?.metadata || {}
+          metadata: scan.recognized_books?.metadata || {}
         },
         // computed fields for convenience
         total_books: enrichedBooks.length,

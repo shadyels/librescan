@@ -31,7 +31,7 @@
 import { query } from "../lib/database.js";
 
 export default async function handler(req, res) {
-  if (req.method != "GET") {
+  if (req.method !== "GET") {
     return res.status(405).json({
       success: false,
       error: "Method not allowed. Use GET.",
