@@ -19,6 +19,7 @@ async function setupDatabase() {
     const client = await pool.connect();
     console.log("Connected to the database successfully!");
 
+    try {
     // Drop tables in reverse FK dependency order
     console.log("Dropping existing tables...");
     await client.query("DROP TABLE IF EXISTS api_usage_tracking CASCADE");
@@ -90,7 +91,7 @@ async function setupDatabase() {
     await client.query(`
       CREATE TABLE recommendations (
         recommendation_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        scan_id UUID UNIQUE NOT NULL REFERENCES scans(scan_id) ON DELETE CASCADE,
+        scan_id UUID NOT NULL REFERENCES scans(scan_id) ON DELETE CASCADE,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         book_data JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -128,15 +129,16 @@ async function setupDatabase() {
 
     // Create indexes
     console.log("Creating indexes...");
-    await client.query("CREATE INDEX idx_user_sessions_user_id ON user_sessions(user_id);");
-    await client.query("CREATE INDEX idx_user_sessions_expires_at ON user_sessions(expires_at);");
-    await client.query("CREATE INDEX idx_scans_user_id ON scans(user_id);");
-    await client.query("CREATE INDEX idx_scans_device_id ON scans(device_id);");
-    await client.query("CREATE INDEX idx_scans_scan_date ON scans(scan_date);");
-    await client.query("CREATE UNIQUE INDEX idx_recommendations_scan_id_unique ON recommendations(scan_id);");
-    await client.query("CREATE INDEX idx_recommendations_saved_created_at ON recommendations(saved, created_at);");
-    await client.query("CREATE UNIQUE INDEX idx_book_cache_lookup ON book_cache(title_lower, author_lower);");
-    await client.query("CREATE INDEX idx_book_cache_isbn ON book_cache(isbn);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_anon_sessions_last_active ON anon_sessions(last_active);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_user_sessions_user_id ON user_sessions(user_id);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_user_sessions_expires_at ON user_sessions(expires_at);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_scans_user_id ON scans(user_id);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_scans_device_id ON scans(device_id);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_scans_scan_date ON scans(scan_date);");
+    await client.query("CREATE UNIQUE INDEX IF NOT EXISTS idx_recommendations_scan_id_unique ON recommendations(scan_id);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_recommendations_saved_created_at ON recommendations(saved, created_at);");
+    await client.query("CREATE UNIQUE INDEX IF NOT EXISTS idx_book_cache_lookup ON book_cache(title_lower, author_lower);");
+    await client.query("CREATE INDEX IF NOT EXISTS idx_book_cache_isbn ON book_cache(isbn);");
     console.log("Indexes created successfully!");
 
     // Verify tables exist
@@ -152,7 +154,9 @@ async function setupDatabase() {
       console.log(`- ${row.table_name}`);
     });
 
-    client.release();
+    } finally {
+      client.release();
+    }
     await pool.end();
     console.log("\nDatabase setup completed");
   } catch (err) {
