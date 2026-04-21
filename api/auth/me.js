@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   try {
     const user = await requireUser(req, res)
-    if (!user) return // 401 already sent by requireUser
+    if (!user) return
 
     return res.status(200).json({
       success: true,
@@ -19,6 +19,6 @@ export default async function handler(req, res) {
     })
   } catch (error) {
     console.error('Me error:', error)
-    return res.status(500).json({ success: false, error: 'Internal server error', details: error.message })
+    return res.status(500).json({ success: false, error: 'Internal server error' })
   }
 }

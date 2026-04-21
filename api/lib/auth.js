@@ -3,7 +3,7 @@ import { parse, serialize } from 'cookie'
 import { randomBytes, createHash } from 'crypto'
 import { query } from './database.js'
 
-const COOKIE_NAME = 'librescan_session'
+export const COOKIE_NAME = 'librescan_session'
 const SESSION_DAYS = 30
 const SESSION_MS = SESSION_DAYS * 24 * 60 * 60 * 1000
 
@@ -51,13 +51,11 @@ export async function getCurrentUser(req) {
   return { id: row.id, email: row.email }
 }
 
-// Writes 401 and returns null when unauthenticated. Callers MUST check: if (!user) return
-// Uses res.writeHead/end (raw Node.js) because Vercel serverless doesn't have Express helpers.
+// Sends 401 and returns null when unauthenticated. Callers MUST check: if (!user) return
 export async function requireUser(req, res) {
   const user = await getCurrentUser(req)
   if (!user) {
-    res.writeHead(401, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: 'Authentication required' }))
+    res.status(401).json({ error: 'Authentication required' })
     return null
   }
   return user
