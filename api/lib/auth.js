@@ -24,6 +24,7 @@ export function hashToken(token) {
 }
 
 export async function createSession(userId) {
+  if (!userId) throw new Error('createSession requires a valid userId')
   const token = generateSessionToken()
   const tokenHash = hashToken(token)
   const expiresAt = new Date(Date.now() + SESSION_MS)
@@ -50,6 +51,8 @@ export async function getCurrentUser(req) {
   return { id: row.id, email: row.email }
 }
 
+// Writes 401 and returns null when unauthenticated. Callers MUST check: if (!user) return
+// Uses res.writeHead/end (raw Node.js) because Vercel serverless doesn't have Express helpers.
 export async function requireUser(req, res) {
   const user = await getCurrentUser(req)
   if (!user) {
@@ -63,7 +66,7 @@ export async function requireUser(req, res) {
 export function serializeSessionCookie(token, expiresAt) {
   return serialize(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
     expires: expiresAt,
@@ -73,7 +76,7 @@ export function serializeSessionCookie(token, expiresAt) {
 export function clearSessionCookie() {
   return serialize(COOKIE_NAME, '', {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
     maxAge: 0,
