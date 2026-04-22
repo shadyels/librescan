@@ -22,6 +22,7 @@
  */
 
 import { query } from "./lib/database.js";
+import { requireUser } from "./lib/auth.js";
 
 const VALID_GENRES = [
   "Fiction",
@@ -88,45 +89,21 @@ export default async function handler(req, res) {
   });
 }
 
-//Fetches preferences for a device
 async function handleGet(req, res) {
   try {
-    // Extract device_id from query string: /api/preferences?device_id=xxx
-    const { device_id } = req.query;
+    const user = await requireUser(req, res);
+    if (!user) return;
 
-    if (!device_id) {
-      return res.status(400).json({
-        success: false,
-        error: "device_id query parameter is required",
-      });
-    }
-
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(device_id)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid device_id format (must be UUID v4)",
-      });
-    }
-
-    // ---- Query ----
-    // Select all preference columns for this device.
-    // Parameterized query ($1) prevents SQL injection.
     const result = await query(
-      "SELECT genres, authors, language, reading_level FROM preferences WHERE device_id = $1",
-      [device_id],
+      "SELECT genres, authors, language, reading_level FROM preferences WHERE user_id = $1",
+      [user.id],
     );
 
     if (result.rows.length === 0) {
-      return res.status(200).json({
-        success: true,
-        preferences: null,
-      });
+      return res.status(200).json({ success: true, preferences: null });
     }
-    // Row found — return the preferences
-    const row = result.rows[0];
 
+    const row = result.rows[0];
     return res.status(200).json({
       success: true,
       preferences: {
@@ -138,10 +115,7 @@ async function handleGet(req, res) {
     });
   } catch (error) {
     console.error(`[preferences] GET error: ${error.message}`);
-    return res.status(500).json({
-      success: false,
-      error: "Failed to fetch preferences",
-    });
+    return res.status(500).json({ success: false, error: "Failed to fetch preferences" });
   }
 }
 
@@ -176,23 +150,10 @@ async function handleGet(req, res) {
  */
 async function handlePut(req, res) {
   try {
-    const { device_id, genres, authors, language, reading_level } = req.body;
+    const user = await requireUser(req, res);
+    if (!user) return;
 
-    if (!device_id) {
-      return res.status(400).json({
-        success: false,
-        error: "device_id query parameter is required",
-      });
-    }
-
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuidRegex.test(device_id)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid device_id format (must be UUID v4)",
-      });
-    }
+    const { genres, authors, language, reading_level } = req.body;
 
     // ---- Validate and sanitize genres ----
     // Must be an array. Each entry must be a string from VALID_GENRES.
@@ -235,39 +196,20 @@ async function handlePut(req, res) {
       // If invalid reading_level string, silently ignore
     }
 
-    // ---- Verify the session exists ----
-    // The preferences table has a foreign key to sessions(device_id).
-    // If the session doesn't exist, the INSERT will fail with a FK violation.
-    // We check first to give a better error message.
-    const sessionCheck = await query(
-      "SELECT device_id FROM sessions WHERE device_id = $1",
-      [device_id],
-    );
-
-    if (sessionCheck.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: "Session not found. Please refresh the page.",
-      });
-    }
-
     // ---- Upsert preferences ----
-    // INSERT if this device has no preferences row yet.
-    // UPDATE if a row already exists (ON CONFLICT on the PRIMARY KEY).
-    // PostgreSQL TEXT[] columns accept JavaScript arrays when passed via parameterized queries.
     await query(
-      `INSERT INTO preferences (device_id, genres, authors, language, reading_level)
+      `INSERT INTO preferences (user_id, genres, authors, language, reading_level)
         VALUES ($1, $2, $3, $4, $5)
-        ON CONFLICT (device_id) DO UPDATE SET
+        ON CONFLICT (user_id) DO UPDATE SET
         genres = $2,
         authors = $3,
         language = $4,
         reading_level = $5`,
-      [device_id, cleanGenres, cleanAuthors, cleanLanguage, cleanReadingLevel],
+      [user.id, cleanGenres, cleanAuthors, cleanLanguage, cleanReadingLevel],
     );
 
     console.log(
-      `[preferences] Saved preferences for device ${device_id}: ` +
+      `[preferences] Saved preferences for user ${user.id}: ` +
         `${cleanGenres.length} genres, ${cleanAuthors.length} authors, ` +
         `language="${cleanLanguage}", level="${cleanReadingLevel}"`,
     );

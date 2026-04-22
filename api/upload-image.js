@@ -28,6 +28,7 @@ import { query } from "./lib/database.js";
 import { recognizeBooks as recognizeBooksReal } from "./lib/qwenAI.js";
 import { enrichBooks } from "./lib/googleBooks.js";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
+import { getCurrentUser } from "./lib/auth.js";
 
 // =============================================================================
 // VERCEL CONFIG: Disable body parsing.
@@ -59,6 +60,10 @@ export default async function handler(req, res) {
       allowedMethods: ["POST"],
     });
   }
+
+  // Read auth cookie BEFORE form.parse() — getCurrentUser only reads req.headers.cookie
+  // and does NOT touch the request body/stream, so it is safe to call here.
+  const user = await getCurrentUser(req);
 
   /**
    * Configure Formidable for file parsing
@@ -111,23 +116,26 @@ export default async function handler(req, res) {
         return resolve();
       }
 
-      /**
-       * Extract device_id from form fields
-       * This links the scan to a specific user session
-       * Format: UUID v4 (validated on client side)
-       */
-      const deviceId = fields.device_id?.[0] || fields.device_id;
+      // Determine identity: logged-in user or anonymous device
+      let deviceId = null;
+      if (!user) {
+        /**
+         * Anonymous path: require device_id form field
+         */
+        deviceId = fields.device_id?.[0] || fields.device_id;
 
-      console.log("Device ID:", deviceId);
+        console.log("Device ID:", deviceId);
 
-      // Validate device_id is present
-      if (!deviceId) {
-        console.error("Missing device_id");
-        res.status(400).json({
-          success: false,
-          error: "device_id is required",
-        });
-        return resolve();
+        if (!deviceId) {
+          console.error("Missing device_id");
+          res.status(400).json({
+            success: false,
+            error: "device_id is required",
+          });
+          return resolve();
+        }
+      } else {
+        console.log("Authenticated user:", user.id);
       }
 
       try {
@@ -140,7 +148,7 @@ export default async function handler(req, res) {
          */
         const scanId = uuidv4();
 
-        console.log(`Processing upload for device ${deviceId}`);
+        console.log(`Processing upload for ${user ? `user ${user.id}` : `device ${deviceId}`}`);
         console.log(`Scan ID: ${scanId}`);
         console.log(
           `File: ${uploadedFile.originalFilename} (${uploadedFile.size} bytes)`,
@@ -248,15 +256,27 @@ export default async function handler(req, res) {
          * - SELECT recognized_books->'books' to get book array
          * - WHERE recognized_books->'metadata'->>'model_used' = 'florence-2'
          */
-        await query(
-          `INSERT INTO scans (scan_id, device_id, recognized_books)
-           VALUES ($1, $2, $3)`,
-          [
-            scanId, // $1: Unique scan identifier
-            deviceId, // $2: User's device ID
-            JSON.stringify(recognizedBooks), // $3: AI results as JSONB
-          ],
-        );
+        if (user) {
+          // Logged-in user: insert with user_id
+          await query(
+            `INSERT INTO scans (scan_id, user_id, recognized_books)
+             VALUES ($1, $2, $3)`,
+            [scanId, user.id, JSON.stringify(recognizedBooks)],
+          );
+        } else {
+          // Anonymous user: upsert anon_sessions first (FK constraint), then insert scan
+          await query(
+            `INSERT INTO anon_sessions (device_id, created_at, last_active)
+             VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+             ON CONFLICT (device_id) DO UPDATE SET last_active = CURRENT_TIMESTAMP`,
+            [deviceId],
+          );
+          await query(
+            `INSERT INTO scans (scan_id, device_id, recognized_books)
+             VALUES ($1, $2, $3)`,
+            [scanId, deviceId, JSON.stringify(recognizedBooks)],
+          );
+        }
 
         console.log(`Scan ${scanId} saved to database`);
 

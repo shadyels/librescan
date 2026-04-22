@@ -1,9 +1,12 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Preferences from "./pages/Preferences";
 import Results from "./pages/Results";
 import Saved from "./pages/Saved";
-import Recommendations from './pages/Recommendations';
+import Recommendations from "./pages/Recommendations";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import { useAuth } from "./contexts/AuthContext";
 
 function NavLink({ to, children }) {
   return (
@@ -17,7 +20,45 @@ function NavLink({ to, children }) {
   );
 }
 
+function NavAuth() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  if (user) {
+    return (
+      <div className="flex items-center gap-4">
+        <span className="text-text-muted text-sm hidden sm:block">{user.email}</span>
+        <button
+          onClick={() => { logout(); navigate("/"); }}
+          className="px-4 py-1.5 text-sm text-text-secondary border border-border rounded-lg hover:border-border-accent hover:text-text-primary transition-all"
+        >
+          Log out
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <Link
+        to="/login"
+        className="px-4 py-1.5 text-sm text-text-secondary border border-border rounded-lg hover:border-border-accent hover:text-text-primary transition-all"
+      >
+        Log in
+      </Link>
+      <Link
+        to="/signup"
+        className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium"
+      >
+        Sign up
+      </Link>
+    </div>
+  );
+}
+
 function App() {
+  const { user, loading } = useAuth();
+
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-bg-primary">
@@ -27,10 +68,13 @@ function App() {
               <Link to="/" className="font-display text-2xl font-semibold text-accent tracking-wide">
                 LibreScan
               </Link>
-              <div className="flex gap-8">
-                <NavLink to="/">Home</NavLink>
-                <NavLink to="/preferences">Preferences</NavLink>
-                <NavLink to="/saved">Saved</NavLink>
+              <div className="flex items-center gap-8">
+                <div className="flex gap-8">
+                  <NavLink to="/">Home</NavLink>
+                  {user && <NavLink to="/preferences">Preferences</NavLink>}
+                  {user && <NavLink to="/saved">Saved</NavLink>}
+                </div>
+                {!loading && <NavAuth />}
               </div>
             </div>
           </div>
@@ -43,6 +87,8 @@ function App() {
             <Route path="/recommendations/:scanId" element={<Recommendations />} />
             <Route path="/results/:scanId" element={<Results />} />
             <Route path="/saved" element={<Saved />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </main>
       </div>

@@ -26,6 +26,7 @@
 // =============================================================================
 
 import { query } from "../lib/database.js";
+import { getCurrentUser } from "../lib/auth.js";
 
 /**
  * Main handler function for the scan endpoint
@@ -191,7 +192,7 @@ export default async function handler(req, res) {
     console.log(`Fetching scan data for scanId: ${scanId}`);
 
     const result = await query(
-      "SELECT scan_id, device_id, scan_date, recognized_books FROM scans WHERE scan_id = $1",
+      "SELECT scan_id, user_id, device_id, scan_date, recognized_books FROM scans WHERE scan_id = $1",
       [scanId],
     );
 
@@ -208,6 +209,19 @@ export default async function handler(req, res) {
 
     // Extract scan data from query result
     const scan = result.rows[0];
+
+    // Ownership check
+    if (scan.user_id) {
+      const user = await getCurrentUser(req);
+      if (!user || user.id !== scan.user_id) {
+        return res.status(403).json({ success: false, error: "Access denied" });
+      }
+    } else if (scan.device_id) {
+      const { device_id } = req.query;
+      if (!device_id || device_id !== scan.device_id) {
+        return res.status(403).json({ success: false, error: "Access denied" });
+      }
+    }
 
     // -------------------------------------------------------------------------
     // Join enriched metadata from book_cache.
@@ -240,7 +254,6 @@ export default async function handler(req, res) {
       success: true,
       scan: {
         scan_id: scan.scan_id,
-        device_id: scan.device_id,
         scan_date: scan.scan_date,
         recognized_books: {
           books: enrichedBooks,

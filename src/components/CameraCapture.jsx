@@ -50,6 +50,7 @@ function CameraCapture({ onUploadSuccess }) {
 
       const response = await fetch("/api/upload-image", {
         method: "POST",
+        credentials: "include",
         body: formData,
       });
 

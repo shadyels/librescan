@@ -43,6 +43,7 @@ import { generateRecommendations } from "./lib/recommendationAI.js";
 import { enrichBooks } from "./lib/googleBooks.js";
 import { v4 as uuidv4 } from "uuid";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
+import { requireUser } from "./lib/auth.js";
 
 /**
  * Why export default: Vercel requires default exports to detect handlers.
@@ -58,37 +59,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { scan_id, device_id } = req.body;
+    const user = await requireUser(req, res);
+    if (!user) return;
+
+    const { scan_id } = req.body;
 
     if (!scan_id) {
-      return res.status(400).json({
-        success: false,
-        error: "scan_id is required",
-      });
+      return res.status(400).json({ success: false, error: "scan_id is required" });
     }
 
-    if (!device_id) {
-      return res.status(400).json({
-        success: false,
-        error: "device_id is required",
-      });
-    }
-
-    // Validate UUID format for both IDs.
-    // This prevents SQL injection via malformed IDs and catches client bugs early.
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(scan_id)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid scan_id format (must be UUID v4)",
-      });
-    }
-    if (!uuidRegex.test(device_id)) {
-      return res.status(400).json({
-        success: false,
-        error: "Invalid device_id format (must be UUID v4)",
-      });
+      return res.status(400).json({ success: false, error: "Invalid scan_id format (must be UUID)" });
     }
 
     console.log(`[generate-recommendations] Starting for scan ${scan_id}`);
@@ -112,29 +94,16 @@ export default async function handler(req, res) {
     }
 
     // ---- Step 3: Fetch the scan data ----
-    // We need the recognized books to send to the LLM as context.
     const scanResult = await query(
-      "SELECT recognized_books, device_id FROM scans WHERE scan_id = $1",
-      [scan_id],
+      "SELECT recognized_books FROM scans WHERE scan_id = $1 AND user_id = $2",
+      [scan_id, user.id],
     );
 
-    // Scan not found — either invalid ID or scan was deleted
     if (scanResult.rows.length === 0) {
-      return res.status(404).json({
-        success: false,
-        error: "Scan not found",
-      });
+      return res.status(404).json({ success: false, error: "Scan not found" });
     }
 
-    // Security check: verify the scan belongs to this device.
-    // Prevents users from generating recommendations for other people's scans.
     const scan = scanResult.rows[0];
-    if (scan.device_id !== device_id) {
-      return res.status(403).json({
-        success: false,
-        error: "This scan does not belong to your device",
-      });
-    }
 
     // Extract the books array from the JSONB column.
     // The scans table stores raw AI output as: { books: [...], metadata: {...} }
@@ -176,8 +145,8 @@ export default async function handler(req, res) {
 
     try {
       const prefResult = await query(
-        "SELECT genres, authors, language, reading_level FROM preferences WHERE device_id = $1",
-        [device_id],
+        "SELECT genres, authors, language, reading_level FROM preferences WHERE user_id = $1",
+        [user.id],
       );
 
       if (prefResult.rows.length > 0) {
@@ -278,10 +247,10 @@ export default async function handler(req, res) {
     const recommendationId = uuidv4();
 
     await query(
-      `INSERT INTO recommendations (recommendation_id, device_id, scan_id, book_data, saved)
+      `INSERT INTO recommendations (recommendation_id, user_id, scan_id, book_data, saved)
         VALUES ($1, $2, $3, $4, FALSE)
         ON CONFLICT (scan_id) DO UPDATE SET book_data = $4`,
-      [recommendationId, device_id, scan_id, JSON.stringify(bookData)],
+      [recommendationId, user.id, scan_id, JSON.stringify(bookData)],
     );
 
     console.log(

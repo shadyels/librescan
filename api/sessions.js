@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     // xmax = 0 is a PostgreSQL trick to detect whether the row was inserted
     // (xmax is 0 for a fresh insert, non-zero for an update).
     const result = await query(
-      `INSERT INTO sessions (device_id, created_at, last_active)
+      `INSERT INTO anon_sessions (device_id, created_at, last_active)
        VALUES ($1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
        ON CONFLICT (device_id) DO UPDATE SET last_active = CURRENT_TIMESTAMP
        RETURNING device_id, created_at, last_active, (xmax = 0) AS is_new`,
