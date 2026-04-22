@@ -29,6 +29,7 @@
  */
 
 import { query } from "../lib/database.js";
+import { requireUser } from "../lib/auth.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -39,9 +40,10 @@ export default async function handler(req, res) {
   }
 
   try {
+    const user = await requireUser(req, res);
+    if (!user) return;
+
     // ---- Step 1: Extract and validate the scanId parameter ----
-    // Vercel dynamic routes put the parameter in req.query.
-    // The filename [scanId].js means the param is named "scanId".
     const { scanId } = req.query;
 
     if (!scanId) {
@@ -72,8 +74,8 @@ export default async function handler(req, res) {
     const result = await query(
       `SELECT recommendation_id, book_data, saved, created_at
         FROM recommendations
-        WHERE scan_id = $1`,
-      [scanId],
+        WHERE scan_id = $1 AND user_id = $2`,
+      [scanId, user.id],
     );
 
     // ---- Step 3: Handle not found ----

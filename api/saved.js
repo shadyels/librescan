@@ -24,6 +24,7 @@
  */
 
 import { query } from "./lib/database.js";
+import { requireUser } from "./lib/auth.js";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -40,19 +41,17 @@ const UUID_REGEX =
  * @returns {Promise<void>} Sends JSON response via res.status().json()
  */
 export default async function handler(req, res) {
-  // Route based on HTTP method. Each sub-handler is responsible for its own
-  // input validation, database query, and response formatting.
+  const user = await requireUser(req, res);
+  if (!user) return;
+
   if (req.method === "GET") {
-    return handleGet(req, res);
+    return handleGet(req, res, user);
   } else if (req.method === "PATCH") {
-    return handlePatch(req, res);
+    return handlePatch(req, res, user);
   } else if (req.method === "DELETE") {
-    return handleDelete(req, res);
+    return handleDelete(req, res, user);
   } else {
-    // 405 Method Not Allowed for any other HTTP method (POST, PUT, OPTIONS, etc.)
-    return res
-      .status(405)
-      .json({ success: false, error: "Method not allowed" });
+    return res.status(405).json({ success: false, error: "Method not allowed" });
   }
 }
 
@@ -69,15 +68,7 @@ export default async function handler(req, res) {
  * @param {object} res - Response with JSON body
  * @returns {Promise<void>}
  */
-async function handleGet(req, res) {
-  const { device_id } = req.query;
-
-  if (!device_id || !UUID_REGEX.test(device_id)) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Valid device_id is required" });
-  }
-
+async function handleGet(req, res, user) {
   try {
     const result = await query(
       `SELECT
@@ -88,9 +79,9 @@ async function handleGet(req, res) {
             r.book_data
         FROM recommendations r
         JOIN scans s ON r.scan_id = s.scan_id
-        WHERE r.device_id = $1 AND r.saved = TRUE
+        WHERE r.user_id = $1 AND r.saved = TRUE
         ORDER by r.created_at DESC`,
-      [device_id],
+      [user.id],
     );
     // Transform database rows into frontend-friendly format ──
     // The frontend doesn't need the full JSONB blobs. Extract only what the
@@ -144,33 +135,20 @@ async function handleGet(req, res) {
  * @param {object} res - Response with JSON body
  * @returns {Promise<void>}
  */
-async function handlePatch(req, res) {
-  const { scan_id, device_id } = req.body;
+async function handlePatch(req, res, user) {
+  const { scan_id } = req.body;
 
   if (!scan_id || !UUID_REGEX.test(scan_id)) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Valid scan_id is required" });
-  }
-
-  if (!device_id || !UUID_REGEX.test(device_id)) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Valid device_id is required" });
+    return res.status(400).json({ success: false, error: "Valid scan_id is required" });
   }
 
   try {
-    // Update the saved flag ──
-    // The WHERE clause serves double duty:
-    //   1. Finds the right recommendation row (scan_id)
-    //   2. Verifies ownership (device_id must match)
-    // RETURNING confirms the update happened and gives us the new state.
     const result = await query(
       `UPDATE recommendations
         SET saved = TRUE
-        WHERE scan_id = $1 AND device_id = $2
+        WHERE scan_id = $1 AND user_id = $2
         RETURNING scan_id, saved`,
-      [scan_id, device_id],
+      [scan_id, user.id],
     );
 
     // ── Step 3: Handle "not found" case ──
@@ -225,43 +203,24 @@ async function handlePatch(req, res) {
  * @param {object} res - Response with JSON body
  * @returns {Promise<void>}
  */
-async function handleDelete(req, res) {
-  const { scan_ids, device_id } = req.body;
-
-  if (!device_id || !UUID_REGEX.test(device_id)) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Valid device_id is required" });
-  }
+async function handleDelete(req, res, user) {
+  const { scan_ids } = req.body;
 
   if (!Array.isArray(scan_ids) || scan_ids.length === 0) {
-    return res
-      .status(400)
-      .json({ success: false, error: "scan_ids must be a non-empty array" });
+    return res.status(400).json({ success: false, error: "scan_ids must be a non-empty array" });
   }
 
-  // every UUID in the scan_ids
   const invalidIds = scan_ids.filter((id) => !UUID_REGEX.test(id));
   if (invalidIds.length > 0) {
-    return res
-      .status(400)
-      .json({ success: false, error: "All scan_ids must be valid UUIDs" });
+    return res.status(400).json({ success: false, error: "All scan_ids must be valid UUIDs" });
   }
 
   try {
-    // ── Step 2: Delete from scans table ──
-    // ANY($1::uuid[]) matches scan_id against each element in the array.
-    // The ::uuid[] cast tells Postgres to treat $1 as a UUID array.
-    // The pg driver (node-postgres) automatically serializes JavaScript arrays
-    // into PostgreSQL array format for parameterized queries.
-    //
-    // RETURNING gives us the list of actually-deleted scan_ids, which may be
-    // fewer than requested if some didn't belong to this device.
     const result = await query(
       `DELETE FROM scans
-        WHERE scan_id = ANY($1::uuid[]) AND device_id = $2
+        WHERE scan_id = ANY($1::uuid[]) AND user_id = $2
         RETURNING scan_id`,
-      [scan_ids, device_id],
+      [scan_ids, user.id],
     );
 
     // Extract the UUIDs of successfully deleted scans from the RETURNING rows.
