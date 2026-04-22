@@ -1,11 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import CameraCapture from "../components/CameraCapture";
+import AuthPrompt from "../components/AuthPrompt";
+import { useSession } from "../contexts/SessionContext";
 
 function Home() {
   const navigate = useNavigate();
+  const { deviceId } = useSession();
 
   const handleUploadSuccess = (scanId) => {
-    navigate(`/results/${scanId}`);
+    const query = deviceId ? `?device_id=${deviceId}` : "";
+    navigate(`/results/${scanId}${query}`);
   };
 
   return (
@@ -25,7 +29,7 @@ function Home() {
         <div className="w-14 h-px bg-accent mt-10 mb-12" />
       </div>
 
-      <div className="glass-card p-8 md:p-10">
+      <div className="glass-card p-8 md:p-10 mb-8">
         <h2 className="font-display text-2xl font-semibold text-text-primary mb-2">
           Scan Your Shelf
         </h2>
@@ -34,6 +38,8 @@ function Home() {
         </p>
         <CameraCapture onUploadSuccess={handleUploadSuccess} />
       </div>
+
+      <AuthPrompt />
     </div>
   );
 }

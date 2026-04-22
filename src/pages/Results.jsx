@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import SkeletonCard from "../components/SkeletonCard";
+import { useAuth } from "../contexts/AuthContext";
 
 function Results() {
   const { scanId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [scan, setScan] = useState(null);
   const [books, setBooks] = useState(null);
@@ -19,7 +22,12 @@ function Results() {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(`/api/scan/${scanId}`);
+        const deviceId = searchParams.get("device_id");
+        const url = deviceId
+          ? `/api/scan/${scanId}?device_id=${encodeURIComponent(deviceId)}`
+          : `/api/scan/${scanId}`;
+
+        const response = await fetch(url, { credentials: "include" });
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -45,7 +53,7 @@ function Results() {
     }
 
     fetchScan();
-  }, [scanId]);
+  }, [scanId, searchParams]);
 
   useEffect(() => {
     if (!books || books.length === 0) return;
@@ -196,32 +204,58 @@ function Results() {
         ))}
       </div>
 
-      <div className="mt-8 text-center">
-        <div className="relative my-8">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
+      {user ? (
+        <div className="mt-8 text-center">
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-bg-primary px-4 text-sm text-text-muted">
+                Want to discover more?
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center">
-            <span className="bg-bg-primary px-4 text-sm text-text-muted">
-              Want to discover more?
-            </span>
+
+          <Link
+            to={`/recommendations/${scanId}`}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-accent text-white rounded-xl hover:bg-accent-hover transition-colors shadow-md hover:shadow-lg text-lg font-semibold"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
+            </svg>
+            <span>View Recommendations</span>
+          </Link>
+
+          <p className="text-text-muted text-sm mt-3">
+            Get personalized book suggestions based on your shelf
+          </p>
+        </div>
+      ) : (
+        <div className="mt-8 glass-card p-6 border border-accent/20">
+          <p className="text-xs tracking-widest uppercase text-accent mb-2">Save your results</p>
+          <h2 className="font-display text-xl font-semibold text-text-primary mb-2">
+            Log in to save this scan and get recommendations
+          </h2>
+          <p className="text-text-secondary text-sm mb-5">
+            Create a free account to save your recognized books, generate personalized picks, and access everything from any device.
+          </p>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/signup"
+              className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium text-sm"
+            >
+              Create account
+            </Link>
+            <Link
+              to="/login"
+              className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent hover:text-text-primary rounded-lg transition-all text-sm"
+            >
+              Sign in
+            </Link>
           </div>
         </div>
-
-        <Link
-          to={`/recommendations/${scanId}`}
-          className="inline-flex items-center gap-2 px-8 py-3 bg-accent text-white rounded-xl hover:bg-accent-hover transition-colors shadow-md hover:shadow-lg text-lg font-semibold"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
-          </svg>
-          <span>View Recommendations</span>
-        </Link>
-
-        <p className="text-text-muted text-sm mt-3">
-          Get personalized book suggestions based on your shelf
-        </p>
-      </div>
+      )}
 
       <div className="flex justify-center gap-4 mt-6">
         <button

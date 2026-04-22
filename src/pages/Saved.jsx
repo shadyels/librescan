@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSession } from "../contexts/SessionContext";
+import { useAuth } from "../contexts/AuthContext";
+import LoginGate from "../components/LoginGate";
 
 export default function Saved() {
   const navigate = useNavigate();
-  const { deviceId, loading: sessionLoading } = useSession();
+  const { user, loading: authLoading } = useAuth();
 
   const [savedSets, setSavedSets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ export default function Saved() {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/saved?device_id=${deviceId}`);
+      const response = await fetch("/api/saved", { credentials: "include" });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -36,10 +37,9 @@ export default function Saved() {
   }
 
   useEffect(() => {
-    if (sessionLoading) return;
-    if (!deviceId) return;
+    if (authLoading || !user) return;
     fetchSavedSets();
-  }, [deviceId, sessionLoading]);
+  }, [user, authLoading]);
 
   const toggleSelection = (scanId) => {
     setSelectedIds((prev) => {
@@ -68,8 +68,9 @@ export default function Saved() {
 
       const response = await fetch("/api/saved", {
         method: "DELETE",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scan_ids: scanIdsArray, device_id: deviceId }),
+        body: JSON.stringify({ scan_ids: scanIdsArray }),
       });
 
       if (!response.ok) {
@@ -89,7 +90,7 @@ export default function Saved() {
         `Deleted ${data.deleted_count} saved scan${data.deleted_count !== 1 ? "s" : ""} and their recommendations.`
       );
       setTimeout(() => setFeedback(null), 4000);
-    } catch (err) {
+    } catch {
       setShowDeleteDialog(false);
     } finally {
       setDeleting(false);
@@ -110,6 +111,25 @@ export default function Saved() {
       return dateStr;
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="max-w-4xl mx-auto flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <LoginGate
+          title="Sign in to see your saved scans"
+          description="Your saved recommendations are stored with your account and accessible from any device."
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto">

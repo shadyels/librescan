@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useSession } from "../contexts/SessionContext";
+import { useAuth } from "../contexts/AuthContext";
 import RecommendationCard from "../components/RecommendationCard";
 import SkeletonCard from "../components/SkeletonCard";
+import LoginGate from "../components/LoginGate";
 
 export default function Recommendations() {
   const { scanId } = useParams();
   const navigate = useNavigate();
-  const { deviceId, loading: sessionLoading } = useSession();
+  const { user, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -28,15 +29,16 @@ export default function Recommendations() {
   };
 
   useEffect(() => {
-    if (sessionLoading) return;
-    if (!deviceId) return;
+    if (authLoading || !user) return;
 
     async function loadRecommendations() {
       try {
         setLoading(true);
         setError(null);
 
-        const getResponse = await fetch(`/api/recommendations/${scanId}`);
+        const getResponse = await fetch(`/api/recommendations/${scanId}`, {
+          credentials: "include",
+        });
 
         if (getResponse.ok) {
           const getData = await getResponse.json();
@@ -56,8 +58,9 @@ export default function Recommendations() {
 
         const postResponse = await fetch("/api/generate-recommendations", {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ scan_id: scanId, device_id: deviceId }),
+          body: JSON.stringify({ scan_id: scanId }),
         });
 
         if (!postResponse.ok) {
@@ -77,15 +80,16 @@ export default function Recommendations() {
     }
 
     loadRecommendations();
-  }, [scanId, deviceId, sessionLoading, retryCount]);
+  }, [scanId, user, authLoading, retryCount]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
       const response = await fetch("/api/saved", {
         method: "PATCH",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scan_id: scanId, device_id: deviceId }),
+        body: JSON.stringify({ scan_id: scanId }),
       });
 
       if (!response.ok) {
@@ -94,7 +98,7 @@ export default function Recommendations() {
       }
 
       setSaved(true);
-    } catch (err) {
+    } catch {
       // save failed silently — recommendations still visible
     } finally {
       setSaving(false);
@@ -106,8 +110,9 @@ export default function Recommendations() {
     try {
       const response = await fetch("/api/saved", {
         method: "DELETE",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scan_ids: [scanId], device_id: deviceId }),
+        body: JSON.stringify({ scan_ids: [scanId] }),
       });
 
       if (!response.ok) {
@@ -116,12 +121,29 @@ export default function Recommendations() {
       }
 
       navigate("/saved");
-    } catch (err) {
+    } catch {
       setShowDeleteDialog(false);
     } finally {
       setDeleting(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <LoginGate
+        title="Sign in to view recommendations"
+        description="Personalized recommendations require an account so we can learn your reading preferences."
+      />
+    );
+  }
 
   const books = recommendations?.recommendations || [];
   const metadata = recommendations?.metadata || {};

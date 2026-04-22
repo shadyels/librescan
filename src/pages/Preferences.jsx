@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useSession } from "../contexts/SessionContext";
+import { useAuth } from "../contexts/AuthContext";
+import LoginGate from "../components/LoginGate";
 
 const GENRE_OPTIONS = [
   "Fiction",
@@ -45,7 +46,7 @@ const READING_LEVEL_DESCRIPTIONS = {
 };
 
 function Preferences() {
-  const { deviceId, loading: sessionLoading } = useSession();
+  const { user, loading: authLoading } = useAuth();
 
   const [genres, setGenres] = useState([]);
   const [authors, setAuthors] = useState([]);
@@ -57,11 +58,11 @@ function Preferences() {
   const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
-    if (!deviceId) return;
+    if (authLoading || !user) return;
 
     async function fetchPreferences() {
       try {
-        const response = await fetch(`/api/preferences?device_id=${deviceId}`);
+        const response = await fetch("/api/preferences", { credentials: "include" });
         const data = await response.json();
 
         if (data.success && data.preferences) {
@@ -70,7 +71,7 @@ function Preferences() {
           setLanguage(data.preferences.language || "");
           setReadingLevel(data.preferences.reading_level || "");
         }
-      } catch (error) {
+      } catch {
         // Network error — form stays empty
       } finally {
         setFetchLoading(false);
@@ -78,7 +79,7 @@ function Preferences() {
     }
 
     fetchPreferences();
-  }, [deviceId]);
+  }, [user, authLoading]);
 
   function handleGenreToggle(genre) {
     setGenres((prev) =>
@@ -125,14 +126,9 @@ function Preferences() {
     try {
       const response = await fetch("/api/preferences", {
         method: "PUT",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          device_id: deviceId,
-          genres,
-          authors,
-          language,
-          reading_level: readingLevel,
-        }),
+        body: JSON.stringify({ genres, authors, language, reading_level: readingLevel }),
       });
 
       const data = await response.json();
@@ -148,7 +144,7 @@ function Preferences() {
           message: data.error || "Failed to save preferences",
         });
       }
-    } catch (error) {
+    } catch {
       setFeedback({
         type: "error",
         message: "Network error. Please check your connection and try again.",
@@ -158,7 +154,28 @@ function Preferences() {
     }
   }
 
-  if (sessionLoading || fetchLoading) {
+  if (authLoading) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-center py-20">
+          <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <LoginGate
+          title="Preferences require an account"
+          description="Create a free account to save your reading preferences and get personalised recommendations."
+        />
+      </div>
+    );
+  }
+
+  if (fetchLoading) {
     return (
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-center py-20">
