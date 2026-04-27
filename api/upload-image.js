@@ -25,7 +25,7 @@ import fs from "fs";
 import path from "path";
 import { query } from "./lib/database.js";
 //import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
-import { recognizeBooks as recognizeBooksReal } from "./lib/qwenAI.js";
+import { recognizeBooks as recognizeBooksReal } from "./lib/groqVisionAI.js";
 import { enrichBooks } from "./lib/googleBooks.js";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
 import { getCurrentUser } from "./lib/auth.js";
@@ -170,13 +170,11 @@ export default async function handler(req, res) {
 
         let recognizedBooks;
 
-        // --- Phase 6: Check Qwen daily limit before calling AI ---
-        // We check BEFORE the expensive API call to avoid wasting the user's
-        // time (Qwen calls take 5-60 seconds). Better to fail fast.
-        const qwenLimit = await checkLimit("qwen");
+        // Check Groq vision daily limit before calling AI.
+        const qwenLimit = await checkLimit("groq_vision");
         if (qwenLimit.limited) {
           console.log(
-            `[upload] Qwen daily limit reached (${qwenLimit.count}). Blocking scan.`,
+            `[upload] Groq vision daily limit reached (${qwenLimit.count}). Blocking scan.`,
           );
           return res.status(429).json({
             success: false,
@@ -194,25 +192,16 @@ export default async function handler(req, res) {
           console.log("[upload] Using MOCK AI (USE_MOCK_AI=true)");
           recognizedBooks = await recognizeBooksMock(uploadedFile.filepath);
         } else {
-          // REAL PATH: Use Qwen2.5-VL to actually analyze the bookshelf image.
-          // This calls the HuggingFace Inference API which:
-          //   - Takes 5-60 seconds depending on cold start
-          //   - Requires HUGGINGFACE_API_KEY to be set
-          //   - Uses free-tier API credits
-          //   - Returns real book identifications from the uploaded photo
-          console.log(
-            "[upload] Using REAL AI - Qwen2.5-VL (USE_MOCK_AI=false)",
-          );
+          // REAL PATH: Use llama-4-scout-17b (Groq) to analyze the bookshelf image.
+          // Requires GROQ_API_KEY to be set.
+          console.log("[upload] Using REAL AI - llama-4-scout via Groq (USE_MOCK_AI=false)");
           recognizedBooks = await recognizeBooksReal(uploadedFile.filepath);
         }
 
         console.log(`AI recognized ${recognizedBooks.books.length} books`);
 
-        // --- Phase 6: Increment Qwen usage counter ---
-        // Only increment on SUCCESS. If the AI call threw an error, the
-        // catch block runs instead, and we don't count failed requests
-        // against the limit.
-        if (!useMockAI) { await incrementUsage("qwen"); }
+        // Increment Groq vision usage counter on success only.
+        if (!useMockAI) { await incrementUsage("groq_vision"); }
 
         // -------------------------------------------------------------------------
         // STEP 6 (Phase 2D): Populate the book_cache with Google Books metadata.

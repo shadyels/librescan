@@ -69,18 +69,19 @@ Auth helper: `api/lib/auth.js` — exports `hashPassword`, `verifyPassword`, `ge
 
 ### Core Data Flow
 
-1. **Upload** (`POST /api/upload-image`): Formidable parses multipart, Qwen2.5-VL-7B (HuggingFace) recognizes books from the image, `enrichBooks()` fetches Google Books metadata and caches it in `book_cache`, scan stored in `scans` table. If cookie present → `user_id`; else → `device_id`.
+1. **Upload** (`POST /api/upload-image`): Formidable parses multipart, `sharp` downsizes image to ≤1568px JPEG, `llama-4-scout-17b` (Groq) recognizes books via vision, `enrichBooks()` fetches Google Books metadata and caches it in `book_cache`, scan stored in `scans` table. If cookie present → `user_id`; else → `device_id`.
 
 2. **Results** (`GET /api/scan/:scanId`): JOINs `scans` with `book_cache`. Ownership check: user session cookie OR `?device_id=` query param for anon access.
 
-3. **Recommendations** (`POST /api/generate-recommendations`): Requires login. Fetches scan + user preferences, calls Llama 3.1 8B, enriches results, stores one JSONB blob per scan in `recommendations` table.
+3. **Recommendations** (`POST /api/generate-recommendations`): Requires login. Fetches scan + user preferences, calls `llama-4-scout-17b` (Groq), enriches results, stores one JSONB blob per scan in `recommendations` table.
 
 ### Key Design Decisions
 
 - **Formidable, not Multer**: Multer fails in Vercel serverless; Formidable handles multipart reliably.
 - **Write-time caching**: `book_cache` is populated on every scan/recommendation. Reads JOIN against it — no duplicate metadata per book across users.
 - **JSONB blobs**: Recommendations stored as a single JSONB array (users save/delete full sets, not individual books).
-- **Preferences as prompt injection**: User preferences are formatted as natural language and injected into the Llama prompt — allows model flexibility rather than hard filters.
+- **Preferences as prompt injection**: User preferences are formatted as natural language and injected into the llama-4-scout prompt — allows model flexibility rather than hard filters.
+- **Image downscaling**: `sharp` resizes uploads to ≤1568px JPEG before base64 encoding to stay within Groq's 4MB base64 per-request limit. Preserves 10MB upload cap for users.
 - **Idempotent recommendations**: `generate-recommendations.js` checks for existing cached recommendations before calling the LLM to prevent duplicate API usage.
 - **Usage tracking**: `lib/usageTracking.js` enforces daily API limits. A `daily_limit_hit` flag blocks all operations if any API hits its ceiling.
 - **Token security**: session tokens stored as SHA-256 hash only in DB. Raw token lives only in the cookie and is never persisted.
@@ -93,7 +94,7 @@ Required in `.env.local`:
 
 ```
 DATABASE_URL=           # PostgreSQL connection string (Neon)
-HUGGINGFACE_API_KEY=    # For Qwen2.5-VL (vision) and Llama 3.1 8B (recommendations)
+GROQ_API_KEY=           # For llama-4-scout-17b (vision + recommendations)
 GOOGLE_BOOKS_API_KEY=   # Book metadata and cover images
 USE_MOCK_AI=false       # Set to "true" to skip real AI calls during development
 ```

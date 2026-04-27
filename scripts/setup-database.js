@@ -117,8 +117,8 @@ async function setupDatabase() {
     await client.query(`
       CREATE TABLE api_usage_tracking (
         date DATE PRIMARY KEY,
-        qwen_requests INT DEFAULT 0,
-        llama_requests INT DEFAULT 0,
+        groq_vision_requests INT DEFAULT 0,
+        groq_text_requests INT DEFAULT 0,
         google_books_requests INT DEFAULT 0,
         total_cost NUMERIC(10,4) DEFAULT 0,
         daily_limit_hit BOOLEAN DEFAULT FALSE

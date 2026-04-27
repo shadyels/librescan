@@ -72,7 +72,7 @@ const HUGGINGFACE_ROUTER_URL =
 //      - We can upgrade to 72B later if accuracy is insufficient
 //      The model ID must match exactly what HuggingFace expects.
 // -----------------------------------------------------------------------------
-const MODEL_ID = "Qwen/Qwen2.5-VL-7B-Instruct";
+const MODEL_ID = "Qwen/Qwen3-VL-8B-Instruct";
 
 // -----------------------------------------------------------------------------
 // CONSTANT: REQUEST_TIMEOUT_MS
