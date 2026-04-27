@@ -4,7 +4,7 @@
 
 LibreScan is a full-stack web app that uses AI vision to recognize books from a photo of your bookshelf, then generates personalized reading recommendations based on what you already own and your reading preferences.
 
-**Live Demo:** [librescan.vercel.app](https://librescan.vercel.app/)
+**Live Demo:** [librescan.shadyels.com](https://librescan.shadyels.com/)
 
 ---
 
@@ -22,7 +22,7 @@ LibreScan is a full-stack web app that uses AI vision to recognize books from a 
 ## Tech Stack
 
 **Frontend**
-- React 18 with Vite 6
+- React 19 with Vite 6
 - Tailwind CSS v4
 - React Router DOM v7
 - IndexedDB for client-side session persistence
@@ -33,8 +33,7 @@ LibreScan is a full-stack web app that uses AI vision to recognize books from a 
 - Formidable for multipart file uploads
 
 **AI & APIs**
-- Qwen2.5-VL-7B-Instruct (HuggingFace) — vision model for book recognition from bookshelf photos
-- Llama 3.1 8B Instruct (HuggingFace) — language model for generating personalized recommendations
+- Llama 4 Scout 17B (Groq) — vision model for book recognition and language model for personalized recommendations
 - Google Books API — metadata enrichment (covers, ISBNs, descriptions, categories)
 
 ---
@@ -47,7 +46,7 @@ LibreScan is a full-stack web app that uses AI vision to recognize books from a 
 
 - **Preferences as natural language prompt injection** — User reading preferences are formatted as conversational sentences and injected into the LLM's user message, letting the model weigh them flexibly alongside bookshelf analysis rather than treating them as hard filters.
 
-- **Daily usage tracking with per-API counters** — Each external API (Qwen, Llama, Google Books) has its own daily request counter with a configurable limit. When any API hits its ceiling, all operations are blocked to prevent unexpected costs.
+- **Daily usage tracking with per-API counters** — Each external API (Groq, Google Books) has its own daily request counter with a configurable limit. When any API hits its ceiling, all operations are blocked to prevent unexpected costs.
 
 - **Serverless function budgeting** — Shared libraries live outside the `api/` directory to avoid Vercel's per-file serverless function count. Imported files are bundled automatically at deploy time.
 
@@ -76,8 +75,8 @@ librescan/
 
 | Decision | Why |
 |---|---|
-| Qwen2.5-VL over Florence-2 | Florence-2 isn't deployed on any HuggingFace Inference Provider. Qwen has built-in OCR and returns structured JSON directly. |
-| Llama 3.1 8B over larger models | Free tier on HuggingFace, Apache 2.0 license, good at structured JSON output. Upgrade path to 70B by changing one constant. |
+| Llama 4 Scout over HuggingFace models | HuggingFace has cold starts (up to 60s) and unstable provider routing. Groq offers consistent low-latency inference on an OpenAI-compatible endpoint. |
+| Single model for vision + recommendations | Llama 4 Scout handles both multimodal book recognition and text-only recommendation generation, reducing API surface and provider dependencies. |
 | Formidable over Multer | Multer caused "Unexpected end of form" errors in Vercel's serverless environment. Formidable is built for it. |
 | JSONB for recommendations | All 8 recommendations stored as one blob per scan. Users save/delete entire sets, not individual books — one row, one operation. |
 | Raw AI output in scans, metadata in cache | Avoids duplicating cover URLs and descriptions across every scan that detects the same book. |
