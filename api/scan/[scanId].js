@@ -25,8 +25,8 @@
 //   the Google Books metadata. No duplication across scans.
 // =============================================================================
 
-import { query } from "../lib/database.js";
-import { getCurrentUser } from "../lib/auth.js";
+import { query } from "../../lib/database.js";
+import { getCurrentUser } from "../../lib/auth.js";
 
 /**
  * Main handler function for the scan endpoint

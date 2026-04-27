@@ -1,6 +1,6 @@
 import { parse } from 'cookie'
-import { query } from '../lib/database.js'
-import { COOKIE_NAME, hashToken, clearSessionCookie } from '../lib/auth.js'
+import { query } from '../../lib/database.js'
+import { COOKIE_NAME, hashToken, clearSessionCookie } from '../../lib/auth.js'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {

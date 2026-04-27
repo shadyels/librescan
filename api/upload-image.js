@@ -23,12 +23,12 @@ import { IncomingForm } from "formidable";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
-import { query } from "./lib/database.js";
+import { query } from "../lib/database.js";
 //import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
-import { recognizeBooks as recognizeBooksReal } from "./lib/groqVisionAI.js";
-import { enrichBooks } from "./lib/googleBooks.js";
+import { recognizeBooks as recognizeBooksReal } from "../lib/groqVisionAI.js";
+import { enrichBooks } from "../lib/googleBooks.js";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
-import { getCurrentUser } from "./lib/auth.js";
+import { getCurrentUser } from "../lib/auth.js";
 
 // =============================================================================
 // VERCEL CONFIG: Disable body parsing.

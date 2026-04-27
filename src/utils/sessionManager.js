@@ -69,19 +69,6 @@ export async function initializeSession() {
       console.log("Existing device ID found: ", deviceId);
     }
 
-    // Register session with backend
-    const response = await fetch("/api/sessions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ device_id: deviceId }),
-    });
-
-    if (!response.ok) {
-      console.error("Failed to register session with backend");
-    }
-
     return deviceId;
   } catch (error) {
     console.error("Error initializing session:", error);

@@ -21,8 +21,8 @@
  * - database.js: PostgreSQL queries
  */
 
-import { query } from "./lib/database.js";
-import { requireUser } from "./lib/auth.js";
+import { query } from "../lib/database.js";
+import { requireUser } from "../lib/auth.js";
 
 const VALID_GENRES = [
   "Fiction",

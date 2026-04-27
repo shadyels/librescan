@@ -1,9 +1,9 @@
-import { query } from '../lib/database.js'
+import { query } from '../../lib/database.js'
 import {
   verifyPassword,
   createSession,
   serializeSessionCookie,
-} from '../lib/auth.js'
+} from '../../lib/auth.js'
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 

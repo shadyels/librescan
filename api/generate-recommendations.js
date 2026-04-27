@@ -38,12 +38,12 @@
  *   just the bookshelf (same behavior as Phase 3)
  */
 
-import { query } from "./lib/database.js";
-import { generateRecommendations } from "./lib/recommendationAI.js";
-import { enrichBooks } from "./lib/googleBooks.js";
+import { query } from "../lib/database.js";
+import { generateRecommendations } from "../lib/recommendationAI.js";
+import { enrichBooks } from "../lib/googleBooks.js";
 import { v4 as uuidv4 } from "uuid";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
-import { requireUser } from "./lib/auth.js";
+import { requireUser } from "../lib/auth.js";
 
 /**
  * Why export default: Vercel requires default exports to detect handlers.
