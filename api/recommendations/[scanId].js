@@ -28,8 +28,8 @@
  * - database.js: PostgreSQL queries
  */
 
-import { query } from "../lib/database.js";
-import { requireUser } from "../lib/auth.js";
+import { query } from "../../lib/database.js";
+import { requireUser } from "../../lib/auth.js";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {

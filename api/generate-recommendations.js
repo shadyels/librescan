@@ -38,12 +38,12 @@
  *   just the bookshelf (same behavior as Phase 3)
  */
 
-import { query } from "./lib/database.js";
-import { generateRecommendations } from "./lib/recommendationAI.js";
-import { enrichBooks } from "./lib/googleBooks.js";
+import { query } from "../lib/database.js";
+import { generateRecommendations } from "../lib/recommendationAI.js";
+import { enrichBooks } from "../lib/googleBooks.js";
 import { v4 as uuidv4 } from "uuid";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
-import { requireUser } from "./lib/auth.js";
+import { requireUser } from "../lib/auth.js";
 
 /**
  * Why export default: Vercel requires default exports to detect handlers.
@@ -183,11 +183,11 @@ export default async function handler(req, res) {
       "[generate-recommendations] Calling LLM for recommendations...",
     );
 
-    // --- Phase 6: Check Llama daily limit before calling LLM ---
-    const llamaLimit = await checkLimit("llama");
+    // Check Groq text daily limit before calling LLM.
+    const llamaLimit = await checkLimit("groq_text");
     if (llamaLimit.limited) {
       console.log(
-        `[generate-recommendations] Llama daily limit reached (${llamaLimit.count}). Blocking.`,
+        `[generate-recommendations] Groq text daily limit reached (${llamaLimit.count}). Blocking.`,
       );
       return res.status(429).json({
         success: false,
@@ -215,8 +215,8 @@ export default async function handler(req, res) {
       `[generate-recommendations] LLM returned ${llmResult.recommendations.length} recommendations`,
     );
 
-    // --- Phase 6: Increment Llama usage counter before enriching the recommendations ---
-    await incrementUsage("llama");
+    // Increment Groq text usage counter on success.
+    await incrementUsage("groq_text");
 
     // ---- Step 6: Enrich recommended books with Google Books ----
     // This populates book_cache with covers, ISBNs, descriptions for the
