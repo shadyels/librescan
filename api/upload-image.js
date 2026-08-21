@@ -160,7 +160,7 @@ export default async function handler(req, res) {
          *
          * Check environment variable to determine mode:
          * - USE_MOCK_AI=true: Use fake data (development/testing)
-         * - USE_MOCK_AI=false: Call real HuggingFace API (production)
+         * - USE_MOCK_AI=false: Call the real Groq API (production)
          *
          * Default to mock if not set (safer for development)
          */
@@ -171,14 +171,14 @@ export default async function handler(req, res) {
         let recognizedBooks;
 
         // Check Groq vision daily limit before calling AI.
-        const qwenLimit = await checkLimit("groq_vision");
-        if (qwenLimit.limited) {
+        const visionLimit = await checkLimit("groq_vision");
+        if (visionLimit.limited) {
           console.log(
-            `[upload] Groq vision daily limit reached (${qwenLimit.count}). Blocking scan.`,
+            `[upload] Groq vision daily limit reached (${visionLimit.count}). Blocking scan.`,
           );
           return res.status(429).json({
             success: false,
-            error: qwenLimit.reason,
+            error: visionLimit.reason,
           });
         }
 
@@ -192,9 +192,9 @@ export default async function handler(req, res) {
           console.log("[upload] Using MOCK AI (USE_MOCK_AI=true)");
           recognizedBooks = await recognizeBooksMock(uploadedFile.filepath);
         } else {
-          // REAL PATH: Use llama-4-scout-17b (Groq) to analyze the bookshelf image.
+          // REAL PATH: Use qwen/qwen3.6-27b (Groq) to analyze the bookshelf image.
           // Requires GROQ_API_KEY to be set.
-          console.log("[upload] Using REAL AI - llama-4-scout via Groq (USE_MOCK_AI=false)");
+          console.log("[upload] Using REAL AI - qwen3.6-27b via Groq (USE_MOCK_AI=false)");
           recognizedBooks = await recognizeBooksReal(uploadedFile.filepath);
         }
 
@@ -243,7 +243,7 @@ export default async function handler(req, res) {
          *
          * JSONB allows flexible querying:
          * - SELECT recognized_books->'books' to get book array
-         * - WHERE recognized_books->'metadata'->>'model_used' = 'florence-2'
+         * - WHERE recognized_books->'metadata'->>'model_used' = 'Qwen 3.6 27B'
          */
         if (user) {
           // Logged-in user: insert with user_id

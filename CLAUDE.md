@@ -17,6 +17,9 @@ npm run db:setup
 # Test image upload endpoint
 npm run test:upload
 
+# Verify both Groq models against the live API (vision + recommendations)
+npm run verify:ai
+
 # Database maintenance
 npm run db:check                        # Check sessions table
 npm run db:clear-cache                  # Flush book_cache table
@@ -69,19 +72,19 @@ Auth helper: `api/lib/auth.js` — exports `hashPassword`, `verifyPassword`, `ge
 
 ### Core Data Flow
 
-1. **Upload** (`POST /api/upload-image`): Formidable parses multipart, `sharp` downsizes image to ≤1568px JPEG, `llama-4-scout-17b` (Groq) recognizes books via vision, `enrichBooks()` fetches Google Books metadata and caches it in `book_cache`, scan stored in `scans` table. If cookie present → `user_id`; else → `device_id`.
+1. **Upload** (`POST /api/upload-image`): Formidable parses multipart, `sharp` downsizes image to ≤1568px JPEG, `qwen/qwen3.6-27b` (Groq) recognizes books via vision, `enrichBooks()` fetches Google Books metadata and caches it in `book_cache`, scan stored in `scans` table. If cookie present → `user_id`; else → `device_id`.
 
 2. **Results** (`GET /api/scan/:scanId`): JOINs `scans` with `book_cache`. Ownership check: user session cookie OR `?device_id=` query param for anon access.
 
-3. **Recommendations** (`POST /api/generate-recommendations`): Requires login. Fetches scan + user preferences, calls `llama-4-scout-17b` (Groq), enriches results, stores one JSONB blob per scan in `recommendations` table.
+3. **Recommendations** (`POST /api/generate-recommendations`): Requires login. Fetches scan + user preferences, calls `openai/gpt-oss-120b` (Groq) with a strict JSON schema, enriches results, stores one JSONB blob per scan in `recommendations` table.
 
 ### Key Design Decisions
 
 - **Formidable, not Multer**: Multer fails in Vercel serverless; Formidable handles multipart reliably.
 - **Write-time caching**: `book_cache` is populated on every scan/recommendation. Reads JOIN against it — no duplicate metadata per book across users.
 - **JSONB blobs**: Recommendations stored as a single JSONB array (users save/delete full sets, not individual books).
-- **Preferences as prompt injection**: User preferences are formatted as natural language and injected into the llama-4-scout prompt — allows model flexibility rather than hard filters.
-- **Image downscaling**: `sharp` resizes uploads to ≤1568px JPEG before base64 encoding to stay within Groq's 4MB base64 per-request limit. Preserves 10MB upload cap for users.
+- **Preferences as prompt injection**: User preferences are formatted as natural language and injected into the gpt-oss-120b user message — allows model flexibility rather than hard filters.
+- **Image downscaling**: `sharp` resizes uploads to ≤1568px JPEG before base64 encoding. qwen3.6-27b accepts 20MB, so this bounds latency rather than satisfying a size limit — and it does *not* reduce token cost: measured `prompt_tokens` is ~2,050 at 1024px, 1200px and 1568px alike. Preserves the 10MB upload cap for users.
 - **Idempotent recommendations**: `generate-recommendations.js` checks for existing cached recommendations before calling the LLM to prevent duplicate API usage.
 - **Usage tracking**: `lib/usageTracking.js` enforces daily API limits. A `daily_limit_hit` flag blocks all operations if any API hits its ceiling.
 - **Token security**: session tokens stored as SHA-256 hash only in DB. Raw token lives only in the cookie and is never persisted.
@@ -94,7 +97,7 @@ Required in `.env.local`:
 
 ```
 DATABASE_URL=           # PostgreSQL connection string (Neon)
-GROQ_API_KEY=           # For llama-4-scout-17b (vision + recommendations)
+GROQ_API_KEY=           # For qwen/qwen3.6-27b (vision) and openai/gpt-oss-120b (recommendations)
 GOOGLE_BOOKS_API_KEY=   # Book metadata and cover images
 USE_MOCK_AI=false       # Set to "true" to skip real AI calls during development
 ```
