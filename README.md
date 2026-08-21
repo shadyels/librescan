@@ -33,7 +33,8 @@ LibreScan is a full-stack web app that uses AI vision to recognize books from a 
 - Formidable for multipart file uploads
 
 **AI & APIs**
-- Llama 4 Scout 17B (Groq) — vision model for book recognition and language model for personalized recommendations
+- Qwen 3.6 27B (Groq) — vision model for book spine recognition
+- GPT-OSS 120B (Groq) — language model for personalized recommendations
 - Google Books API — metadata enrichment (covers, ISBNs, descriptions, categories)
 
 ---
@@ -75,8 +76,10 @@ librescan/
 
 | Decision | Why |
 |---|---|
-| Llama 4 Scout over HuggingFace models | HuggingFace has cold starts (up to 60s) and unstable provider routing. Groq offers consistent low-latency inference on an OpenAI-compatible endpoint. |
-| Single model for vision + recommendations | Llama 4 Scout handles both multimodal book recognition and text-only recommendation generation, reducing API surface and provider dependencies. |
+| Groq over HuggingFace models | HuggingFace has cold starts (up to 60s) and unstable provider routing. Groq offers consistent low-latency inference on an OpenAI-compatible endpoint. |
+| Split models for vision and recommendations | Groq retired Llama 4 Scout, which had served both paths. Vision is now forced to `qwen/qwen3.6-27b` — the only image-capable model Groq offers. Recommendations moved to `openai/gpt-oss-120b`, which is Production rather than Preview tier, costs less, and is the only option supporting strict JSON schema enforcement. |
+| Reasoning disabled on the vision call | Both replacement models are reasoning models. On the bookshelf task `reasoning_effort: "default"` either fails validation outright (with JSON mode) or spends the entire token budget thinking and returns nothing (without it). `"none"` is required for correctness, not just latency. |
+| Output sanity guards on recognized books | The vision model pads its list with placeholder "Unknown" titles or repeats one title dozens of times on dense, hard-to-read shelves. `sanitizeBooks()` drops placeholders, de-duplicates, and caps the list, so phantom books never reach Google Books enrichment or the results grid. |
 | Formidable over Multer | Multer caused "Unexpected end of form" errors in Vercel's serverless environment. Formidable is built for it. |
 | JSONB for recommendations | All 8 recommendations stored as one blob per scan. Users save/delete entire sets, not individual books — one row, one operation. |
 | Raw AI output in scans, metadata in cache | Avoids duplicating cover URLs and descriptions across every scan that detects the same book. |

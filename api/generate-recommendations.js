@@ -184,14 +184,14 @@ export default async function handler(req, res) {
     );
 
     // Check Groq text daily limit before calling LLM.
-    const llamaLimit = await checkLimit("groq_text");
-    if (llamaLimit.limited) {
+    const textLimit = await checkLimit("groq_text");
+    if (textLimit.limited) {
       console.log(
-        `[generate-recommendations] Groq text daily limit reached (${llamaLimit.count}). Blocking.`,
+        `[generate-recommendations] Groq text daily limit reached (${textLimit.count}). Blocking.`,
       );
       return res.status(429).json({
         success: false,
-        error: llamaLimit.reason,
+        error: textLimit.reason,
       });
     }
     console.log(

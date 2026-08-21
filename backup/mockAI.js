@@ -3,7 +3,7 @@
  * 
  * This module simulates the behavior of a real AI vision model (Florence-2)
  * for book spine recognition. It returns realistic fake data for testing
- * without making actual API calls to HuggingFace.
+ * without making actual API calls to Groq.
  * 
  * Purpose: Allow frontend development and flow testing without API costs
  */
@@ -23,7 +23,7 @@ function delay(ms) {
  * Mock book recognition function
  * Simulates what Florence-2 would return after analyzing a bookshelf image
  * 
- * In production, this will be replaced with actual HuggingFace API calls
+ * In production, this is replaced by lib/groqVisionAI.js
  * 
  * @param {string} imagePath - Path to uploaded image file (not used in mock)
  * @returns {Promise<Object>} Structured book recognition results
@@ -84,7 +84,7 @@ export async function recognizeBooks(imagePath) {
     metadata: {
       total_books_detected: mockBooks.length,
       processing_time_ms: 3000,  // How long AI took to process
-      model_used: "mock-ai",     // Will be "florence-2-large" in production
+      model_used: "mock-ai",     // Real path reports "Qwen 3.6 27B"
       mock: true                 // Flag to indicate this is test data
     }
   }
