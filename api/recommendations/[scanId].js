@@ -9,10 +9,11 @@
  * there's no need to call the LLM again.
  *
  * Flow:
- * 1. Validate the scanId parameter
- * 2. Query the recommendations table for this scan_id
- * 3. If found, return the stored book_data (enriched recommendations + metadata)
- * 4. If not found, return a 404 so the frontend knows to trigger generation
+ * 1. Resolve identity: logged-in user (cookie) or anonymous device_id (query param)
+ * 2. Validate the scanId parameter
+ * 3. Query the recommendations table for this scan_id, owned by this identity
+ * 4. If found, return the stored book_data (enriched recommendations + metadata)
+ * 5. If not found, return a 404 so the frontend knows to trigger generation
  *
  * Why this is separate from generate-recommendations.js:
  * - GET vs POST: Fetching is a read operation, generating is a write operation
@@ -29,7 +30,9 @@
  */
 
 import { query } from "../../lib/database.js";
-import { requireUser } from "../../lib/auth.js";
+import { getCurrentUser } from "../../lib/auth.js";
+
+const deviceIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
@@ -40,12 +43,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const user = await requireUser(req, res);
-    if (!user) return;
+    // ---- Step 1: Resolve identity ----
+    const user = await getCurrentUser(req);
+    const { scanId, device_id } = req.query;
 
-    // ---- Step 1: Extract and validate the scanId parameter ----
-    const { scanId } = req.query;
+    if (!user && (!device_id || !deviceIdRegex.test(device_id))) {
+      return res.status(400).json({
+        success: false,
+        error: "device_id is required when not logged in",
+      });
+    }
 
+    const ownerUserId = user ? user.id : null;
+    const ownerDeviceId = user ? null : device_id;
+
+    // ---- Step 2: Extract and validate the scanId parameter ----
     if (!scanId) {
       return res.status(400).json({
         success: false,
@@ -68,17 +80,19 @@ export default async function handler(req, res) {
       `[recommendations] Fetching recommendations for scan ${scanId}`,
     );
 
-    // ---- Step 2: Query the recommendations table ----
+    // ---- Step 3: Query the recommendations table ----
     // We select book_data (JSONB with recommendations + metadata),
     // saved status (for future use), and creation timestamp.
+    // Filtered by identity so a scanId alone can't be used to read
+    // someone else's stored recommendations.
     const result = await query(
       `SELECT recommendation_id, book_data, saved, created_at
         FROM recommendations
-        WHERE scan_id = $1 AND user_id = $2`,
-      [scanId, user.id],
+        WHERE scan_id = $1 AND (user_id = $2 OR device_id = $3)`,
+      [scanId, ownerUserId, ownerDeviceId],
     );
 
-    // ---- Step 3: Handle not found ----
+    // ---- Step 4: Handle not found ----
     // 404 tells the frontend "no recommendations exist yet, you need to generate them"
     if (result.rows.length === 0) {
       console.log(
@@ -90,7 +104,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // ---- Step 4: Return the existing recommendations ----
+    // ---- Step 5: Return the existing recommendations ----
     const row = result.rows[0];
 
     // Enrich each recommendation with fresh cache data (covers, descriptions).
@@ -119,15 +133,15 @@ export default async function handler(req, res) {
 
 /**
  * Enriches recommendation books with data from book_cache.
- * 
+ *
  * This is called at read time (same architecture as the scan endpoint).
  * The recommendations table stores the raw LLM output + whatever enrichment
  * was available at generation time. But if a book's cache entry was updated
  * later (e.g., by another scan), this ensures we always show the latest.
- * 
+ *
  * Mutates the books array in place (adds cover_url, isbn, description,
  * categories, enriched fields).
- * 
+ *
  * @param {Array<Object>} recommendations - Array of recommendation objects
  */
 async function enrichRecommendationsFromCache(recommendations) {
