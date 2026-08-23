@@ -42,7 +42,7 @@ import dotenv from 'dotenv'
 dotenv.config({ path: '.env.local' })
 
 // Import the shared database query function
-import { query } from '../api/lib/database.js'
+import { query } from '../lib/database.js'
 
 /**
  * Main function: deletes old unsaved recommendations.
