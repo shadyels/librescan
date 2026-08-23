@@ -9,6 +9,7 @@ function Results() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const deviceId = searchParams.get("device_id");
 
   const [scan, setScan] = useState(null);
   const [books, setBooks] = useState(null);
@@ -22,7 +23,6 @@ function Results() {
         setLoading(true);
         setError(null);
 
-        const deviceId = searchParams.get("device_id");
         const url = deviceId
           ? `/api/scan/${scanId}?device_id=${encodeURIComponent(deviceId)}`
           : `/api/scan/${scanId}`;
@@ -204,41 +204,45 @@ function Results() {
         ))}
       </div>
 
-      {user ? (
-        <div className="mt-8 text-center">
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-bg-primary px-4 text-sm text-text-muted">
-                Want to discover more?
-              </span>
-            </div>
+      <div className="mt-8 text-center">
+        <div className="relative my-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border" />
           </div>
-
-          <Link
-            to={`/recommendations/${scanId}`}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-accent text-white rounded-xl hover:bg-accent-hover transition-colors shadow-md hover:shadow-lg text-lg font-semibold"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
-            </svg>
-            <span>View Recommendations</span>
-          </Link>
-
-          <p className="text-text-muted text-sm mt-3">
-            Get personalized book suggestions based on your shelf
-          </p>
+          <div className="relative flex justify-center">
+            <span className="bg-bg-primary px-4 text-sm text-text-muted">
+              Want to discover more?
+            </span>
+          </div>
         </div>
-      ) : (
+
+        <Link
+          to={
+            user
+              ? `/recommendations/${scanId}`
+              : `/recommendations/${scanId}?device_id=${deviceId || ""}`
+          }
+          className="inline-flex items-center gap-2 px-8 py-3 bg-accent text-white rounded-xl hover:bg-accent-hover transition-colors shadow-md hover:shadow-lg text-lg font-semibold"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3l14 9-14 9V3z" />
+          </svg>
+          <span>View Recommendations</span>
+        </Link>
+
+        <p className="text-text-muted text-sm mt-3">
+          Get personalized book suggestions based on your shelf
+        </p>
+      </div>
+
+      {!user && (
         <div className="mt-8 glass-card p-6 border border-accent/20">
           <p className="text-xs tracking-widest uppercase text-accent mb-2">Save your results</p>
           <h2 className="font-display text-xl font-semibold text-text-primary mb-2">
-            Log in to save this scan and get recommendations
+            Log in to save this scan
           </h2>
           <p className="text-text-secondary text-sm mb-5">
-            Create a free account to save your recognized books, generate personalized picks, and access everything from any device.
+            Create a free account and this scan plus its recommendations move straight into it — access everything from any device.
           </p>
           <div className="flex items-center gap-3">
             <Link
