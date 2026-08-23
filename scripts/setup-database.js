@@ -92,10 +92,15 @@ async function setupDatabase() {
       CREATE TABLE recommendations (
         recommendation_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         scan_id UUID NOT NULL REFERENCES scans(scan_id) ON DELETE CASCADE,
-        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+        device_id UUID REFERENCES anon_sessions(device_id) ON DELETE CASCADE,
         book_data JSONB,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        saved BOOLEAN DEFAULT FALSE
+        saved BOOLEAN DEFAULT FALSE,
+        CHECK (
+          (user_id IS NOT NULL AND device_id IS NULL) OR
+          (user_id IS NULL AND device_id IS NOT NULL)
+        )
       );
     `);
 

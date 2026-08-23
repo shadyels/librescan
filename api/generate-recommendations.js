@@ -8,14 +8,14 @@
  * from the frontend when the user navigates to the recommendations page.
  *
  * Full pipeline:
- * 1. Receive scan_id and device_id from the request body
- * 2. Check if recommendations already exist for this scan (prevent duplicate LLM calls)
- * 3. Fetch the scan data from the database (recognized books)
+ * 1. Resolve identity: logged-in user (cookie) or anonymous device_id (body)
+ * 2. Check if recommendations already exist for this scan, owned by this identity
+ * 3. Fetch the scan data from the database (recognized books), owned by this identity
  * 4. Enrich recognized books with cached metadata (covers, categories, descriptions)
  *    — needed because the LLM uses descriptions + categories for better recommendations
- * 4.5. Fetch user preferences from the preferences table (Phase 4)
+ * 4.5. Fetch user preferences from the preferences table (logged-in users only)
  *    — genres, authors, language, reading level are injected into the LLM prompt
- * 5. Call the recommendation LLM (Llama 3.1 8B) with the enriched book list + preferences
+ * 5. Call the recommendation LLM (Groq) with the enriched book list + preferences
  * 6. Enrich the RECOMMENDED books with Google Books (covers, ISBN, etc.)
  *    — so the frontend can display real covers for recommendations too
  * 7. Store everything in the recommendations table (one row per scan)
@@ -24,18 +24,14 @@
  * Side effects:
  * - Populates book_cache with metadata for recommended books (via enrichBooks)
  * - Cleans up unsaved recommendations older than 24 hours (via cleanupOldRecommendations)
+ *   — this is what discards anonymous recommendations that are never claimed by
+ *   signing up or logging in.
  *
  * Dependencies:
  * - database.js: PostgreSQL queries
  * - recommendationAI.js: LLM call
  * - googleBooks.js: Cover/metadata enrichment + cache
  * - uuid: Generating recommendation_id
- *
- * Phase 4 changes:
- * - Added Step 4.5: fetch preferences from the preferences table
- * - Pass preferences to generateRecommendations() as second argument
- * - Preferences are optional — if the user hasn't set any, the LLM works with
- *   just the bookshelf (same behavior as Phase 3)
  */
 
 import { query } from "../lib/database.js";
@@ -43,7 +39,9 @@ import { generateRecommendations } from "../lib/recommendationAI.js";
 import { enrichBooks } from "../lib/googleBooks.js";
 import { v4 as uuidv4 } from "uuid";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
-import { requireUser } from "../lib/auth.js";
+import { getCurrentUser } from "../lib/auth.js";
+
+const deviceIdRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Why export default: Vercel requires default exports to detect handlers.
@@ -59,10 +57,22 @@ export default async function handler(req, res) {
   }
 
   try {
-    const user = await requireUser(req, res);
-    if (!user) return;
+    // ---- Step 1: Resolve identity ----
+    // Logged-in user via session cookie takes priority. If there's no session,
+    // fall back to the anonymous device_id supplied in the body (same dual-identity
+    // pattern used by api/scan/[scanId].js and api/upload-image.js).
+    const user = await getCurrentUser(req);
+    const { scan_id, device_id } = req.body;
 
-    const { scan_id } = req.body;
+    if (!user && (!device_id || !deviceIdRegex.test(device_id))) {
+      return res.status(400).json({
+        success: false,
+        error: "device_id is required when not logged in",
+      });
+    }
+
+    const ownerUserId = user ? user.id : null;
+    const ownerDeviceId = user ? null : device_id;
 
     if (!scan_id) {
       return res.status(400).json({ success: false, error: "scan_id is required" });
@@ -77,9 +87,12 @@ export default async function handler(req, res) {
 
     // ---- Step 2: Check if recommendations already exist for this scan ----
     // Prevents duplicate generation if the user refreshes or navigates back.
+    // Filtered by identity so a scan_id alone can't be used to read someone
+    // else's stored recommendations.
     const existingResult = await query(
-      `SELECT recommendation_id, book_data FROM recommendations WHERE scan_id = $1`,
-      [scan_id],
+      `SELECT recommendation_id, book_data FROM recommendations
+       WHERE scan_id = $1 AND (user_id = $2 OR device_id = $3)`,
+      [scan_id, ownerUserId, ownerDeviceId],
     );
 
     if (existingResult.rows.length > 0) {
@@ -95,8 +108,8 @@ export default async function handler(req, res) {
 
     // ---- Step 3: Fetch the scan data ----
     const scanResult = await query(
-      "SELECT recognized_books FROM scans WHERE scan_id = $1 AND user_id = $2",
-      [scan_id, user.id],
+      "SELECT recognized_books FROM scans WHERE scan_id = $1 AND (user_id = $2 OR device_id = $3)",
+      [scan_id, ownerUserId, ownerDeviceId],
     );
 
     if (scanResult.rows.length === 0) {
@@ -119,7 +132,7 @@ export default async function handler(req, res) {
 
     // ---- Step 4: Enrich recognized books with cached metadata ----
     // The LLM needs descriptions and categories to make good recommendations.
-    // These are stored in book_cache (populated during Phase 2D upload).
+    // These are stored in book_cache (populated during upload).
     // We join them here the same way the scan endpoint does.
     const enrichedRecognizedBooks = await enrichBooksFromCache(recognizedBooks);
 
@@ -131,50 +144,50 @@ export default async function handler(req, res) {
       `[generate-recommendations] Found ${recognizedBooks.length} recognized books`,
     );
 
-    // ---- Step 4.5: Fetch user preferences ----
-    // Query the preferences table for this device's reading preferences.
-    // These are optional — if the user hasn't set preferences, we pass null
-    // to generateRecommendations(), and the LLM works with just the bookshelf.
-    //
-    // Why fetch here instead of in recommendationAI.js:
-    // - recommendationAI.js is a pure library (takes data in, returns data out).
-    //   It should not have database access — that's the handler's job.
-    // - This separation of concerns keeps recommendationAI.js testable without
-    //   a database connection.
+    // ---- Step 4.5: Fetch user preferences (logged-in users only) ----
+    // Preferences are keyed by user_id — anonymous requests have none, so we
+    // skip straight to preferences = null and the LLM works with just the
+    // bookshelf (same behavior as before preferences existed).
     let preferences = null;
 
-    try {
-      const prefResult = await query(
-        "SELECT genres, authors, language, reading_level FROM preferences WHERE user_id = $1",
-        [user.id],
-      );
-
-      if (prefResult.rows.length > 0) {
-        // User has saved preferences — pass them to the LLM
-        preferences = {
-          genres: prefResult.rows[0].genres || [],
-          authors: prefResult.rows[0].authors || [],
-          language: prefResult.rows[0].language || "",
-          reading_level: prefResult.rows[0].reading_level || "",
-        };
-        console.log(
-          `[generate-recommendations] Found user preferences: ` +
-            `${preferences.genres.length} genres, ` +
-            `${preferences.authors.length} authors, ` +
-            `language="${preferences.language}", ` +
-            `level="${preferences.reading_level}"`,
+    if (user) {
+      try {
+        const prefResult = await query(
+          "SELECT genres, authors, language, reading_level FROM preferences WHERE user_id = $1",
+          [user.id],
         );
-      } else {
-        console.log(
-          "[generate-recommendations] No user preferences found (using bookshelf only)",
+
+        if (prefResult.rows.length > 0) {
+          // User has saved preferences — pass them to the LLM
+          preferences = {
+            genres: prefResult.rows[0].genres || [],
+            authors: prefResult.rows[0].authors || [],
+            language: prefResult.rows[0].language || "",
+            reading_level: prefResult.rows[0].reading_level || "",
+          };
+          console.log(
+            `[generate-recommendations] Found user preferences: ` +
+              `${preferences.genres.length} genres, ` +
+              `${preferences.authors.length} authors, ` +
+              `language="${preferences.language}", ` +
+              `level="${preferences.reading_level}"`,
+          );
+        } else {
+          console.log(
+            "[generate-recommendations] No user preferences found (using bookshelf only)",
+          );
+        }
+      } catch (prefError) {
+        // If preferences fetch fails, continue without them.
+        // The LLM can still generate good recommendations from just the bookshelf.
+        // This is a graceful degradation — preferences are an enhancement, not a requirement.
+        console.error(
+          `[generate-recommendations] Failed to fetch preferences (non-blocking): ${prefError.message}`,
         );
       }
-    } catch (prefError) {
-      // If preferences fetch fails, continue without them.
-      // The LLM can still generate good recommendations from just the bookshelf.
-      // This is a graceful degradation — preferences are an enhancement, not a requirement.
-      console.error(
-        `[generate-recommendations] Failed to fetch preferences (non-blocking): ${prefError.message}`,
+    } else {
+      console.log(
+        "[generate-recommendations] Anonymous request — skipping preferences",
       );
     }
 
@@ -194,9 +207,6 @@ export default async function handler(req, res) {
         error: textLimit.reason,
       });
     }
-    console.log(
-      "[generate-recommendations] Calling LLM for recommendations...",
-    );
 
     const llmResult = await generateRecommendations(
       enrichedRecognizedBooks,
@@ -221,7 +231,7 @@ export default async function handler(req, res) {
     // ---- Step 6: Enrich recommended books with Google Books ----
     // This populates book_cache with covers, ISBNs, descriptions for the
     // recommended books, so the frontend can display real covers.
-    // enrichBooks() is the same function used during upload (Phase 2D).
+    // enrichBooks() is the same function used during upload.
     // It handles cache hits/misses internally.
     console.log(
       "[generate-recommendations] Enriching recommendations with Google Books...",
@@ -247,10 +257,10 @@ export default async function handler(req, res) {
     const recommendationId = uuidv4();
 
     await query(
-      `INSERT INTO recommendations (recommendation_id, user_id, scan_id, book_data, saved)
-        VALUES ($1, $2, $3, $4, FALSE)
-        ON CONFLICT (scan_id) DO UPDATE SET book_data = $4`,
-      [recommendationId, user.id, scan_id, JSON.stringify(bookData)],
+      `INSERT INTO recommendations (recommendation_id, user_id, device_id, scan_id, book_data, saved)
+        VALUES ($1, $2, $3, $4, $5, FALSE)
+        ON CONFLICT (scan_id) DO UPDATE SET book_data = $5`,
+      [recommendationId, ownerUserId, ownerDeviceId, scan_id, JSON.stringify(bookData)],
     );
 
     console.log(
@@ -261,6 +271,8 @@ export default async function handler(req, res) {
     // This runs as a fire-and-forget side effect. We don't await it because
     // we don't want cleanup failures to block the response to the user.
     // The .catch() ensures any errors are logged but don't crash the handler.
+    // This same cleanup is what discards anonymous recommendations that are
+    // never claimed within 24 hours.
     cleanupOldRecommendations().catch((err) => {
       console.error(
         `[generate-recommendations] Cleanup error (non-blocking): ${err.message}`,
@@ -353,6 +365,8 @@ async function enrichBooksFromCache(books) {
  * - Only deletes unsaved recommendations (saved ones persist forever)
  * - 24-hour window gives users time to come back and save
  * - The column is named created_at (not created_at) — matching the existing schema
+ * - Applies regardless of user_id vs device_id ownership, so this is also
+ *   what discards anonymous recommendations nobody ever claimed.
  *
  * Note: A separate npm script (cleanup-recommendations.js) also exists
  * for manual cleanup if needed.

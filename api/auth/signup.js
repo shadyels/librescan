@@ -60,6 +60,14 @@ export default async function handler(req, res) {
       )
       if (claimResult.rows.length > 0) {
         claimed_scan_id = claimResult.rows[0].scan_id
+        // The claimed scan may have an anonymous recommendation attached to it.
+        // Move it into the new account too, so recommendations generated before
+        // signing up aren't lost.
+        await query(
+          `UPDATE recommendations SET user_id = $1, device_id = NULL
+           WHERE scan_id = $2 AND device_id IS NOT NULL`,
+          [user.id, claimed_scan_id]
+        )
       }
     }
 
