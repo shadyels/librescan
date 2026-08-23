@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import RecommendationCard from "../components/RecommendationCard";
 import SkeletonCard from "../components/SkeletonCard";
-import LoginGate from "../components/LoginGate";
 
 export default function Recommendations() {
   const { scanId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
+  const deviceId = searchParams.get("device_id");
 
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -29,14 +30,20 @@ export default function Recommendations() {
   };
 
   useEffect(() => {
-    if (authLoading || !user) return;
+    if (authLoading) return;
 
     async function loadRecommendations() {
       try {
         setLoading(true);
         setError(null);
 
-        const getResponse = await fetch(`/api/recommendations/${scanId}`, {
+        const anon = !user && deviceId;
+
+        const getUrl = anon
+          ? `/api/recommendations/${scanId}?device_id=${deviceId}`
+          : `/api/recommendations/${scanId}`;
+
+        const getResponse = await fetch(getUrl, {
           credentials: "include",
         });
 
@@ -60,7 +67,9 @@ export default function Recommendations() {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ scan_id: scanId }),
+          body: JSON.stringify(
+            anon ? { scan_id: scanId, device_id: deviceId } : { scan_id: scanId },
+          ),
         });
 
         if (!postResponse.ok) {
@@ -80,7 +89,7 @@ export default function Recommendations() {
     }
 
     loadRecommendations();
-  }, [scanId, user, authLoading, retryCount]);
+  }, [scanId, deviceId, user, authLoading, retryCount]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -133,15 +142,6 @@ export default function Recommendations() {
       <div className="flex items-center justify-center py-20">
         <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
       </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <LoginGate
-        title="Sign in to view recommendations"
-        description="Personalized recommendations require an account so we can learn your reading preferences."
-      />
     );
   }
 
@@ -238,7 +238,7 @@ export default function Recommendations() {
           </div>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            {saved === false && (
+            {user && saved === false && (
               <button
                 onClick={handleSave}
                 disabled={saving}
@@ -262,7 +262,7 @@ export default function Recommendations() {
                 )}
               </button>
             )}
-            {saved === true && (
+            {user && saved === true && (
               <button
                 onClick={() => setShowDeleteDialog(true)}
                 className="flex items-center gap-2 px-6 py-2 bg-danger text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
@@ -280,6 +280,32 @@ export default function Recommendations() {
               Back to Scan Results
             </button>
           </div>
+
+          {!user && (
+            <div className="mt-8 glass-card p-6 border border-accent/20 text-center max-w-xl mx-auto">
+              <p className="text-xs tracking-widest uppercase text-accent mb-2">Save your results</p>
+              <h2 className="font-display text-xl font-semibold text-text-primary mb-2">
+                Create an account to save these recommendations
+              </h2>
+              <p className="text-text-secondary text-sm mb-5">
+                Sign up now and this scan plus its recommendations move straight into your new account.
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium text-sm"
+                >
+                  Create account
+                </button>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent hover:text-text-primary rounded-lg transition-all text-sm"
+                >
+                  Sign in
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
 
