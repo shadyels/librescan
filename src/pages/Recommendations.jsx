@@ -145,6 +145,10 @@ export default function Recommendations() {
     );
   }
 
+  const resultsUrl = user
+    ? `/results/${scanId}`
+    : `/results/${scanId}?device_id=${encodeURIComponent(deviceId || "")}`;
+
   const books = recommendations?.recommendations || [];
   const metadata = recommendations?.metadata || {};
 
@@ -153,7 +157,7 @@ export default function Recommendations() {
       {/* Header */}
       <div className="glass-card px-6 py-5 mb-8">
         <button
-          onClick={() => navigate(`/results/${scanId}`)}
+          onClick={() => navigate(resultsUrl)}
           className="flex items-center text-text-muted hover:text-accent transition-colors mb-3 text-sm"
         >
           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,7 +208,7 @@ export default function Recommendations() {
               Try Again
             </button>
             <button
-              onClick={() => navigate(`/results/${scanId}`)}
+              onClick={() => navigate(resultsUrl)}
               className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent rounded-lg transition-all"
             >
               Back to Results
@@ -274,7 +278,7 @@ export default function Recommendations() {
               </button>
             )}
             <button
-              onClick={() => navigate(`/results/${scanId}`)}
+              onClick={() => navigate(resultsUrl)}
               className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent hover:text-text-primary rounded-lg transition-all"
             >
               Back to Scan Results

@@ -43,13 +43,13 @@ LibreScan is a full-stack AI bookshelf scanner: users upload a photo of their bo
 Two identity primitives coexist:
 
 1. **`users`** — permanent accounts (email + password). Created via `/api/auth/signup`. Identified by `user_id` (UUID).
-2. **`device_id`** — ephemeral anonymous identifier stored in IndexedDB via `src/utils/sessionManager.js`. Used only to scope an anon scan for temporary preview, and to enable the claim flow on login/signup.
+2. **`device_id`** — ephemeral anonymous identifier stored in IndexedDB via `src/utils/sessionManager.js`. Used to scope an anon scan and its recommendations for temporary preview, and to enable the claim flow on login/signup.
 
 **Session auth**: opaque random token (32 bytes, base64url) set as `librescan_session` httpOnly cookie. The server stores only the SHA-256 hash in `user_sessions` — a DB leak does not grant live sessions. Sessions expire after 30 days.
 
-**Anon scope**: anonymous users can upload and view recognized books (scan preview). Preferences, recommendations, and saved scans require a logged-in account.
+**Anon scope**: anonymous users can upload and view recognized books (scan preview), and can generate and view recommendations. Preferences and saved scans require a logged-in account.
 
-**Claim flow**: on login/signup, the most recent anon scan for the provided `device_id` is automatically transferred to the new user (`user_id` set, `device_id` nulled).
+**Claim flow**: on login/signup, the most recent anon scan for the provided `device_id` is automatically transferred to the new user (`user_id` set, `device_id` nulled), along with that scan's recommendation, if one exists, transferred the same way.
 
 ### Database Schema
 
@@ -58,7 +58,7 @@ Two identity primitives coexist:
 - **`anon_sessions`**: `device_id UUID PK, created_at, last_active` — ephemeral, for anon scan scoping
 - **`scans`**: `scan_id UUID PK, user_id UUID NULL FK, device_id UUID NULL FK, scan_date, recognized_books JSONB` — CHECK ensures one of user_id or device_id is non-null
 - **`preferences`**: `user_id UUID PK FK` — logged-in users only
-- **`recommendations`**: `recommendation_id UUID PK, scan_id UUID UNIQUE FK, user_id UUID FK, book_data JSONB, saved BOOL`
+- **`recommendations`**: `recommendation_id UUID PK, scan_id UUID UNIQUE FK, user_id UUID NULL FK, device_id UUID NULL FK, book_data JSONB, saved BOOL` — CHECK ensures one of user_id or device_id is non-null
 - **`book_cache`**, **`api_usage_tracking`**: unchanged
 
 ### Auth Endpoints
@@ -76,7 +76,7 @@ Auth helper: `api/lib/auth.js` — exports `hashPassword`, `verifyPassword`, `ge
 
 2. **Results** (`GET /api/scan/:scanId`): JOINs `scans` with `book_cache`. Ownership check: user session cookie OR `?device_id=` query param for anon access.
 
-3. **Recommendations** (`POST /api/generate-recommendations`): Requires login. Fetches scan + user preferences, calls `openai/gpt-oss-120b` (Groq) with a strict JSON schema, enriches results, stores one JSONB blob per scan in `recommendations` table.
+3. **Recommendations** (`POST /api/generate-recommendations`): Ownership check: user session cookie OR `device_id` in the request body for anon access. Fetches scan + user preferences (anon requests have none), calls `openai/gpt-oss-120b` (Groq) with a strict JSON schema, enriches results, stores one JSONB blob per scan in `recommendations` table.
 
 ### Key Design Decisions
 
