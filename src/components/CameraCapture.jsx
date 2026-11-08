@@ -1,176 +1,210 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Camera, ImagePlus, ScanLine } from "lucide-react";
 import { useSession } from "../contexts/SessionContext.jsx";
+import { HOUSE_BAND, ReadSweep, sampleSpectrum, saveSpectrum, useBand } from "../spectrum";
+import Button from "./ui/Button";
+import Notice from "./ui/Notice";
 
-function CameraCapture({ onUploadSuccess }) {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
-  const fileInputRef = useRef(null);
-  const { deviceId } = useSession();
+const MAX_BYTES = 10 * 1024 * 1024;
+const ALLOWED = ["image/jpeg", "image/jpg", "image/png", "image/heic"];
 
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const maxSize = 10 * 1024 * 1024;
-    if (file.size > maxSize) {
-      setError("File size exceeds 10MB limit.");
-      return;
-    }
-
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/heic"];
-    if (!allowedTypes.includes(file.type)) {
-      setError("Invalid file type. Only JPEG, PNG, and HEIC are allowed.");
-      return;
-    }
-
-    setError(null);
-    setSelectedFile(file);
-    setPreview(URL.createObjectURL(file));
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      setError("No file selected for upload.");
-      return;
-    }
-    if (!deviceId) {
-      setError("Session not initialized. Please refresh the page.");
-      return;
-    }
-
-    setUploading(true);
-    setError(null);
-
-    try {
-      const formData = new FormData();
-      formData.append("image", selectedFile);
-      formData.append("device_id", deviceId);
-
-      const response = await fetch("/api/upload-image", {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Upload failed");
-      }
-
-      const data = await response.json();
-
-      if (onUploadSuccess) {
-        onUploadSuccess(data.scan_id);
-      }
-
-      setSelectedFile(null);
-      setPreview(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    } catch (err) {
-      setError(err.message || "Upload failed. Please try again.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleChooseFile = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleClear = () => {
-    setSelectedFile(null);
-    setPreview(null);
-    setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
+function Step({ n, label, state }) {
+  const tag = { done: "Done", now: "Now", working: "Working", next: "Next", later: "Later" }[state];
+  const active = state === "now" || state === "working";
   return (
-    <div className="w-full">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg, image/jpg, image/png, image/heic"
-        onChange={handleFileSelect}
-        className="hidden"
-        capture="environment"
-      />
-
-      <div className="border border-dashed border-border hover:border-border-accent transition-colors duration-300 rounded-xl p-8 bg-bg-surface/30">
-        {preview ? (
-          <div className="space-y-5">
-            <img
-              src={preview}
-              alt="Preview"
-              className="max-h-96 mx-auto rounded-lg ring-1 ring-border"
-            />
-            <div className="flex justify-center gap-3">
-              <button
-                onClick={handleClear}
-                disabled={uploading}
-                className="px-5 py-2.5 bg-bg-surface text-text-secondary border border-border hover:border-border-accent hover:text-text-primary rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-              >
-                Choose Different
-              </button>
-              <button
-                onClick={handleUpload}
-                disabled={uploading}
-                className="px-6 py-2.5 bg-accent text-white rounded-lg hover:bg-accent-hover font-medium transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-sm"
-              >
-                {uploading ? "Uploading..." : "Upload & Scan"}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center space-y-4">
-            <div className="mx-auto w-12 h-12 rounded-full bg-bg-surface flex items-center justify-center">
-              <svg className="w-6 h-6 text-text-muted" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            <div>
-              <button
-                onClick={handleChooseFile}
-                disabled={uploading}
-                className="px-7 py-3 bg-accent text-white rounded-lg hover:bg-accent-hover font-medium transition-all duration-150 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
-              >
-                Take Photo or Choose from Library
-              </button>
-            </div>
-            <p className="text-xs text-text-muted">JPEG, PNG or HEIC · Up to 10 MB</p>
-          </div>
-        )}
-      </div>
-
-      {error && !uploading && (
-        <div className="mt-4 p-4 bg-danger-muted border border-danger/30 rounded-lg">
-          <p className="text-danger text-sm">{error}</p>
-        </div>
-      )}
-
-      {selectedFile && !uploading && (
-        <div className="mt-3 text-xs text-text-muted">
-          {selectedFile.name} · {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-        </div>
-      )}
-    </div>
+    <li
+      className={`grid grid-cols-[2rem_1fr_auto] items-center border-t-[1.5px] py-4 text-[15px] ${
+        state === "later" ? "border-line text-ink-muted" : "border-ink"
+      }`}
+      aria-current={active ? "step" : undefined}
+    >
+      <span className="type-label text-lg">{n}</span>
+      <span className={active ? "font-semibold" : ""}>{label}</span>
+      <span className={`type-label text-[13px] ${state === "working" ? "animate-pulse" : ""}`}>{tag}</span>
+    </li>
   );
 }
 
-export default CameraCapture;
+export default function CameraCapture({ onUploadSuccess }) {
+  const { deviceId } = useSession();
+  const inputRef = useRef(null);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
+  const [colors, setColors] = useState(null);
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useBand(colors || HOUSE_BAND, uploading);
+
+  useEffect(() => () => preview && URL.revokeObjectURL(preview), [preview]);
+
+  function takeFile(next) {
+    if (!next) return;
+    if (next.size > MAX_BYTES) return setError("That photo is over 10 MB. Choose a smaller one.");
+    if (!ALLOWED.includes(next.type)) return setError("That file type isn't supported. Use a JPEG, PNG or HEIC photo.");
+    setError(null);
+    setFile(next);
+    setPreview(URL.createObjectURL(next));
+    setPreviewFailed(false);
+    setColors(null);
+    sampleSpectrum(next).then(setColors);
+  }
+
+  async function upload() {
+    if (!deviceId) return setError("Your session isn't ready yet. Refresh the page and try again.");
+    setUploading(true);
+    setError(null);
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("device_id", deviceId);
+    let response;
+    try {
+      response = await fetch("/api/upload-image", { method: "POST", credentials: "include", body: formData });
+    } catch {
+      setUploading(false);
+      return setError("Couldn't reach LibreScan. Check your connection and try again.");
+    }
+    if (!response.ok) {
+      // Recovery depends on the cause: 400 = the file couldn't be read (a
+      // different photo helps); 429 = daily API limit (server gives the reason);
+      // 5xx = server fault (the photo is not the problem).
+      const data = await response.json().catch(() => ({}));
+      const reason = (data.error || "Upload failed").replace(/\.?$/, ".");
+      const recovery = {
+        400: " Try a different photo.",
+        429: "",
+      }[response.status] ?? " Something went wrong on our side. Try again in a moment.";
+      setUploading(false);
+      return setError(reason + recovery);
+    }
+    try {
+      const data = await response.json();
+      if (colors) saveSpectrum(data.scan_id, colors);
+      onUploadSuccess(data.scan_id);
+    } catch {
+      setUploading(false);
+      setError("The server sent an unexpected response. Something went wrong on our side. Try again in a moment.");
+    }
+  }
+
+  const choose = () => inputRef.current?.click();
+
+  const steps = [
+    ["Choose a shelf photo", file ? "done" : "now"],
+    ["Read the spines", uploading ? "working" : file ? "next" : "later"],
+    ["Match covers on Google Books", uploading ? "working" : "later"],
+    ["Recommendations, when you want them", "later"],
+  ];
+
+  return (
+    <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:grid-rows-[auto_1fr] lg:gap-x-14 lg:gap-y-8">
+      <section className="lg:col-start-1 lg:row-span-2 lg:row-start-1">
+        <h1 className="type-display text-6xl sm:text-7xl lg:text-[5.25rem]">
+          {uploading ? "Reading your shelf" : "Scan your shelf"}
+        </h1>
+        <p className="mt-4 max-w-[60ch] text-[17px] leading-relaxed text-ink-muted">
+          {uploading
+            ? "The vision model is reading every spine in your photo, then Google Books matches the covers. This takes a few seconds."
+            : "One photo of the books you own. LibreScan reads the spines, finds the covers and recommends what to read next. No account needed."}
+        </p>
+
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/jpeg, image/jpg, image/png, image/heic"
+          capture="environment"
+          className="sr-only"
+          tabIndex={-1}
+          onChange={(e) => {
+            takeFile(e.target.files[0]);
+            e.target.value = "";
+          }}
+        />
+
+        <div
+          className={`relative mt-8 aspect-[3/2] overflow-hidden rounded-photo border-[1.5px] transition-colors ${
+            dragging ? "border-ink bg-ink/6" : "border-line bg-surface"
+          }`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (!uploading) setDragging(true);
+          }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            if (!uploading) takeFile(e.dataTransfer.files[0]);
+          }}
+        >
+          {preview && !previewFailed ? (
+            <img
+              src={preview}
+              alt="Your shelf photo"
+              className="absolute inset-0 size-full object-cover"
+              onError={() => setPreviewFailed(true)}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={choose}
+              disabled={uploading}
+              className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center"
+            >
+              <ImagePlus className="size-9 text-ink-muted" strokeWidth={1.5} aria-hidden />
+              <span className="text-[17px] font-semibold">
+                {file ? "Preview unavailable in this browser" : "Drop a shelf photo here, or choose one"}
+              </span>
+              <span className="text-sm text-ink-muted">JPEG, PNG or HEIC · up to 10 MB</span>
+            </button>
+          )}
+          {uploading && <ReadSweep />}
+        </div>
+
+        <div className="mt-3 flex min-h-5 justify-between gap-4 text-[13px] text-ink-muted">
+          {file && (
+            <>
+              <span className="truncate">{file.name}</span>
+              <span className="shrink-0">{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+            </>
+          )}
+        </div>
+      </section>
+
+      {/* Actions sit right under the photo on phones, under the steps on desktop. */}
+      <div className="flex flex-col gap-4 lg:col-start-2 lg:row-start-2 lg:self-start">
+        <div className="flex flex-wrap gap-3">
+          {file ? (
+            <>
+              <Button size="lg" icon={ScanLine} loading={uploading} onClick={upload}>
+                {uploading ? "Reading…" : "Read this shelf"}
+              </Button>
+              <Button size="lg" variant="secondary" onClick={choose} disabled={uploading}>
+                Choose another
+              </Button>
+            </>
+          ) : (
+            <Button size="lg" icon={Camera} onClick={choose}>
+              Take or choose a photo
+            </Button>
+          )}
+        </div>
+        <Notice tone="error" message={error} onDismiss={() => setError(null)} />
+      </div>
+
+      <aside className="lg:col-start-2 lg:row-start-1 lg:pt-3">
+        <ol>
+          {steps.map(([label, state], i) => (
+            <Step key={label} n={i + 1} label={label} state={state} />
+          ))}
+        </ol>
+        <p className="mt-4 text-[13px] leading-relaxed text-ink-muted">
+          {colors
+            ? "The band above is your shelf, sampled from the photo."
+            : "Choose a photo and the band above turns into your shelf's colours."}
+        </p>
+      </aside>
+    </div>
+  );
+}

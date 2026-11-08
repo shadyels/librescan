@@ -1,8 +1,30 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { motion } from "motion/react";
+import { ArrowLeft, BookOpen, Bookmark, BookmarkCheck, CircleAlert, RotateCcw, ScanLine, Trash2 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
+import { scanSpectrum, useBand } from "../spectrum";
+import { list, rise } from "../motion";
 import RecommendationCard from "../components/RecommendationCard";
-import SkeletonCard from "../components/SkeletonCard";
+import AccountCta from "../components/ui/AccountCta";
+import Button from "../components/ui/Button";
+import Dialog from "../components/ui/Dialog";
+import Notice from "../components/ui/Notice";
+import StatusView from "../components/ui/StatusView";
+
+function Elapsed() {
+  const [s, setS] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setS((v) => v + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+  return (
+    <span className="type-display text-[5rem] leading-none sm:text-[6rem]" aria-hidden>
+      {s}
+      <span className="text-[0.45em]"> s</span>
+    </span>
+  );
+}
 
 export default function Recommendations() {
   const { scanId } = useParams();
@@ -11,8 +33,7 @@ export default function Recommendations() {
   const { user, loading: authLoading } = useAuth();
   const deviceId = searchParams.get("device_id");
 
-  const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
+  const [phase, setPhase] = useState("loading"); // loading | generating | ready | error
   const [error, setError] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -20,79 +41,70 @@ export default function Recommendations() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [actionError, setActionError] = useState(null);
 
-  const handleRetry = () => {
-    setError(null);
-    setLoading(true);
-    setRecommendations(null);
-    setSaved(null);
-    setRetryCount((prev) => prev + 1);
-  };
+  useBand(scanSpectrum(scanId).colors, phase === "generating");
 
   useEffect(() => {
     if (authLoading) return;
+    let live = true;
 
     async function loadRecommendations() {
       try {
-        setLoading(true);
+        setPhase("loading");
         setError(null);
-
         const anon = !user && deviceId;
 
-        const getUrl = anon
-          ? `/api/recommendations/${scanId}?device_id=${deviceId}`
-          : `/api/recommendations/${scanId}`;
-
-        const getResponse = await fetch(getUrl, {
-          credentials: "include",
-        });
-
+        const getResponse = await fetch(
+          anon ? `/api/recommendations/${scanId}?device_id=${deviceId}` : `/api/recommendations/${scanId}`,
+          { credentials: "include" }
+        );
         if (getResponse.ok) {
-          const getData = await getResponse.json();
-          setRecommendations(getData.recommendations);
-          setSaved(getData.saved || false);
-          setLoading(false);
+          const data = await getResponse.json();
+          if (!live) return;
+          setRecommendations(data.recommendations);
+          setSaved(data.saved || false);
+          setPhase("ready");
           return;
         }
-
         if (getResponse.status !== 404) {
-          const errorData = await getResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || `Server error: ${getResponse.status}`);
+          const data = await getResponse.json().catch(() => ({}));
+          throw new Error(data.error || `Server error ${getResponse.status}`);
         }
 
-        setLoading(false);
-        setGenerating(true);
-
+        if (!live) return;
+        setPhase("generating");
         const postResponse = await fetch("/api/generate-recommendations", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(
-            anon ? { scan_id: scanId, device_id: deviceId } : { scan_id: scanId },
-          ),
+          body: JSON.stringify(anon ? { scan_id: scanId, device_id: deviceId } : { scan_id: scanId }),
         });
-
         if (!postResponse.ok) {
-          const errorData = await postResponse.json().catch(() => ({}));
-          throw new Error(errorData.error || `Generation failed: ${postResponse.status}`);
+          const data = await postResponse.json().catch(() => ({}));
+          throw new Error(data.error || `Generation failed (${postResponse.status})`);
         }
-
-        const postData = await postResponse.json();
-        setRecommendations(postData.recommendations);
-        setGenerating(false);
+        const data = await postResponse.json();
+        if (!live) return;
+        setRecommendations(data.recommendations);
         setSaved(false);
+        setPhase("ready");
       } catch (err) {
+        if (!live) return;
         setError(err.message);
-        setLoading(false);
-        setGenerating(false);
+        setPhase("error");
       }
     }
 
     loadRecommendations();
+    return () => {
+      live = false;
+    };
   }, [scanId, deviceId, user, authLoading, retryCount]);
 
-  const handleSave = async () => {
+  async function handleSave() {
     setSaving(true);
+    setActionError(null);
     try {
       const response = await fetch("/api/saved", {
         method: "PATCH",
@@ -100,21 +112,19 @@ export default function Recommendations() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scan_id: scanId }),
       });
-
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Save failed: ${response.status}`);
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || `Save failed (${response.status})`);
       }
-
       setSaved(true);
-    } catch {
-      // save failed silently — recommendations still visible
+    } catch (err) {
+      setActionError(`Couldn't save: ${err.message}`);
     } finally {
       setSaving(false);
     }
-  };
+  }
 
-  const handleDelete = async () => {
+  async function handleDelete() {
     setDeleting(true);
     try {
       const response = await fetch("/api/saved", {
@@ -123,270 +133,180 @@ export default function Recommendations() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scan_ids: [scanId] }),
       });
-
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Delete failed: ${response.status}`);
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || `Delete failed (${response.status})`);
       }
-
       navigate("/saved");
-    } catch {
+    } catch (err) {
       setShowDeleteDialog(false);
+      setActionError(`Couldn't delete: ${err.message}`);
     } finally {
       setDeleting(false);
     }
-  };
+  }
 
-  if (authLoading) {
+  const resultsUrl = user ? `/results/${scanId}` : `/results/${scanId}?device_id=${encodeURIComponent(deviceId || "")}`;
+  const books = recommendations?.recommendations || [];
+  const meta = recommendations?.metadata || {};
+  const back = (
+    <Button to={resultsUrl} variant="ghost" size="sm" icon={ArrowLeft} className="-ml-3">
+      Back to your shelf
+    </Button>
+  );
+
+  if (phase === "error") {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
+      <StatusView
+        icon={CircleAlert}
+        tone="error"
+        title="Couldn't get recommendations"
+        actions={
+          <>
+            <Button icon={RotateCcw} onClick={() => setRetryCount((n) => n + 1)}>
+              Try again
+            </Button>
+            <Button to={resultsUrl} variant="secondary">
+              Back to your shelf
+            </Button>
+          </>
+        }
+      >
+        {error}
+      </StatusView>
+    );
+  }
+
+  if (phase === "generating") {
+    return (
+      <section className="py-6" aria-live="polite">
+        {back}
+        <div className="mt-6 grid gap-8 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <h1 className="type-display text-6xl sm:text-7xl">Choosing your next reads</h1>
+            <p className="mt-4 max-w-[56ch] text-[17px] leading-relaxed text-ink-muted">
+              A language model is going through the books on your shelf{user ? " and your reading preferences" : ""}{" "}
+              to pick titles you don't own yet, each with a reason. This usually takes 10–30 seconds and only happens
+              once per scan.
+            </p>
+          </div>
+          <Elapsed />
+        </div>
+      </section>
+    );
+  }
+
+  if (phase === "loading") {
+    return (
+      <div aria-busy="true" aria-label="Loading recommendations">
+        <div className="h-16 w-2/3 max-w-lg animate-pulse rounded-photo bg-surface" />
+        {Array.from({ length: 3 }, (_, i) => (
+          <div key={i} className="mt-8 flex gap-6 border-t-[1.5px] border-line pt-6">
+            <div className="aspect-[2/3] w-28 animate-pulse rounded-photo bg-surface" />
+            <div className="h-6 w-1/3 animate-pulse rounded-photo bg-surface" />
+          </div>
+        ))}
       </div>
     );
   }
 
-  const resultsUrl = user
-    ? `/results/${scanId}`
-    : `/results/${scanId}?device_id=${encodeURIComponent(deviceId || "")}`;
+  if (books.length === 0) {
+    return (
+      <StatusView
+        icon={BookOpen}
+        title="No recommendations this time"
+        actions={
+          <Button to="/" icon={ScanLine}>
+            Scan another shelf
+          </Button>
+        }
+      >
+        The model couldn't find recommendations for this scan. A clearer photo with more readable spines usually
+        helps.
+      </StatusView>
+    );
+  }
 
-  const books = recommendations?.recommendations || [];
-  const metadata = recommendations?.metadata || {};
+  const basis = meta.prompt_books_count ? `${meta.prompt_books_count} books on your shelf` : "your shelf";
+  const facts = [
+    `${books.length} pick${books.length !== 1 ? "s" : ""} based on ${basis}`,
+    meta.processing_time_ms && `generated in ${(meta.processing_time_ms / 1000).toFixed(1)} s`,
+    meta.model_used,
+  ].filter(Boolean);
 
   return (
     <div>
-      {/* Header */}
-      <div className="glass-card px-6 py-5 mb-8">
-        <button
-          onClick={() => navigate(resultsUrl)}
-          className="flex items-center text-text-muted hover:text-accent transition-colors mb-3 text-sm"
-        >
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Scan Results
-        </button>
-        <h1 className="font-display text-3xl font-semibold text-text-primary">Your Recommendations</h1>
-        <p className="text-text-secondary text-sm mt-1">Personalized picks based on your bookshelf</p>
+      {back}
+      <header className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="type-display text-6xl sm:text-7xl">What to read next</h1>
+          <p className="mt-3 text-[15px] text-ink-muted">{facts.join(" · ")}</p>
+        </div>
+        {user && (
+          <div className="flex flex-wrap items-center gap-3">
+            {saved ? (
+              <>
+                <span className="flex items-center gap-1.5 text-sm font-semibold">
+                  <BookmarkCheck className="size-4" strokeWidth={1.75} aria-hidden /> Saved
+                </span>
+                <Button variant="secondary" icon={Trash2} onClick={() => setShowDeleteDialog(true)}>
+                  Remove from saved
+                </Button>
+              </>
+            ) : (
+              <Button size="lg" icon={Bookmark} loading={saving} onClick={handleSave}>
+                {saving ? "Saving…" : "Save these picks"}
+              </Button>
+            )}
+          </div>
+        )}
+      </header>
+
+      <Notice tone="error" message={actionError} onDismiss={() => setActionError(null)} className="mt-6" />
+
+      <motion.div className="mt-10" variants={list(0.07)} initial="hidden" animate="show">
+        {books.map((book, i) => (
+          <motion.div key={`${book.title}-${i}`} variants={rise}>
+            <RecommendationCard book={book} />
+          </motion.div>
+        ))}
+      </motion.div>
+
+      <div className="mt-12 space-y-10">
+        {!user && (
+          <AccountCta title="Keep these picks">
+            Sign up now and this scan and its recommendations move straight into your new account.
+          </AccountCta>
+        )}
+        <div className="flex flex-wrap gap-3">
+          <Button to={resultsUrl} variant="secondary" icon={ArrowLeft}>
+            Back to your shelf
+          </Button>
+          <Button to="/" variant="ghost" icon={ScanLine}>
+            Scan another shelf
+          </Button>
+        </div>
       </div>
 
-      {/* Loading state */}
-      {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
-      )}
-
-      {/* Generating state */}
-      {generating && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="w-16 h-16 rounded-full border-4 border-bg-surface border-t-accent animate-spin" />
-          <h2 className="text-xl font-semibold text-text-primary mt-6">Generating Recommendations...</h2>
-          <p className="text-text-secondary mt-2 text-center max-w-md text-sm">
-            Our AI is analyzing your bookshelf and finding personalized picks.
-            This usually takes 10–30 seconds.
-          </p>
-        </div>
-      )}
-
-      {/* Error state */}
-      {error && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="w-16 h-16 bg-danger-muted rounded-full flex items-center justify-center mb-4">
-            <svg className="w-8 h-8 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-text-primary">Something went wrong</h2>
-          <p className="text-text-secondary mt-2 text-center max-w-md text-sm">{error}</p>
-          <div className="flex gap-4 mt-6">
-            <button
-              onClick={handleRetry}
-              className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium"
-            >
-              Try Again
-            </button>
-            <button
-              onClick={() => navigate(resultsUrl)}
-              className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent rounded-lg transition-all"
-            >
-              Back to Results
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Success state */}
-      {!loading && !generating && !error && books.length > 0 && (
-        <>
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-text-secondary text-sm">
-              {books.length} recommendation{books.length !== 1 ? "s" : ""}{" "}
-              based on {metadata.prompt_books_count || "your"} book
-              {(metadata.prompt_books_count || 0) !== 1 ? "s" : ""}
-            </p>
-            {metadata.processing_time_ms && (
-              <p className="text-text-muted text-xs">
-                Generated in {(metadata.processing_time_ms / 1000).toFixed(1)}s
-              </p>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {books.map((book, index) => (
-              <div key={`${book.title}-${index}`} style={{ animationDelay: `${index * 80}ms` }}>
-                <RecommendationCard book={book} />
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            {user && saved === false && (
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="flex items-center gap-2 px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-              >
-                {saving ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                    </svg>
-                    Save Recommendations
-                  </>
-                )}
-              </button>
-            )}
-            {user && saved === true && (
-              <button
-                onClick={() => setShowDeleteDialog(true)}
-                className="flex items-center gap-2 px-6 py-2 bg-danger text-white rounded-lg hover:opacity-90 transition-opacity font-medium"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                Remove from Saved
-              </button>
-            )}
-            <button
-              onClick={() => navigate(resultsUrl)}
-              className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent hover:text-text-primary rounded-lg transition-all"
-            >
-              Back to Scan Results
-            </button>
-          </div>
-
-          {!user && (
-            <div className="mt-8 glass-card p-6 border border-accent/20 text-center max-w-xl mx-auto">
-              <p className="text-xs tracking-widest uppercase text-accent mb-2">Save your results</p>
-              <h2 className="font-display text-xl font-semibold text-text-primary mb-2">
-                Create an account to save these recommendations
-              </h2>
-              <p className="text-text-secondary text-sm mb-5">
-                Sign up now and this scan plus its recommendations move straight into your new account.
-              </p>
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  onClick={() => navigate("/signup")}
-                  className="px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium text-sm"
-                >
-                  Create account
-                </button>
-                <button
-                  onClick={() => navigate("/login")}
-                  className="px-6 py-2 bg-bg-surface text-text-secondary border border-border hover:border-border-accent hover:text-text-primary rounded-lg transition-all text-sm"
-                >
-                  Sign in
-                </button>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Empty state */}
-      {!loading && !generating && !error && books.length === 0 && recommendations !== null && (
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="w-16 h-16 bg-bg-surface rounded-full flex items-center justify-center mb-5">
-            <svg className="w-8 h-8 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-text-primary">No Recommendations Generated</h2>
-          <p className="text-text-secondary mt-2 text-center max-w-md text-sm">
-            The AI wasn't able to generate recommendations from your scan.
-            Try scanning a clearer photo with more visible book spines.
-          </p>
-          <button
-            onClick={() => navigate("/")}
-            className="mt-6 px-6 py-2 bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium"
-          >
-            Scan Another Bookshelf
-          </button>
-        </div>
-      )}
-
-      {/* Delete confirmation dialog */}
-      {showDeleteDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => !deleting && setShowDeleteDialog(false)}
-          />
-          <div className="relative glass-card max-w-md w-full mx-4 p-6">
-            <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 bg-danger-muted rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
-            </div>
-            <h3 className="font-display text-lg font-semibold text-text-primary text-center">
-              Permanently Delete This Scan?
-            </h3>
-            <p className="text-text-secondary text-sm text-center mt-3">
-              This will permanently delete your scan data and all {books.length}{" "}
-              recommendation{books.length !== 1 ? "s" : ""} associated with it.
-              This action cannot be undone.
-            </p>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={() => setShowDeleteDialog(false)}
-                disabled={deleting}
-                className="flex-1 px-4 py-2 bg-bg-surface text-text-secondary border border-border rounded-lg hover:border-border-accent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-danger text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {deleting ? (
-                  <>
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Deleting...
-                  </>
-                ) : (
-                  "Yes, Delete Permanently"
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={showDeleteDialog}
+        busy={deleting}
+        onClose={() => setShowDeleteDialog(false)}
+        title="Delete this scan for good?"
+        actions={
+          <>
+            <Button variant="secondary" onClick={() => setShowDeleteDialog(false)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleDelete} loading={deleting}>
+              {deleting ? "Deleting…" : "Delete permanently"}
+            </Button>
+          </>
+        }
+      >
+        This permanently deletes the scan and all {books.length} recommendation{books.length !== 1 ? "s" : ""} with it.
+        You can't undo this.
+      </Dialog>
     </div>
   );
 }
