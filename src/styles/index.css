@@ -1,103 +1,113 @@
 @import "tailwindcss";
 
+/*
+ * Spine Spectrum tokens. Neutral ground + ink; colour arrives only from the
+ * spine spectrum (photo-sampled or the house hues below) and book covers.
+ * Dark values are redefined on :root under prefers-color-scheme.
+ */
 @theme {
-  /* Backgrounds */
-  --color-bg-primary: #f6f1ea;
-  --color-bg-elevated: #ffffff;
-  --color-bg-surface: #ece5db;
-  --color-bg-hover: #e3dbd0;
+  --color-ground: #f4f4f2;
+  --color-surface: #e9e9e6;
+  --color-raised: #ffffff;
+  --color-line: #d4d4cf;
+  --color-ink: #141518;
+  --color-ink-muted: #55575d;
+  --color-accent: #141518;
+  --color-accent-ink: #f4f4f2;
+  --color-focus: #2a5a8f;
+  --color-danger: #b42318;
+  --color-success: #2e6b3f;
 
-  /* Warm brown accent */
-  --color-accent: #7c5e36;
-  --color-accent-hover: #6b4f2b;
-  --color-accent-muted: #7c5e3615;
-  --color-accent-glow: #7c5e3620;
+  /* The house spectrum (bookcloth hues) lives in src/spectrum.jsx. */
 
-  /* Text */
-  --color-text-primary: #2a2017;
-  --color-text-secondary: #6b5c4b;
-  --color-text-muted: #9c8d7c;
+  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
 
-  /* Borders */
-  --color-border: #ddd4c7;
-  --color-border-accent: #7c5e3630;
+  --radius-photo: 4px;
 
-  /* Feedback */
-  --color-danger: #c44133;
-  --color-danger-muted: #c4413312;
-  --color-success: #3a7d56;
-  --color-success-muted: #3a7d5612;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  /* Body font override */
-  --font-sans: "Outfit", system-ui, sans-serif;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ground: #111214;
+    --color-surface: #1c1d20;
+    --color-raised: #24252a;
+    --color-line: #34353a;
+    --color-ink: #ededea;
+    --color-ink-muted: #a3a5ab;
+    --color-accent: #ededea;
+    --color-accent-ink: #111214;
+    --color-focus: #8fb2ea;
+    --color-danger: #f2877b;
+    --color-success: #79c08a;
+  }
+}
+
+/* Spine lettering: condensed caps for display headings only. */
+@utility type-display {
+  font-stretch: 62%;
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+
+/* Condensed label voice for figures and short labels (sentence case). */
+@utility type-label {
+  font-stretch: 72%;
+  font-weight: 700;
+}
+
+/* Read sweep (src/spectrum.jsx ReadSweep): 2.6 s travel + 0.35 s hold = 2950 ms. */
+@keyframes read-veil {
+  0% { transform: translateX(0); }
+  88%, 100% { transform: translateX(100%); }
+}
+@keyframes read-line {
+  0% { transform: translateX(-100%); }
+  88%, 100% { transform: translateX(0); }
+}
+.read-sweep-veil,
+.read-sweep-line {
+  animation: 2950ms cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.read-sweep-veil { animation-name: read-veil; }
+.read-sweep-line { animation-name: read-line; }
+@media (prefers-reduced-motion: reduce) {
+  .read-sweep { display: none; }
 }
 
 @layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
   body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+    caret-color: var(--color-ink);
+    scrollbar-color: var(--color-line) transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-}
 
-@layer components {
-  .font-display {
-    font-family: "Fraunces", Georgia, serif;
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-ground);
   }
 
-  .glass-card {
-    background-color: var(--color-bg-elevated);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(42, 32, 23, 0.06);
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
   }
 
-  .glass-card-hover {
-    transition:
-      transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      border-color 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      box-shadow 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &:hover {
-      transform: translateY(-2px);
-      border-color: var(--color-border-accent);
-      box-shadow: 0 8px 24px rgba(42, 32, 23, 0.08);
-    }
+  a {
+    text-underline-offset: 0.2em;
   }
 
-  .animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out both;
-  }
-
-  .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      var(--color-bg-surface) 25%,
-      var(--color-bg-hover) 50%,
-      var(--color-bg-surface) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.8s ease-in-out infinite;
-  }
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
+  dialog::backdrop {
+    background: rgb(0 0 0 / 0.55);
   }
 }
