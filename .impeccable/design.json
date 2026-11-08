@@ -1,0 +1,671 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-07T02:54:48.620Z",
+  "title": "Design System: LibreScan",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Shelf Ground",
+        "tonalRamp": [
+          "oklch(15% 0.003 106.4)",
+          "oklch(25% 0.003 106.4)",
+          "oklch(35% 0.003 106.4)",
+          "oklch(48% 0.003 106.4)",
+          "oklch(60% 0.003 106.4)",
+          "oklch(72% 0.003 106.4)",
+          "oklch(84% 0.003 106.4)",
+          "oklch(95% 0.003 106.4)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Board Grey",
+        "tonalRamp": [
+          "oklch(15% 0.004 106.5)",
+          "oklch(25% 0.004 106.5)",
+          "oklch(35% 0.004 106.5)",
+          "oklch(48% 0.004 106.5)",
+          "oklch(60% 0.004 106.5)",
+          "oklch(72% 0.004 106.5)",
+          "oklch(84% 0.004 106.5)",
+          "oklch(95% 0.004 106.5)"
+        ]
+      },
+      "raised": {
+        "role": "neutral",
+        "displayName": "Paper White",
+        "tonalRamp": [
+          "oklch(15% 0 89.9)",
+          "oklch(25% 0 89.9)",
+          "oklch(35% 0 89.9)",
+          "oklch(48% 0 89.9)",
+          "oklch(60% 0 89.9)",
+          "oklch(72% 0 89.9)",
+          "oklch(84% 0 89.9)",
+          "oklch(95% 0 89.9)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Pencil Line",
+        "tonalRamp": [
+          "oklch(15% 0.007 106.5)",
+          "oklch(25% 0.007 106.5)",
+          "oklch(35% 0.007 106.5)",
+          "oklch(48% 0.007 106.5)",
+          "oklch(60% 0.007 106.5)",
+          "oklch(72% 0.007 106.5)",
+          "oklch(84% 0.007 106.5)",
+          "oklch(95% 0.007 106.5)"
+        ]
+      },
+      "ink": {
+        "role": "primary",
+        "displayName": "Spine Ink",
+        "tonalRamp": [
+          "oklch(15% 0.006 271.1)",
+          "oklch(25% 0.006 271.1)",
+          "oklch(35% 0.006 271.1)",
+          "oklch(48% 0.006 271.1)",
+          "oklch(60% 0.006 271.1)",
+          "oklch(72% 0.006 271.1)",
+          "oklch(84% 0.006 271.1)",
+          "oklch(95% 0.006 271.1)"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Faded Ink",
+        "tonalRamp": [
+          "oklch(15% 0.01 271.2)",
+          "oklch(25% 0.01 271.2)",
+          "oklch(35% 0.01 271.2)",
+          "oklch(48% 0.01 271.2)",
+          "oklch(60% 0.01 271.2)",
+          "oklch(72% 0.01 271.2)",
+          "oklch(84% 0.01 271.2)",
+          "oklch(95% 0.01 271.2)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Ink Accent (same as ink)",
+        "tonalRamp": [
+          "oklch(15% 0.006 271.1)",
+          "oklch(25% 0.006 271.1)",
+          "oklch(35% 0.006 271.1)",
+          "oklch(48% 0.006 271.1)",
+          "oklch(60% 0.006 271.1)",
+          "oklch(72% 0.006 271.1)",
+          "oklch(84% 0.006 271.1)",
+          "oklch(95% 0.006 271.1)"
+        ]
+      },
+      "accent-ink": {
+        "role": "primary",
+        "displayName": "Text on Ink",
+        "tonalRamp": [
+          "oklch(15% 0.003 106.4)",
+          "oklch(25% 0.003 106.4)",
+          "oklch(35% 0.003 106.4)",
+          "oklch(48% 0.003 106.4)",
+          "oklch(60% 0.003 106.4)",
+          "oklch(72% 0.003 106.4)",
+          "oklch(84% 0.003 106.4)",
+          "oklch(95% 0.003 106.4)"
+        ]
+      },
+      "focus": {
+        "role": "functional",
+        "displayName": "Focus Blue",
+        "tonalRamp": [
+          "oklch(15% 0.101 252.8)",
+          "oklch(25% 0.101 252.8)",
+          "oklch(35% 0.101 252.8)",
+          "oklch(48% 0.101 252.8)",
+          "oklch(60% 0.101 252.8)",
+          "oklch(72% 0.101 252.8)",
+          "oklch(84% 0.101 252.8)",
+          "oklch(95% 0.101 252.8)"
+        ]
+      },
+      "danger": {
+        "role": "functional",
+        "displayName": "Danger Red",
+        "tonalRamp": [
+          "oklch(15% 0.16 29.5)",
+          "oklch(25% 0.16 29.5)",
+          "oklch(35% 0.16 29.5)",
+          "oklch(48% 0.16 29.5)",
+          "oklch(60% 0.16 29.5)",
+          "oklch(72% 0.16 29.5)",
+          "oklch(84% 0.16 29.5)",
+          "oklch(95% 0.16 29.5)"
+        ]
+      },
+      "success": {
+        "role": "functional",
+        "displayName": "Success Green",
+        "tonalRamp": [
+          "oklch(15% 0.095 150.4)",
+          "oklch(25% 0.095 150.4)",
+          "oklch(35% 0.095 150.4)",
+          "oklch(48% 0.095 150.4)",
+          "oklch(60% 0.095 150.4)",
+          "oklch(72% 0.095 150.4)",
+          "oklch(84% 0.095 150.4)",
+          "oklch(95% 0.095 150.4)"
+        ]
+      },
+      "ground-dark": {
+        "role": "neutral",
+        "displayName": "Shelf Ground (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.004 264.5)",
+          "oklch(25% 0.004 264.5)",
+          "oklch(35% 0.004 264.5)",
+          "oklch(48% 0.004 264.5)",
+          "oklch(60% 0.004 264.5)",
+          "oklch(72% 0.004 264.5)",
+          "oklch(84% 0.004 264.5)",
+          "oklch(95% 0.004 264.5)"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Board Grey (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.006 271.2)",
+          "oklch(25% 0.006 271.2)",
+          "oklch(35% 0.006 271.2)",
+          "oklch(48% 0.006 271.2)",
+          "oklch(60% 0.006 271.2)",
+          "oklch(72% 0.006 271.2)",
+          "oklch(84% 0.006 271.2)",
+          "oklch(95% 0.006 271.2)"
+        ]
+      },
+      "raised-dark": {
+        "role": "neutral",
+        "displayName": "Paper (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 276.7)",
+          "oklch(25% 0.009 276.7)",
+          "oklch(35% 0.009 276.7)",
+          "oklch(48% 0.009 276.7)",
+          "oklch(60% 0.009 276.7)",
+          "oklch(72% 0.009 276.7)",
+          "oklch(84% 0.009 276.7)",
+          "oklch(95% 0.009 276.7)"
+        ]
+      },
+      "line-dark": {
+        "role": "neutral",
+        "displayName": "Pencil Line (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 276.9)",
+          "oklch(25% 0.009 276.9)",
+          "oklch(35% 0.009 276.9)",
+          "oklch(48% 0.009 276.9)",
+          "oklch(60% 0.009 276.9)",
+          "oklch(72% 0.009 276.9)",
+          "oklch(84% 0.009 276.9)",
+          "oklch(95% 0.009 276.9)"
+        ]
+      },
+      "ink-dark": {
+        "role": "primary",
+        "displayName": "Bone Ink (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.004 106.5)",
+          "oklch(25% 0.004 106.5)",
+          "oklch(35% 0.004 106.5)",
+          "oklch(48% 0.004 106.5)",
+          "oklch(60% 0.004 106.5)",
+          "oklch(72% 0.004 106.5)",
+          "oklch(84% 0.004 106.5)",
+          "oklch(95% 0.004 106.5)"
+        ]
+      },
+      "ink-muted-dark": {
+        "role": "neutral",
+        "displayName": "Faded Ink (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.009 271.3)",
+          "oklch(25% 0.009 271.3)",
+          "oklch(35% 0.009 271.3)",
+          "oklch(48% 0.009 271.3)",
+          "oklch(60% 0.009 271.3)",
+          "oklch(72% 0.009 271.3)",
+          "oklch(84% 0.009 271.3)",
+          "oklch(95% 0.009 271.3)"
+        ]
+      },
+      "focus-dark": {
+        "role": "functional",
+        "displayName": "Focus Blue (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.09 259.6)",
+          "oklch(25% 0.09 259.6)",
+          "oklch(35% 0.09 259.6)",
+          "oklch(48% 0.09 259.6)",
+          "oklch(60% 0.09 259.6)",
+          "oklch(72% 0.09 259.6)",
+          "oklch(84% 0.09 259.6)",
+          "oklch(95% 0.09 259.6)"
+        ]
+      },
+      "danger-dark": {
+        "role": "functional",
+        "displayName": "Danger (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.133 27.4)",
+          "oklch(25% 0.133 27.4)",
+          "oklch(35% 0.133 27.4)",
+          "oklch(48% 0.133 27.4)",
+          "oklch(60% 0.133 27.4)",
+          "oklch(72% 0.133 27.4)",
+          "oklch(84% 0.133 27.4)",
+          "oklch(95% 0.133 27.4)"
+        ]
+      },
+      "success-dark": {
+        "role": "functional",
+        "displayName": "Success (dark)",
+        "tonalRamp": [
+          "oklch(15% 0.106 150.8)",
+          "oklch(25% 0.106 150.8)",
+          "oklch(35% 0.106 150.8)",
+          "oklch(48% 0.106 150.8)",
+          "oklch(60% 0.106 150.8)",
+          "oklch(72% 0.106 150.8)",
+          "oklch(84% 0.106 150.8)",
+          "oklch(95% 0.106 150.8)"
+        ]
+      },
+      "house-oxblood": {
+        "role": "secondary",
+        "displayName": "Oxblood Bookcloth",
+        "tonalRamp": [
+          "oklch(15% 0.134 27.9)",
+          "oklch(25% 0.134 27.9)",
+          "oklch(35% 0.134 27.9)",
+          "oklch(48% 0.134 27.9)",
+          "oklch(60% 0.134 27.9)",
+          "oklch(72% 0.134 27.9)",
+          "oklch(84% 0.134 27.9)",
+          "oklch(95% 0.134 27.9)"
+        ]
+      },
+      "house-rust": {
+        "role": "secondary",
+        "displayName": "Rust Bookcloth",
+        "tonalRamp": [
+          "oklch(15% 0.141 54.8)",
+          "oklch(25% 0.141 54.8)",
+          "oklch(35% 0.141 54.8)",
+          "oklch(48% 0.141 54.8)",
+          "oklch(60% 0.141 54.8)",
+          "oklch(72% 0.141 54.8)",
+          "oklch(84% 0.141 54.8)",
+          "oklch(95% 0.141 54.8)"
+        ]
+      },
+      "house-ochre": {
+        "role": "secondary",
+        "displayName": "Ochre Bookcloth",
+        "tonalRamp": [
+          "oklch(15% 0.138 89.7)",
+          "oklch(25% 0.138 89.7)",
+          "oklch(35% 0.138 89.7)",
+          "oklch(48% 0.138 89.7)",
+          "oklch(60% 0.138 89.7)",
+          "oklch(72% 0.138 89.7)",
+          "oklch(84% 0.138 89.7)",
+          "oklch(95% 0.138 89.7)"
+        ]
+      },
+      "house-green": {
+        "role": "secondary",
+        "displayName": "Library Green",
+        "tonalRamp": [
+          "oklch(15% 0.088 153.6)",
+          "oklch(25% 0.088 153.6)",
+          "oklch(35% 0.088 153.6)",
+          "oklch(48% 0.088 153.6)",
+          "oklch(60% 0.088 153.6)",
+          "oklch(72% 0.088 153.6)",
+          "oklch(84% 0.088 153.6)",
+          "oklch(95% 0.088 153.6)"
+        ]
+      },
+      "house-blue": {
+        "role": "secondary",
+        "displayName": "Cloth Blue",
+        "tonalRamp": [
+          "oklch(15% 0.101 252.8)",
+          "oklch(25% 0.101 252.8)",
+          "oklch(35% 0.101 252.8)",
+          "oklch(48% 0.101 252.8)",
+          "oklch(60% 0.101 252.8)",
+          "oklch(72% 0.101 252.8)",
+          "oklch(84% 0.101 252.8)",
+          "oklch(95% 0.101 252.8)"
+        ]
+      },
+      "house-violet": {
+        "role": "secondary",
+        "displayName": "Violet Bookcloth",
+        "tonalRamp": [
+          "oklch(15% 0.105 293.3)",
+          "oklch(25% 0.105 293.3)",
+          "oklch(35% 0.105 293.3)",
+          "oklch(48% 0.105 293.3)",
+          "oklch(60% 0.105 293.3)",
+          "oklch(72% 0.105 293.3)",
+          "oklch(84% 0.105 293.3)",
+          "oklch(95% 0.105 293.3)"
+        ]
+      },
+      "house-plum": {
+        "role": "secondary",
+        "displayName": "Plum Bookcloth",
+        "tonalRamp": [
+          "oklch(15% 0.117 351.0)",
+          "oklch(25% 0.117 351.0)",
+          "oklch(35% 0.117 351.0)",
+          "oklch(48% 0.117 351.0)",
+          "oklch(60% 0.117 351.0)",
+          "oklch(72% 0.117 351.0)",
+          "oklch(84% 0.117 351.0)",
+          "oklch(95% 0.117 351.0)"
+        ]
+      },
+      "spine-black": {
+        "role": "secondary",
+        "displayName": "Black Spine",
+        "tonalRamp": [
+          "oklch(15% 0.01 268.3)",
+          "oklch(25% 0.01 268.3)",
+          "oklch(35% 0.01 268.3)",
+          "oklch(48% 0.01 268.3)",
+          "oklch(60% 0.01 268.3)",
+          "oklch(72% 0.01 268.3)",
+          "oklch(84% 0.01 268.3)",
+          "oklch(95% 0.01 268.3)"
+        ]
+      },
+      "spine-bone": {
+        "role": "secondary",
+        "displayName": "Bone Spine",
+        "tonalRamp": [
+          "oklch(15% 0.013 91.5)",
+          "oklch(25% 0.013 91.5)",
+          "oklch(35% 0.013 91.5)",
+          "oklch(48% 0.013 91.5)",
+          "oklch(60% 0.013 91.5)",
+          "oklch(72% 0.013 91.5)",
+          "oklch(84% 0.013 91.5)",
+          "oklch(95% 0.013 91.5)"
+        ]
+      },
+      "spine-graphite": {
+        "role": "secondary",
+        "displayName": "Graphite Spine",
+        "tonalRamp": [
+          "oklch(15% 0.011 271.1)",
+          "oklch(25% 0.011 271.1)",
+          "oklch(35% 0.011 271.1)",
+          "oklch(48% 0.011 271.1)",
+          "oklch(60% 0.011 271.1)",
+          "oklch(72% 0.011 271.1)",
+          "oklch(84% 0.011 271.1)",
+          "oklch(95% 0.011 271.1)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Spine Lettering",
+        "purpose": "Page h1s, status titles, auth titles, coverless book titles, the elapsed counter. Uppercase, 62% width, 800. 60px / 72px (sm) / 84px Home hero."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Recommendation titles, dialog and CTA titles, preference group titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Book titles in grids, active step labels, field labels (14px)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Metadata and supporting copy; tabular figures on."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "The muted line under every h1, max ~56-60ch."
+      },
+      "label": {
+        "displayName": "Condensed Label",
+        "purpose": "Figures and short state words in sentence case: step numbers, step states, confidence, counts."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ring-ink",
+        "value": "inset 0 0 0 1.5px var(--color-ink)",
+        "purpose": "Border substitute on outlined pills and hovered chips/tiles. Not elevation."
+      },
+      {
+        "name": "ring-line",
+        "value": "inset 0 0 0 1.5px var(--color-line)",
+        "purpose": "Resting border of toggle chips and option tiles. Not elevation."
+      },
+      {
+        "name": "read-line-edge",
+        "value": "1px 0 0 rgb(0 0 0 / 0.35)",
+        "purpose": "Keeps the white read-line visible on pale photos. Only inside the read sweep."
+      },
+      {
+        "name": "dialog-backdrop",
+        "value": "rgb(0 0 0 / 0.55)",
+        "purpose": "Native dialog::backdrop; the only separation for modals."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All entrances: page, list rise, notices, stripe growth."
+      },
+      {
+        "name": "spring-layout",
+        "value": "spring(stiffness 420, damping 36, mass 0.8)",
+        "purpose": "Layout moves: nav underline, sort pill, dialog entrance."
+      },
+      {
+        "name": "page-enter",
+        "value": "opacity 0 -> 1, y 8px -> 0, 350ms ease-out-expo; exit fade 140ms",
+        "purpose": "Route transitions."
+      },
+      {
+        "name": "list-rise",
+        "value": "opacity 0 -> 1, y 14px -> 0, 500ms ease-out-expo, stagger 60-70ms",
+        "purpose": "Book grid and recommendation rows landing."
+      },
+      {
+        "name": "stripe-grow",
+        "value": "scaleY 0 -> 1 from bottom, 400ms ease-out-expo, 12ms per stripe",
+        "purpose": "Spectrum band when its colours change."
+      },
+      {
+        "name": "read-sweep",
+        "value": "2950ms loop (2.6s travel + 0.35s hold), cubic-bezier(0.45, 0, 0.55, 1), phase-locked to wall clock",
+        "purpose": "While a photo is being read; hidden under prefers-reduced-motion."
+      },
+      {
+        "name": "tap-press",
+        "value": "scale 0.97",
+        "purpose": "Buttons and chips (0.96) on press."
+      },
+      {
+        "name": "cover-fade",
+        "value": "opacity 500ms",
+        "purpose": "A loaded cover replacing its generated binding."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ink-filled pill for the main action on a screen.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/></svg>Take or choose a photo</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; border: 0; border-radius: 9999px; background: var(--color-ink, #141518); color: var(--color-ground, #f4f4f2); font: 600 15px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, transform 150ms; } .ds-btn-primary:hover { background: color-mix(in srgb, var(--color-ink, #141518) 85%, transparent); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Ink-outlined pill (1.5px inset ring) for the alternative action.",
+      "html": "<button class=\"ds-btn-secondary\">Choose another</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border: 0; border-radius: 9999px; background: transparent; color: var(--color-ink, #141518); box-shadow: inset 0 0 0 1.5px var(--color-ink, #141518); font: 600 14px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, transform 150ms; } .ds-btn-secondary:hover { background: color-mix(in srgb, var(--color-ink, #141518) 8%, transparent); } .ds-btn-secondary:active { transform: scale(0.97); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Muted text pill for back links and low-weight actions.",
+      "html": "<button class=\"ds-btn-ghost\">Back to your shelf</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: 0; border-radius: 9999px; background: transparent; color: var(--color-ink-muted, #55575d); font: 600 13px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-btn-ghost:hover { background: color-mix(in srgb, var(--color-ink, #141518) 8%, transparent); color: var(--color-ink, #141518); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Raised field with a 1px line border and 4px corner; border turns ink on focus.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Email</span><input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\"></label>",
+      "css": ".ds-field { display: block; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-field-label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; color: var(--color-ink, #141518); } .ds-input { height: 44px; width: 100%; box-sizing: border-box; padding: 0 14px; border: 1px solid var(--color-line, #d4d4cf); border-radius: 4px; background: var(--color-raised, #fff); color: var(--color-ink, #141518); font: 400 15px Archivo, ui-sans-serif, system-ui, sans-serif; transition: border-color 150ms; } .ds-input::placeholder { color: var(--color-ink-muted, #55575d); } .ds-input:hover { border-color: var(--color-ink-muted, #55575d); } .ds-input:focus { border-color: var(--color-ink, #141518); } .ds-input:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+    },
+    {
+      "name": "Toggle Chip",
+      "kind": "chip",
+      "refersTo": "chip-toggle",
+      "description": "Genre toggle: line-ringed pill, ink fill with a check when selected.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"false\">Fantasy</button><button class=\"ds-chip\" aria-pressed=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 6 9 17l-5-5\"/></svg>History</button></div>",
+      "css": ".ds-chips { display: flex; gap: 8px; } .ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 0; border-radius: 9999px; background: transparent; color: var(--color-ink, #141518); box-shadow: inset 0 0 0 1.5px var(--color-line, #d4d4cf); font: 600 14px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: box-shadow 150ms, background-color 150ms; } .ds-chip:hover { box-shadow: inset 0 0 0 1.5px var(--color-ink, #141518); } .ds-chip[aria-pressed=\"true\"] { background: var(--color-ink, #141518); color: var(--color-ground, #f4f4f2); box-shadow: none; } .ds-chip:active { transform: scale(0.96); } .ds-chip:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Header row: condensed wordmark, links with a sliding 2px ink underline, account pills right.",
+      "html": "<header class=\"ds-nav\"><span class=\"ds-wordmark\">LibreScan</span><a class=\"ds-nav-link is-active\" href=\"#\">Scan</a><a class=\"ds-nav-link\" href=\"#\">Saved</a><a class=\"ds-nav-link\" href=\"#\">Preferences</a><span class=\"ds-nav-end\"><a class=\"ds-pill ds-pill-out\" href=\"#\">Log in</a><a class=\"ds-pill\" href=\"#\">Sign up</a></span></header>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 24px; height: 64px; padding: 0 16px; background: var(--color-ground, #f4f4f2); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-wordmark { font-size: 26px; font-weight: 800; font-stretch: 62%; line-height: 0.92; margin-right: 8px; color: var(--color-ink, #141518); } .ds-nav-link { position: relative; display: flex; align-items: center; height: 40px; font-size: 14px; font-weight: 500; color: var(--color-ink-muted, #55575d); text-decoration: none; transition: color 150ms; } .ds-nav-link:hover { color: var(--color-ink, #141518); } .ds-nav-link.is-active { font-weight: 700; color: var(--color-ink, #141518); } .ds-nav-link.is-active::after { content: \"\"; position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; background: var(--color-ink, #141518); } .ds-nav-end { margin-left: auto; display: flex; gap: 8px; } .ds-pill { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 9999px; background: var(--color-ink, #141518); color: var(--color-ground, #f4f4f2); font-size: 13px; font-weight: 600; text-decoration: none; } .ds-pill-out { background: transparent; color: var(--color-ink, #141518); box-shadow: inset 0 0 0 1.5px var(--color-ink, #141518); } .ds-nav-link:focus-visible, .ds-pill:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+    },
+    {
+      "name": "Spectrum Band",
+      "kind": "custom",
+      "refersTo": "spectrum-band",
+      "description": "Full-width spine stripes under the nav; house band shown here (every fourth stripe a neutral spine, widths 0.5-1.8x).",
+      "html": "<div class=\"ds-band\"><i style=\"background:#8f2d26;flex-grow:0.5\"></i><i style=\"background:#2f6b45;flex-grow:1.4\"></i><i style=\"background:#7a2d55;flex-grow:0.9\"></i><i style=\"background:#1d1f24;flex-grow:1.8\"></i><i style=\"background:#4b3a7a;flex-grow:1.3\"></i><i style=\"background:#c46a1e;flex-grow:0.8\"></i><i style=\"background:#2a5a8f;flex-grow:1.7\"></i><i style=\"background:#e4e1d8;flex-grow:1.2\"></i><i style=\"background:#2f6b45;flex-grow:0.7\"></i><i style=\"background:#7a2d55;flex-grow:1.6\"></i><i style=\"background:#c9a227;flex-grow:1.1\"></i><i style=\"background:#3a3c42;flex-grow:0.6\"></i><i style=\"background:#c46a1e;flex-grow:1.5\"></i><i style=\"background:#2a5a8f;flex-grow:1\"></i><i style=\"background:#8f2d26;flex-grow:0.5\"></i><i style=\"background:#1d1f24;flex-grow:1.4\"></i><i style=\"background:#7a2d55;flex-grow:0.9\"></i><i style=\"background:#c9a227;flex-grow:1.8\"></i><i style=\"background:#4b3a7a;flex-grow:1.3\"></i><i style=\"background:#e4e1d8;flex-grow:0.8\"></i><i style=\"background:#2a5a8f;flex-grow:1.7\"></i><i style=\"background:#8f2d26;flex-grow:1.2\"></i><i style=\"background:#2f6b45;flex-grow:0.7\"></i><i style=\"background:#3a3c42;flex-grow:1.6\"></i><i style=\"background:#c9a227;flex-grow:1.1\"></i><i style=\"background:#4b3a7a;flex-grow:0.6\"></i><i style=\"background:#c46a1e;flex-grow:1.5\"></i><i style=\"background:#1d1f24;flex-grow:1\"></i><i style=\"background:#8f2d26;flex-grow:0.5\"></i><i style=\"background:#2f6b45;flex-grow:1.4\"></i><i style=\"background:#7a2d55;flex-grow:0.9\"></i><i style=\"background:#e4e1d8;flex-grow:1.8\"></i><i style=\"background:#4b3a7a;flex-grow:1.3\"></i><i style=\"background:#c46a1e;flex-grow:0.8\"></i><i style=\"background:#2a5a8f;flex-grow:1.7\"></i><i style=\"background:#3a3c42;flex-grow:1.2\"></i><i style=\"background:#2f6b45;flex-grow:0.7\"></i><i style=\"background:#7a2d55;flex-grow:1.6\"></i><i style=\"background:#c9a227;flex-grow:1.1\"></i><i style=\"background:#1d1f24;flex-grow:0.6\"></i></div>",
+      "css": ".ds-band { display: flex; height: 28px; overflow: hidden; } .ds-band i { display: block; flex-basis: 0; transform-origin: bottom; animation: ds-grow 400ms cubic-bezier(0.16, 1, 0.3, 1) both; } @keyframes ds-grow { from { transform: scaleY(0); } } @media (prefers-reduced-motion: reduce) { .ds-band i { animation: none; } }"
+    },
+    {
+      "name": "Book Cover (generated binding)",
+      "kind": "card",
+      "refersTo": "book-cover",
+      "description": "2:3 cover at 4px corner; coverless books are bound in their title colour with the title in spine lettering.",
+      "html": "<article class=\"ds-book\"><div class=\"ds-cover\" style=\"background:#2f6b45;color:#f7f7f5\"><span class=\"ds-cover-title\">The Name of the Rose</span><span class=\"ds-cover-author\">Umberto Eco</span></div><h3 class=\"ds-book-title\">The Name of the Rose</h3><p class=\"ds-book-meta\">Umberto Eco</p><p class=\"ds-book-conf\">92% · good</p></article>",
+      "css": ".ds-book { width: 150px; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #141518); } .ds-cover { aspect-ratio: 2 / 3; border-radius: 4px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; } .ds-cover-title { font-size: 20px; font-weight: 800; font-stretch: 62%; text-transform: uppercase; line-height: 0.92; } .ds-cover-author { font-size: 12px; font-weight: 700; font-stretch: 72%; opacity: 0.85; } .ds-book-title { margin: 12px 0 0; font-size: 16px; font-weight: 600; line-height: 1.375; } .ds-book-meta { margin: 2px 0 0; font-size: 14px; color: var(--color-ink-muted, #55575d); } .ds-book-conf { margin: 8px 0 0; font-size: 13px; font-weight: 700; font-stretch: 72%; color: var(--color-ink-muted, #55575d); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Ruled Step Row",
+      "kind": "custom",
+      "refersTo": "row",
+      "description": "Pipeline steps: 1.5px ink top rule, condensed figure, label, state word; later steps fall back to the line colour.",
+      "html": "<ol class=\"ds-steps\"><li class=\"ds-step is-now\"><span class=\"ds-n\">1</span><span>Choose a shelf photo</span><span class=\"ds-tag\">Now</span></li><li class=\"ds-step is-later\"><span class=\"ds-n\">2</span><span>Read the spines</span><span class=\"ds-tag\">Later</span></li></ol>",
+      "css": ".ds-steps { list-style: none; margin: 0; padding: 0; width: 380px; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #141518); } .ds-step { display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; padding: 16px 0; border-top: 1.5px solid var(--color-ink, #141518); font-size: 15px; } .ds-step.is-now span:nth-child(2) { font-weight: 600; } .ds-step.is-later { border-color: var(--color-line, #d4d4cf); color: var(--color-ink-muted, #55575d); } .ds-n { font-size: 18px; font-weight: 700; font-stretch: 72%; } .ds-tag { font-size: 13px; font-weight: 700; font-stretch: 72%; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Spine Spectrum",
+    "overview": "The shelf's own colours run the interface. Everything LibreScan draws itself is neutral: a cool off-white ground (near-black in dark mode), ink type, ink rules. Colour enters the screen from exactly two places: the spine spectrum, a band of thin vertical stripes sampled from the user's shelf photo (or a fixed house spectrum of bookcloth hues before there is a photo), and book covers, which are shown untouched. The band sits full-width directly under the nav on every page, so each screen is literally coloured by the shelf it is about.\n\nType carries the identity the palette withholds. Archivo's variable width axis does double duty: squeezed to 62% at 800 weight in uppercase it becomes spine lettering for display headings; at normal width it is a plain, legible UI face. Density is moderate and list-like: steps, recommendations, saved sets and preference groups are rows separated by 1.5px ink rules rather than boxed cards. Surfaces are flat; there are no shadows at rest, no gradients, no glass.\n\nMotion is short and physical: exponential ease-out for entrances, one shared spring for layout changes, stripes that grow up from their baseline, and one signature effect, the read sweep, where a white read-line crosses the photo and the band while the unread side stays veiled.",
+    "keyCharacteristics": [
+      "Neutral ground and ink; chromatic colour comes only from the spine spectrum and covers.",
+      "Full-width spectrum band under the nav on every route (20px mobile, 28px from `sm`).",
+      "Condensed uppercase Archivo display (62% width, 800); normal-width Archivo for UI; tabular figures everywhere.",
+      "Ink-filled and ink-outlined pill buttons; 4px corners on photos, covers and fields.",
+      "1.5px ink rules between rows instead of cards.",
+      "Flat at rest; Lucide icons at 1.75 stroke.",
+      "Light and dark follow the OS (`prefers-color-scheme`); reduced motion follows the OS."
+    ],
+    "rules": [
+      {
+        "name": "The Shelf Owns The Colour Rule",
+        "body": "Interface chrome is ink and neutrals only. A hue on screen must come from the spectrum band, a cover, a generated spine binding, or a functional state (focus, danger, success).",
+        "section": "colors"
+      },
+      {
+        "name": "The Untinted Cover Rule",
+        "body": "Covers are shown as delivered: no overlays, tints, duotones or filters. A missing cover is bound in its generated spine colour with the title in spine lettering.",
+        "section": "colors"
+      },
+      {
+        "name": "The Spine Lettering Rule",
+        "body": "Condensed uppercase is for display headings and cover titles only. Labels stay sentence case; body never condenses.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "`tabular-nums` is set on the body; counts, percentages, timings and sizes always align.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Shelf Rule",
+        "body": "No drop shadows, gradients or backdrop blur. If something needs to stand apart, use a rule, a tonal step, or the dialog backdrop.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** put every new route under the shell band and declare what it shows (house band, photo spectrum, or title colours).",
+      "**Do** keep chrome to ground, surface, raised, line, ink and ink-muted; take hue only from the spectrum, covers, or functional states.",
+      "**Do** set page h1s in display lettering (62% width, 800, uppercase) with a 17px muted lede beneath.",
+      "**Do** separate list content with 1.5px ink top rules instead of boxing it.",
+      "**Do** use pills for controls and the 4px corner for photos, covers and fields.",
+      "**Do** use Lucide icons at 1.75 stroke (1.5 for large status icons).",
+      "**Do** animate only transform and opacity, with the shared ease-out and spring, and give every looping effect a reduced-motion fallback.",
+      "**Do** check every new colour pair in both light and dark mode."
+    ],
+    "donts": [
+      "**Don't** tint, overlay or filter book covers.",
+      "**Don't** introduce a chromatic brand or accent colour; the accent is ink.",
+      "**Don't** add drop shadows, gradients, glass or backdrop blur.",
+      "**Don't** wrap rows in rounded cards or grids of boxed tiles.",
+      "**Don't** set body or labels in condensed caps, or add tracked-out uppercase labels above headings.",
+      "**Don't** order the house hues as a spectral rainbow; keep neutral spines mixed in.",
+      "**Don't** return to the retired cream, serif and brown look.",
+      ""
+    ]
+  }
+}
