@@ -24,7 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import { query } from "../lib/database.js";
-//import { recognizeBooks as recognizeBooksMock } from "./lib/mockAI.js";
+import { recognizeBooks as recognizeBooksMock } from "../lib/mockAI.js";
 import { recognizeBooks as recognizeBooksReal } from "../lib/groqVisionAI.js";
 import { enrichBooks } from "../lib/googleBooks.js";
 import { checkLimit, incrementUsage } from "../lib/usageTracking.js";
@@ -162,7 +162,7 @@ export default async function handler(req, res) {
          * - USE_MOCK_AI=true: Use fake data (development/testing)
          * - USE_MOCK_AI=false: Call the real Groq API (production)
          *
-         * Default to mock if not set (safer for development)
+         * Unset means REAL: only the exact string "true" enables the mock.
          */
         const useMockAI = process.env.USE_MOCK_AI === "true";
 
