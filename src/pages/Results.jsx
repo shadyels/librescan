@@ -3,8 +3,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { CircleAlert, ScanLine, SearchX, Sparkles } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import { scanSpectrum, useBand } from "../spectrum";
-import { list, rise, spring } from "../motion";
+import { list, pop, spring } from "../motion";
 import BookCard from "../components/BookCard";
 import Button from "../components/ui/Button";
 import StatusView from "../components/ui/StatusView";
@@ -82,12 +81,6 @@ export default function Results() {
     return [...books].sort(compare);
   }, [books, sortBy]);
 
-  const spectrum = useMemo(
-    () => scanSpectrum(scanId, books?.map((b) => b.title) || []),
-    [scanId, books]
-  );
-  useBand(books ? spectrum.colors : null);
-
   if (error) {
     return (
       <StatusView
@@ -105,9 +98,9 @@ export default function Results() {
     return (
       <div aria-busy="true" aria-label="Loading scan">
         <div className="h-16 w-2/3 max-w-lg animate-pulse rounded-photo bg-surface" />
-        <div className="mt-10 grid grid-cols-2 gap-x-5 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} className="aspect-[2/3] animate-pulse rounded-photo bg-surface" />
+            <div key={i} className="aspect-[2/3] animate-pulse rounded-2xl bg-surface" />
           ))}
         </div>
       </div>
@@ -143,32 +136,29 @@ export default function Results() {
     <div>
       <header className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="type-display text-6xl sm:text-7xl">Your shelf</h1>
+          <h1 className="type-display text-6xl sm:text-7xl">
+            Your <span className="text-coral">shelf</span>
+          </h1>
           <p className="mt-3 text-[15px] text-ink-muted">{facts.join(" · ")}</p>
-          <p className="mt-1 text-[13px] text-ink-muted">
-            {spectrum.source === "photo"
-              ? "The band above is sampled from your photo."
-              : "The band above is generated from the titles; the photo isn't kept on this device."}
-          </p>
         </div>
         <Button to={recsUrl} size="lg" icon={Sparkles}>
           Recommend what to read next
         </Button>
       </header>
 
-      <div className="mt-10 flex items-center justify-between gap-4 border-t-[1.5px] border-ink pt-4">
+      <div className="mt-10 flex items-center justify-between gap-4 border-t border-line pt-4">
         <span className="text-sm font-semibold">Sort by</span>
         <SortControl value={sortBy} onChange={setSortBy} />
       </div>
 
       <motion.ul
-        className="mt-8 grid grid-cols-2 gap-x-5 gap-y-9 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+        className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
         variants={list(0.06)}
         initial="hidden"
         animate="show"
       >
         {sorted.map((book) => (
-          <motion.li key={book._key} layout transition={spring} variants={rise}>
+          <motion.li key={book._key} layout transition={spring} variants={pop}>
             <BookCard book={book} />
           </motion.li>
         ))}

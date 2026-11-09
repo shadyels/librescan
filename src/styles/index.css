@@ -1,65 +1,90 @@
 @import "tailwindcss";
 
 /*
- * Spine Spectrum tokens. Neutral ground + ink; colour arrives only from the
- * spine spectrum (photo-sampled or the house hues below) and book covers.
- * Dark values are redefined on :root under prefers-color-scheme.
+ * Ink blue on paper. Cream ground, navy ink and accent, one peach highlight,
+ * one coral detail (large display text and the read line only; it is under
+ * AA for small text on cream). Dark values are redefined on :root under
+ * prefers-color-scheme.
  */
 @theme {
-  --color-ground: #f4f4f2;
-  --color-surface: #e9e9e6;
-  --color-raised: #ffffff;
-  --color-line: #d4d4cf;
-  --color-ink: #141518;
-  --color-ink-muted: #55575d;
-  --color-accent: #141518;
-  --color-accent-ink: #f4f4f2;
-  --color-focus: #2a5a8f;
+  --color-ground: #f5f0e6;
+  --color-surface: #ece5d8;
+  --color-raised: #fffdf8;
+  --color-line: #ded6c8;
+  --color-ink: #1e2433;
+  --color-ink-muted: #5f6677;
+  --color-accent: #23395d;
+  --color-accent-ink: #f5f0e6;
+  --color-highlight: #f3c9b5;
+  --color-highlight-ink: #1e2433;
+  --color-coral: #d2603f;
+  --color-focus: #23395d;
   --color-danger: #b42318;
   --color-success: #2e6b3f;
 
-  /* The house spectrum (bookcloth hues) lives in src/spectrum.jsx. */
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Young Serif", Georgia, serif;
 
-  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
-
-  --radius-photo: 4px;
+  --radius-photo: 1.25rem;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ground: #111214;
-    --color-surface: #1c1d20;
-    --color-raised: #24252a;
-    --color-line: #34353a;
-    --color-ink: #ededea;
-    --color-ink-muted: #a3a5ab;
-    --color-accent: #ededea;
-    --color-accent-ink: #111214;
-    --color-focus: #8fb2ea;
+    --color-ground: #151821;
+    --color-surface: #1a1d29;
+    --color-raised: #1e2230;
+    --color-line: #2e3446;
+    --color-ink: #eef0f5;
+    --color-ink-muted: #a6adbf;
+    --color-accent: #9db4e0;
+    --color-accent-ink: #151821;
+    --color-highlight: #5a3a30;
+    --color-highlight-ink: #f6dccf;
+    --color-coral: #ef8a6a;
+    --color-focus: #9db4e0;
     --color-danger: #f2877b;
     --color-success: #79c08a;
   }
 }
 
-/* Spine lettering: condensed caps for display headings only. */
+/* Display voice: Young Serif has one weight; tighten it a touch. */
 @utility type-display {
-  font-stretch: 62%;
-  font-weight: 800;
-  text-transform: uppercase;
-  line-height: 0.92;
-  letter-spacing: -0.005em;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 
-/* Condensed label voice for figures and short labels (sentence case). */
+/* Label voice for figures and short labels. */
 @utility type-label {
-  font-stretch: 72%;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-/* Read sweep (src/spectrum.jsx ReadSweep): 2.6 s travel + 0.35 s hold = 2950 ms. */
+/* Soft, ink-tinted elevation for cards and stickers. */
+@utility shadow-card {
+  box-shadow: 0 1px 2px rgb(30 36 51 / 0.05), 0 8px 22px rgb(30 36 51 / 0.07);
+}
+@utility shadow-lift {
+  box-shadow: 0 1px 2px rgb(30 36 51 / 0.18), 0 4px 12px rgb(35 57 93 / 0.18);
+}
+@utility shadow-sticker {
+  box-shadow: 0 6px 14px rgb(210 96 63 / 0.25);
+}
+
+/* Header rule while reading (src/reading.jsx ReadRule): indeterminate, eases
+   toward 92% and waits there; the page navigates away when the read ends. */
+@keyframes read-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(0.92); }
+}
+.read-progress {
+  animation: read-progress 14s cubic-bezier(0.1, 0.6, 0.3, 1) forwards;
+}
+
+/* Read sweep over the photo (src/reading.jsx ReadSweep): 2.6 s travel + 0.35 s hold = 2950 ms. */
 @keyframes read-veil {
   0% { transform: translateX(0); }
   88%, 100% { transform: translateX(100%); }
@@ -74,8 +99,10 @@
 }
 .read-sweep-veil { animation-name: read-veil; }
 .read-sweep-line { animation-name: read-line; }
+
 @media (prefers-reduced-motion: reduce) {
   .read-sweep { display: none; }
+  .read-progress { animation: none; }
 }
 
 @layer base {
@@ -87,20 +114,20 @@
     background-color: var(--color-ground);
     color: var(--color-ink);
     font-variant-numeric: tabular-nums;
-    caret-color: var(--color-ink);
+    caret-color: var(--color-accent);
     scrollbar-color: var(--color-line) transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   ::selection {
-    background-color: var(--color-ink);
-    color: var(--color-ground);
+    background-color: var(--color-highlight);
+    color: var(--color-highlight-ink);
   }
 
   :focus-visible {
     outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
+    outline-offset: 3px;
   }
 
   a {
@@ -108,6 +135,6 @@
   }
 
   dialog::backdrop {
-    background: rgb(0 0 0 / 0.55);
+    background: rgb(21 24 33 / 0.5);
   }
 }

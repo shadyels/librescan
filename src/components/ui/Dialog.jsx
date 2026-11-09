@@ -24,13 +24,13 @@ function Panel({ title, children, actions, onClose, busy }) {
         close();
       }}
       onClick={(e) => e.target === ref.current && close()}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-lg bg-raised p-0 text-ink"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl border border-line bg-raised p-0 text-ink shadow-[0_24px_60px_rgb(21_24_33/0.25)]"
       initial={{ opacity: 0, scale: 0.96, y: 8 }}
       animate={{ opacity: 1, scale: 1, y: 0, transition: spring }}
       exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
     >
-      <div className="p-6">
-        <h2 id="dialog-title" className="text-lg font-bold">
+      <div className="p-7">
+        <h2 id="dialog-title" className="type-display text-2xl">
           {title}
         </h2>
         <div className="mt-2 text-sm leading-relaxed text-ink-muted">{children}</div>

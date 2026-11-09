@@ -23,9 +23,9 @@ export default function AccountCta({ variant = "inline", title, children }) {
   }
 
   return (
-    <section className="flex flex-col gap-5 border-t-[1.5px] border-ink pt-6 sm:flex-row sm:items-end sm:justify-between">
+    <section className="flex flex-col gap-5 rounded-photo border border-line bg-raised p-6 shadow-card sm:flex-row sm:items-center sm:justify-between sm:p-8">
       <div className="max-w-xl">
-        <h2 className="text-xl font-bold">{title}</h2>
+        <h2 className="type-display text-2xl sm:text-3xl">{title}</h2>
         <p className="mt-1.5 text-[15px] leading-relaxed text-ink-muted">{children}</p>
       </div>
       <div className="flex shrink-0 gap-3">{actions}</div>

@@ -55,9 +55,9 @@ const MAX_AUTHORS = 20;
 function Section({ title, hint, children, htmlFor }) {
   const Title = htmlFor ? "label" : "h2";
   return (
-    <section className="grid gap-4 border-t-[1.5px] border-ink py-8 md:grid-cols-[16rem_1fr] md:gap-10">
+    <section className="grid gap-4 border-t border-line py-8 md:grid-cols-[16rem_1fr] md:gap-10">
       <div>
-        <Title htmlFor={htmlFor} className="block text-lg font-bold">
+        <Title htmlFor={htmlFor} className="type-display block text-xl">
           {title}
         </Title>
         <p className="mt-1 text-sm text-ink-muted">{hint}</p>
@@ -177,10 +177,8 @@ export default function Preferences() {
                   aria-pressed={on}
                   onClick={() => toggleGenre(genre)}
                   whileTap={{ scale: 0.96 }}
-                  className={`inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold transition-colors ${
-                    on
-                      ? "bg-accent text-accent-ink"
-                      : "text-ink shadow-[inset_0_0_0_1.5px_var(--color-line)] hover:shadow-[inset_0_0_0_1.5px_var(--color-ink)]"
+                  className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition-colors ${
+                    on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-ink hover:border-ink-muted"
                   }`}
                 >
                   {on && <Check className="size-3.5" strokeWidth={2.5} aria-hidden />}
@@ -207,7 +205,7 @@ export default function Preferences() {
               placeholder="e.g. Ursula K. Le Guin"
               className={inputClass}
             />
-            <Button variant="secondary" icon={Plus} onClick={addAuthor} disabled={!authorInput.trim()} className="h-11">
+            <Button variant="secondary" icon={Plus} onClick={addAuthor} disabled={!authorInput.trim()} className="h-12">
               Add
             </Button>
           </div>
@@ -221,14 +219,14 @@ export default function Preferences() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.12 } }}
                   transition={spring}
-                  className="inline-flex h-9 items-center gap-1 rounded-full bg-surface pl-3.5 pr-1.5 text-sm font-semibold"
+                  className="inline-flex h-9 items-center gap-1 rounded-full bg-highlight pl-3.5 pr-1.5 text-sm font-semibold text-highlight-ink"
                 >
                   {author}
                   <button
                     type="button"
                     onClick={() => setAuthors((prev) => prev.filter((a) => a !== author))}
                     aria-label={`Remove ${author}`}
-                    className="rounded-full p-1 text-ink-muted hover:bg-ink/8 hover:text-ink"
+                    className="rounded-full p-1 opacity-70 hover:bg-highlight-ink/10 hover:opacity-100"
                   >
                     <X className="size-3.5" aria-hidden />
                   </button>
@@ -266,8 +264,8 @@ export default function Preferences() {
               return (
                 <label
                   key={level}
-                  className={`flex cursor-pointer flex-col gap-1 rounded-[4px] p-4 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus ${
-                    on ? "bg-accent text-accent-ink" : "shadow-[inset_0_0_0_1.5px_var(--color-line)] hover:shadow-[inset_0_0_0_1.5px_var(--color-ink)]"
+                  className={`flex cursor-pointer flex-col gap-1 rounded-2xl border p-4 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus ${
+                    on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised hover:border-ink-muted"
                   }`}
                 >
                   <input
@@ -278,7 +276,7 @@ export default function Preferences() {
                     onChange={(e) => setReadingLevel(e.target.value)}
                     className="sr-only"
                   />
-                  <span className="font-bold">{level}</span>
+                  <span className="font-semibold">{level}</span>
                   <span className={`text-sm ${on ? "opacity-85" : "text-ink-muted"}`}>{description}</span>
                 </label>
               );
@@ -291,7 +289,7 @@ export default function Preferences() {
           )}
         </Section>
 
-        <div className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t-[1.5px] border-ink bg-ground px-4 py-5 sm:flex-row sm:items-center">
+        <div className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t border-line bg-ground/90 px-4 py-5 backdrop-blur sm:flex-row sm:items-center">
           <Button size="lg" loading={saving} onClick={handleSave}>
             {saving ? "Saving…" : "Save preferences"}
           </Button>

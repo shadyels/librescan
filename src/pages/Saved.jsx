@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Bookmark, CircleAlert, RotateCcw, ScanLine, Trash2 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import { scanSpectrum, SpectrumBand } from "../spectrum";
+import { titleColor } from "../components/ui/BookCover";
 import { easeOut, spring } from "../motion";
 import AccountCta from "../components/ui/AccountCta";
 import Button from "../components/ui/Button";
@@ -10,7 +10,7 @@ import Dialog from "../components/ui/Dialog";
 import Notice from "../components/ui/Notice";
 import StatusView from "../components/ui/StatusView";
 
-const checkbox = "size-[18px] shrink-0 cursor-pointer accent-ink";
+const checkbox = "size-[18px] shrink-0 cursor-pointer accent-accent";
 
 function formatDate(dateStr) {
   const d = new Date(dateStr);
@@ -163,7 +163,7 @@ export default function Saved() {
         className="mt-6"
       />
 
-      <div className="mt-8 flex min-h-12 items-center justify-between gap-4 border-b-[1.5px] border-ink pb-3">
+      <div className="mt-8 flex min-h-12 items-center justify-between gap-4 px-2 pb-3">
         <label className="flex cursor-pointer items-center gap-3 text-sm font-semibold">
           <input type="checkbox" className={checkbox} checked={allSelected} onChange={toggleAll} disabled={loading} />
           {count > 0 ? `${count} selected` : "Select all"}
@@ -174,13 +174,13 @@ export default function Saved() {
       </div>
 
       {loading ? (
-        <div aria-busy="true" aria-label="Loading saved scans">
+        <div aria-busy="true" aria-label="Loading saved scans" className="overflow-hidden rounded-photo border border-line">
           {Array.from({ length: 3 }, (_, i) => (
-            <div key={i} className="h-24 animate-pulse border-b border-line bg-surface/60" />
+            <div key={i} className="h-24 animate-pulse border-b border-line bg-surface/60 last:border-0" />
           ))}
         </div>
       ) : (
-        <ul>
+        <ul className="overflow-hidden rounded-photo border border-line bg-raised shadow-card">
           <AnimatePresence initial={false}>
             {savedSets.map((set, i) => {
               const selected = selectedIds.has(set.scan_id);
@@ -195,15 +195,20 @@ export default function Saved() {
                   animate={{ opacity: 1, y: 0, transition: { duration: 0.4, delay: i * 0.04, ease: easeOut } }}
                   exit={{ opacity: 0, x: -24, transition: { duration: 0.2 } }}
                   transition={spring}
-                  className={`flex items-center gap-4 border-b border-line px-2 py-5 transition-colors sm:gap-5 ${
-                    selected ? "bg-ink/6" : ""
+                  className={`flex items-center gap-4 border-b border-line px-4 py-5 transition-colors last:border-0 sm:gap-5 sm:px-5 ${
+                    selected ? "bg-highlight/35" : ""
                   }`}
                 >
                   <input type="checkbox" id={id} className={checkbox} checked={selected} onChange={() => toggle(set.scan_id)} />
-                  <SpectrumBand
-                    colors={scanSpectrum(set.scan_id, preview).colors}
-                    className="hidden h-14 w-20 shrink-0 rounded-photo sm:flex"
-                  />
+                  <span className="relative hidden h-14 w-16 shrink-0 sm:block" aria-hidden>
+                    {preview.slice(0, 3).map((title, j) => (
+                      <span
+                        key={j}
+                        className="absolute top-0.5 left-3.5 h-13 w-9 rounded-[4px] shadow-[inset_-3px_0_0_rgb(0_0_0/0.1),0_1px_3px_rgb(0_0_0/0.15)]"
+                        style={{ backgroundColor: titleColor(title), transform: `rotate(${(j - 1) * 9}deg)`, zIndex: 3 - j }}
+                      />
+                    ))}
+                  </span>
                   <label htmlFor={id} className="min-w-0 flex-1 cursor-pointer">
                     <span className="block font-semibold">Scanned {formatDate(set.scan_date)}</span>
                     <span className="mt-1 block truncate text-sm text-ink-muted">

@@ -3,8 +3,8 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { ArrowLeft, BookOpen, Bookmark, BookmarkCheck, CircleAlert, RotateCcw, ScanLine, Trash2 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import { scanSpectrum, useBand } from "../spectrum";
-import { list, rise } from "../motion";
+import { useReading } from "../reading";
+import { list, pop } from "../motion";
 import RecommendationCard from "../components/RecommendationCard";
 import AccountCta from "../components/ui/AccountCta";
 import Button from "../components/ui/Button";
@@ -19,7 +19,7 @@ function Elapsed() {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="type-display text-[5rem] leading-none sm:text-[6rem]" aria-hidden>
+    <span className="type-display text-[5rem] leading-none text-coral sm:text-[6rem]" aria-hidden>
       {s}
       <span className="text-[0.45em]"> s</span>
     </span>
@@ -43,7 +43,7 @@ export default function Recommendations() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [actionError, setActionError] = useState(null);
 
-  useBand(scanSpectrum(scanId).colors, phase === "generating");
+  useReading(phase === "generating");
 
   useEffect(() => {
     if (authLoading) return;
@@ -201,9 +201,9 @@ export default function Recommendations() {
       <div aria-busy="true" aria-label="Loading recommendations">
         <div className="h-16 w-2/3 max-w-lg animate-pulse rounded-photo bg-surface" />
         {Array.from({ length: 3 }, (_, i) => (
-          <div key={i} className="mt-8 flex gap-6 border-t-[1.5px] border-line pt-6">
-            <div className="aspect-[2/3] w-28 animate-pulse rounded-photo bg-surface" />
-            <div className="h-6 w-1/3 animate-pulse rounded-photo bg-surface" />
+          <div key={i} className="mt-5 flex gap-6 rounded-photo border border-line bg-raised p-6">
+            <div className="aspect-[2/3] w-28 animate-pulse rounded-[10px] bg-surface" />
+            <div className="h-6 w-1/3 animate-pulse rounded-full bg-surface" />
           </div>
         ))}
       </div>
@@ -239,7 +239,9 @@ export default function Recommendations() {
       {back}
       <header className="mt-4 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div>
-          <h1 className="type-display text-6xl sm:text-7xl">What to read next</h1>
+          <h1 className="type-display text-6xl sm:text-7xl">
+            What to read <span className="text-coral">next</span>
+          </h1>
           <p className="mt-3 text-[15px] text-ink-muted">{facts.join(" · ")}</p>
         </div>
         {user && (
@@ -264,9 +266,9 @@ export default function Recommendations() {
 
       <Notice tone="error" message={actionError} onDismiss={() => setActionError(null)} className="mt-6" />
 
-      <motion.div className="mt-10" variants={list(0.07)} initial="hidden" animate="show">
+      <motion.div className="mt-10 space-y-5" variants={list(0.07)} initial="hidden" animate="show">
         {books.map((book, i) => (
-          <motion.div key={`${book.title}-${i}`} variants={rise}>
+          <motion.div key={`${book.title}-${i}`} variants={pop}>
             <RecommendationCard book={book} />
           </motion.div>
         ))}

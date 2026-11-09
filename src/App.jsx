@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Button from "./components/ui/Button";
 import { useAuth } from "./contexts/AuthContext";
-import { SpectrumBand, SpectrumProvider, useShellBand } from "./spectrum";
+import { ReadingProvider, ReadRule, useShellReading } from "./reading";
 import { page, spring } from "./motion";
 
 function NavItem({ to, children }) {
@@ -19,17 +19,21 @@ function NavItem({ to, children }) {
       to={to}
       end={to === "/"}
       className={({ isActive }) =>
-        `relative flex h-10 items-center text-sm transition-colors ${
-          isActive ? "font-bold text-ink" : "font-medium text-ink-muted hover:text-ink"
+        `relative flex h-9 items-center rounded-full px-4 text-sm font-semibold transition-colors ${
+          isActive ? "text-highlight-ink" : "text-ink-muted hover:text-ink"
         }`
       }
     >
       {({ isActive }) => (
         <>
-          {children}
           {isActive && (
-            <motion.span layoutId="nav-active" transition={spring} className="absolute inset-x-0 bottom-0.5 h-0.5 bg-ink" />
+            <motion.span
+              layoutId="nav-active"
+              transition={spring}
+              className="absolute inset-0 rounded-full bg-highlight"
+            />
           )}
+          <span className="relative">{children}</span>
         </>
       )}
     </NavLink>
@@ -45,7 +49,7 @@ function Account() {
   if (user) {
     return (
       <div className="flex items-center gap-3">
-        <span className="hidden max-w-56 truncate text-sm text-ink-muted md:block">{user.email}</span>
+        <span className="hidden max-w-56 truncate text-sm font-medium text-ink-muted md:block">{user.email}</span>
         <Button
           variant="secondary"
           size="sm"
@@ -76,7 +80,7 @@ function Account() {
 function Shell() {
   const location = useLocation();
   const { user } = useAuth();
-  const band = useShellBand();
+  const reading = useShellReading();
 
   const links = (
     <>
@@ -89,11 +93,11 @@ function Shell() {
   return (
     <div className="min-h-screen">
       <header>
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-4 sm:px-6 lg:px-10">
-          <Link to="/" className="type-display text-[26px] normal-case tracking-normal">
+        <div className="mx-auto flex h-18 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-10">
+          <Link to="/" className="type-display text-[27px]">
             LibreScan
           </Link>
-          <nav aria-label="Main" className="hidden items-center gap-6 sm:flex">
+          <nav aria-label="Main" className="hidden items-center gap-1 sm:flex">
             {links}
           </nav>
           <div className="ml-auto">
@@ -101,11 +105,11 @@ function Shell() {
           </div>
         </div>
         {user && (
-          <nav aria-label="Main" className="flex gap-6 px-4 sm:hidden">
+          <nav aria-label="Main" className="flex gap-1 px-3 pb-2 sm:hidden">
             {links}
           </nav>
         )}
-        <SpectrumBand colors={band?.colors} reading={band?.reading} className="h-5 sm:h-7" />
+        <ReadRule reading={reading} />
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
@@ -130,9 +134,9 @@ function Shell() {
 export default function App() {
   return (
     <BrowserRouter>
-      <SpectrumProvider>
+      <ReadingProvider>
         <Shell />
-      </SpectrumProvider>
+      </ReadingProvider>
     </BrowserRouter>
   );
 }

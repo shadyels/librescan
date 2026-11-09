@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, ImagePlus, ScanLine } from "lucide-react";
+import { Camera, Check, ImagePlus, ScanLine } from "lucide-react";
 import { useSession } from "../contexts/SessionContext.jsx";
-import { HOUSE_BAND, ReadSweep, sampleSpectrum, saveSpectrum, useBand } from "../spectrum";
+import { ReadSweep, useReading } from "../reading";
 import Button from "./ui/Button";
 import Notice from "./ui/Notice";
 
@@ -13,14 +13,27 @@ function Step({ n, label, state }) {
   const active = state === "now" || state === "working";
   return (
     <li
-      className={`grid grid-cols-[2rem_1fr_auto] items-center border-t-[1.5px] py-4 text-[15px] ${
-        state === "later" ? "border-line text-ink-muted" : "border-ink"
-      }`}
+      className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 text-[15px] transition-colors ${
+        active ? "border-line bg-raised shadow-card" : "border-transparent"
+      } ${state === "later" || state === "next" ? "text-ink-muted" : ""}`}
       aria-current={active ? "step" : undefined}
     >
-      <span className="type-label text-lg">{n}</span>
-      <span className={active ? "font-semibold" : ""}>{label}</span>
-      <span className={`type-label text-[13px] ${state === "working" ? "animate-pulse" : ""}`}>{tag}</span>
+      <span
+        className={`grid size-9 shrink-0 place-items-center rounded-[11px] border font-display text-[15px] transition-transform ${
+          state === "done" || active ? "border-accent bg-accent text-accent-ink" : "border-line"
+        } ${active ? "-rotate-6" : ""}`}
+      >
+        {state === "done" ? <Check className="size-4.5" strokeWidth={3} aria-hidden /> : n}
+      </span>
+      <span className={`flex-1 ${active ? "font-semibold" : ""}`}>{label}</span>
+      {state === "working" ? (
+        <span className="flex items-center gap-1.5 text-[13px] font-semibold">
+          <span className="size-2 animate-pulse rounded-full bg-coral motion-reduce:animate-none" aria-hidden />
+          {tag}
+        </span>
+      ) : (
+        <span className="text-[13px] font-semibold text-ink-muted">{tag}</span>
+      )}
     </li>
   );
 }
@@ -31,12 +44,11 @@ export default function CameraCapture({ onUploadSuccess }) {
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [previewFailed, setPreviewFailed] = useState(false);
-  const [colors, setColors] = useState(null);
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
-  useBand(colors || HOUSE_BAND, uploading);
+  useReading(uploading);
 
   useEffect(() => () => preview && URL.revokeObjectURL(preview), [preview]);
 
@@ -48,8 +60,6 @@ export default function CameraCapture({ onUploadSuccess }) {
     setFile(next);
     setPreview(URL.createObjectURL(next));
     setPreviewFailed(false);
-    setColors(null);
-    sampleSpectrum(next).then(setColors);
   }
 
   async function upload() {
@@ -81,7 +91,6 @@ export default function CameraCapture({ onUploadSuccess }) {
     }
     try {
       const data = await response.json();
-      if (colors) saveSpectrum(data.scan_id, colors);
       onUploadSuccess(data.scan_id);
     } catch {
       setUploading(false);
@@ -102,7 +111,8 @@ export default function CameraCapture({ onUploadSuccess }) {
     <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:grid-rows-[auto_1fr] lg:gap-x-14 lg:gap-y-8">
       <section className="lg:col-start-1 lg:row-span-2 lg:row-start-1">
         <h1 className="type-display text-6xl sm:text-7xl lg:text-[5.25rem]">
-          {uploading ? "Reading your shelf" : "Scan your shelf"}
+          {uploading ? "Reading your " : "Scan your "}
+          <span className="text-coral">shelf</span>
         </h1>
         <p className="mt-4 max-w-[60ch] text-[17px] leading-relaxed text-ink-muted">
           {uploading
@@ -124,8 +134,12 @@ export default function CameraCapture({ onUploadSuccess }) {
         />
 
         <div
-          className={`relative mt-8 aspect-[3/2] overflow-hidden rounded-photo border-[1.5px] transition-colors ${
-            dragging ? "border-ink bg-ink/6" : "border-line bg-surface"
+          className={`relative mt-8 aspect-[3/2] overflow-hidden rounded-photo border shadow-card transition-colors ${
+            preview && !previewFailed
+              ? "border-line"
+              : dragging
+                ? "border-dashed border-accent bg-highlight/30"
+                : "border-dashed border-ink-muted/40 bg-raised hover:border-ink-muted"
           }`}
           onDragOver={(e) => {
             e.preventDefault();
@@ -152,8 +166,10 @@ export default function CameraCapture({ onUploadSuccess }) {
               disabled={uploading}
               className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center"
             >
-              <ImagePlus className="size-9 text-ink-muted" strokeWidth={1.5} aria-hidden />
-              <span className="text-[17px] font-semibold">
+              <span className="mb-2 grid size-17 -rotate-6 place-items-center rounded-[20px] bg-highlight text-highlight-ink shadow-sticker">
+                <ImagePlus className="size-7.5" strokeWidth={1.75} aria-hidden />
+              </span>
+              <span className="type-display text-xl sm:text-2xl">
                 {file ? "Preview unavailable in this browser" : "Drop a shelf photo here, or choose one"}
               </span>
               <span className="text-sm text-ink-muted">JPEG, PNG or HEIC · up to 10 MB</span>
@@ -162,7 +178,7 @@ export default function CameraCapture({ onUploadSuccess }) {
           {uploading && <ReadSweep />}
         </div>
 
-        <div className="mt-3 flex min-h-5 justify-between gap-4 text-[13px] text-ink-muted">
+        <div className="mt-3 flex min-h-5 justify-between gap-4 px-2 text-[13px] text-ink-muted">
           {file && (
             <>
               <span className="truncate">{file.name}</span>
@@ -194,16 +210,11 @@ export default function CameraCapture({ onUploadSuccess }) {
       </div>
 
       <aside className="lg:col-start-2 lg:row-start-1 lg:pt-3">
-        <ol>
+        <ol className="space-y-1.5">
           {steps.map(([label, state], i) => (
             <Step key={label} n={i + 1} label={label} state={state} />
           ))}
         </ol>
-        <p className="mt-4 text-[13px] leading-relaxed text-ink-muted">
-          {colors
-            ? "The band above is your shelf, sampled from the photo."
-            : "Choose a photo and the band above turns into your shelf's colours."}
-        </p>
       </aside>
     </div>
   );

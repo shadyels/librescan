@@ -1,5 +1,5 @@
 export const inputClass =
-  "h-11 w-full rounded-[4px] border border-line bg-raised px-3.5 text-[15px] text-ink placeholder:text-ink-muted transition-colors hover:border-ink-muted focus:border-ink";
+  "h-12 w-full rounded-2xl border border-line bg-raised px-4 text-[15px] text-ink placeholder:text-ink-muted transition-colors hover:border-ink-muted focus:border-accent";
 
 export default function Field({ id, label, hint, children }) {
   return (
