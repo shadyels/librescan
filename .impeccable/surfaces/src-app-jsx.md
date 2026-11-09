@@ -1,5 +1,5 @@
 ---
-version: 1
+version: 2
 slug: "src-app-jsx"
 primary_target: "src/App.jsx"
 related_targets: ["src/pages/Home.jsx","src/pages/Results.jsx","src/pages/Recommendations.jsx","src/pages/Saved.jsx","src/pages/Preferences.jsx","src/pages/Login.jsx","src/pages/Signup.jsx"]
@@ -7,24 +7,24 @@ related_targets: ["src/pages/Home.jsx","src/pages/Results.jsx","src/pages/Recomm
 
 Scope: the whole LibreScan SPA (Home/scan, Results, Recommendations, Saved, Preferences, Login, Signup). Visitor mode: **Operate**. Code-led build.
 
-Audience and job: portfolio reviewers first, readers second; photo of a shelf → recognised books → recommendations in one sitting, anonymously. Flows, routes, API calls, anon `?device_id=` and claim redirect are unchanged.
+Audience and job: portfolio reviewers first, readers second. A photo of a shelf becomes recognised books, then recommendations, in one sitting, anonymously. Flows, routes, API calls, the anon `?device_id=` and the claim redirect are unchanged.
 
-Constraints: light + dark from `prefers-color-scheme`; motion via `motion/react` with `reducedMotion="user"`; icons via `lucide-react`; no backend changes. The vision model returns titles, not spine coordinates, so nothing may claim to point at a specific spine.
+Constraints: light and dark from `prefers-color-scheme`; motion via `motion/react` with `reducedMotion="user"`; icons via `lucide-react`; no backend changes. The vision model returns titles, not spine coordinates, so nothing may claim to point at a specific spine.
 
-Memorable moment: the user's own photo being read, then its colours carrying into Results.
+History: "Spine Spectrum" (grey, condensed caps, photo-sampled stripe band) was rejected as unusable. A "playful brights" round (six brights, chunky outlines, a toy-shelf header, a plum dark mode) was rejected as garish. Four cream directions were mocked; the user chose D, "Ink blue on paper", with the progress-rule header.
 
 Unresolved: none.
 
 ## Direction contract
 
-THESIS: The shelf's own colours run the interface. LibreScan samples the uploaded photo into a band of spine stripes, and that band is the app's colour. Refuses the category default (centred hero over a dashed drop card, indigo accent, rounded card grid) and the incumbent cream, serif and brown.
+THESIS: A calm, well-made paperback. Cream paper, navy ink, one peach highlight and one coral detail, so the books carry the colour. Friendliness comes from pill shapes, soft cards and a few tilted stickers, not from extra hues.
 
-OWN-WORLD: Neutral ground (light #f4f4f2, dark #111214) with ink type; colour arrives only as the spine spectrum (stripes sampled from the photo, otherwise a fixed house spectrum of bookcloth hues) and as covers, which are never tinted. Archivo variable: 62% width, 800 weight, uppercase for display (spine lettering); normal width for UI; tabular figures. Ink-filled and ink-outlined pill buttons, 1.5px ink rules between rows, 4px radius on photos and covers, Lucide icons at 1.75 stroke. No shadows at rest, no gradients or glass.
+OWN-WORLD: Ground #f5f0e6 (dark #151821), ink #1e2433, accent navy #23395d (dark #9db4e0), highlight peach #f3c9b5, coral #d2603f for large display words and the read line only. Young Serif display and Outfit UI; tabular figures. Pill buttons with soft lift shadows; 16–20px raised cards with hairline borders; covers untinted, with coverless books bound in seven muted bookcloth tones. No hard offset shadows, no ink outlines, no rainbow.
 
-STORY: Within one viewport a reviewer sees that a shelf photo becomes books and then recommendations, watches each step happen honestly (confidence, timings, model), and does it without signing up; an account is offered only where there is something to keep.
+STORY: Within one viewport a reviewer sees that a shelf photo becomes books and then recommendations, watches each step happen honestly (confidence, timings, model), and does it without signing up. An account is offered only where there is something to keep.
 
-FIRST VIEWPORT: Nav row on ground (wordmark left; Scan, Saved, Preferences; Log in and Sign up pills right). Beneath it a full-width 28px spectrum band. Left two-thirds: condensed uppercase h1 "Scan your shelf" at about 76px, one-line lede, then the photo frame (drop or choose; the preview fills it). Right column: the four-step pipeline (Photo, Reading spines, Matching covers, Recommendations) in ink-ruled rows with states; the primary pill sits at its foot. Signature interaction: on upload a white read-line sweeps the photo, the unread side veiled, spectrum stripes lighting as it passes; on response the band carries into Results and covers land in a stagger. Motion: transform and opacity only, 60–90 ms staggers, layout springs for reorder and removal; reduced motion drops travel and keeps a static progress label.
+FIRST VIEWPORT: Nav row on cream (Young Serif wordmark; a peach pill on the active link; Log in and Sign up pills on the right) over a 4px hairline. On the left, the h1 "Scan your *shelf*" with "shelf" in coral, a lede, then a dashed raised photo frame with a tilted peach upload sticker. On the right, the four-step pipeline (numbered chips, the active step as a raised card) with the navy primary pill beneath it. Signature: while reading, the hairline becomes a navy-to-coral progress rule, and a coral scan line crosses the photo over a fading veil. Motion is transform and opacity only, with pop-in card staggers and springs for layout. Reduced motion drops the sweep and the progress animation.
 
-FORM: Spine Spectrum, #3 of the grounded list (re-roll round 1). seed:b7f2bf99584f9e42
+FORM: Ink blue on paper (direction D of four cream mocks, user-picked).
 
-FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance
+FINISH: unreviewed and undocumented is unfinished; DESIGN.md documents the shipped system. The `.impeccable/design.json` sidecar still describes Spine Spectrum and needs regenerating.

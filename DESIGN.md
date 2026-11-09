@@ -1,112 +1,120 @@
 ---
 name: LibreScan
-description: Photograph your bookshelf; the shelf's own colours run the interface.
+description: Photograph your bookshelf; a calm paper-and-ink interface lets the books do the talking.
 colors:
-  ground: "#f4f4f2"
-  surface: "#e9e9e6"
-  raised: "#ffffff"
-  line: "#d4d4cf"
-  ink: "#141518"
-  ink-muted: "#55575d"
-  accent: "#141518"
-  accent-ink: "#f4f4f2"
-  focus: "#2a5a8f"
+  ground: "#f5f0e6"
+  surface: "#ece5d8"
+  raised: "#fffdf8"
+  line: "#ded6c8"
+  ink: "#1e2433"
+  ink-muted: "#5f6677"
+  accent: "#23395d"
+  accent-ink: "#f5f0e6"
+  highlight: "#f3c9b5"
+  highlight-ink: "#1e2433"
+  coral: "#d2603f"
+  focus: "#23395d"
   danger: "#b42318"
   success: "#2e6b3f"
-  ground-dark: "#111214"
-  surface-dark: "#1c1d20"
-  raised-dark: "#24252a"
-  line-dark: "#34353a"
-  ink-dark: "#ededea"
-  ink-muted-dark: "#a3a5ab"
-  focus-dark: "#8fb2ea"
+  ground-dark: "#151821"
+  surface-dark: "#1a1d29"
+  raised-dark: "#1e2230"
+  line-dark: "#2e3446"
+  ink-dark: "#eef0f5"
+  ink-muted-dark: "#a6adbf"
+  accent-dark: "#9db4e0"
+  accent-ink-dark: "#151821"
+  highlight-dark: "#5a3a30"
+  highlight-ink-dark: "#f6dccf"
+  coral-dark: "#ef8a6a"
+  focus-dark: "#9db4e0"
   danger-dark: "#f2877b"
   success-dark: "#79c08a"
-  house-oxblood: "#8f2d26"
-  house-rust: "#c46a1e"
-  house-ochre: "#c9a227"
-  house-green: "#2f6b45"
-  house-blue: "#2a5a8f"
-  house-violet: "#4b3a7a"
-  house-plum: "#7a2d55"
-  spine-black: "#1d1f24"
-  spine-bone: "#e4e1d8"
-  spine-graphite: "#3a3c42"
+  cloth-navy: "#23395d"
+  cloth-coral: "#d2603f"
+  cloth-sage: "#6e8b74"
+  cloth-mustard: "#c9a55c"
+  cloth-linen: "#e9e1d2"
+  cloth-brick: "#8c4a3c"
+  cloth-slate: "#4f5d75"
 typography:
   display:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Young Serif, Georgia, serif"
     fontSize: "clamp(3.75rem, 6vw, 5.25rem)"
-    fontWeight: 800
-    lineHeight: 0.92
-    letterSpacing: "-0.005em"
-    fontVariation: "'wdth' 62"
+    fontWeight: 400
+    lineHeight: 1.02
+    letterSpacing: "-0.015em"
   headline:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.25rem"
-    fontWeight: 700
-    lineHeight: 1.25
+    fontFamily: "Young Serif, Georgia, serif"
+    fontSize: "1.5rem"
+    fontWeight: 400
+    lineHeight: 1.1
   title:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
     fontSize: "1rem"
     fontWeight: 600
     lineHeight: 1.375
   body:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
     fontSize: "15px"
     fontWeight: 400
     lineHeight: 1.625
     fontFeature: "'tnum' 1"
   lede:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
+    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
     fontSize: "17px"
     fontWeight: 400
     lineHeight: 1.625
   label:
-    fontFamily: "Archivo, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "13px"
-    fontWeight: 700
-    fontVariation: "'wdth' 72"
+    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "12px"
+    fontWeight: 600
     fontFeature: "'tnum' 1"
 rounded:
-  photo: "4px"
-  dialog: "8px"
+  cover: "10px"
+  card: "16px"
+  photo: "20px"
+  sticker: "20px"
+  dialog: "24px"
   pill: "9999px"
 spacing:
   gutter-sm: "16px"
   gutter-md: "24px"
   gutter-lg: "40px"
   row: "16px"
-  section: "32px"
+  section: "40px"
 components:
   button-primary:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.accent-ink}"
     rounded: "{rounded.pill}"
     padding: "0 20px"
-    height: "40px"
+    height: "44px"
   button-primary-lg:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.accent-ink}"
     rounded: "{rounded.pill}"
-    padding: "0 24px"
-    height: "48px"
+    padding: "0 28px"
+    height: "52px"
   button-secondary:
+    backgroundColor: "{colors.raised}"
     textColor: "{colors.ink}"
     rounded: "{rounded.pill}"
     padding: "0 20px"
-    height: "40px"
+    height: "44px"
   button-danger:
     backgroundColor: "{colors.danger}"
-    textColor: "{colors.ground}"
+    textColor: "#ffffff"
     rounded: "{rounded.pill}"
     padding: "0 20px"
-    height: "40px"
+    height: "44px"
   button-ghost:
     textColor: "{colors.ink-muted}"
     rounded: "{rounded.pill}"
-    padding: "0 14px"
-    height: "32px"
+    padding: "0 16px"
+    height: "36px"
   chip-toggle:
+    backgroundColor: "{colors.raised}"
     textColor: "{colors.ink}"
     rounded: "{rounded.pill}"
     padding: "0 14px"
@@ -115,176 +123,183 @@ components:
     backgroundColor: "{colors.accent}"
     textColor: "{colors.accent-ink}"
     rounded: "{rounded.pill}"
+  sticker:
+    backgroundColor: "{colors.highlight}"
+    textColor: "{colors.highlight-ink}"
+    rounded: "{rounded.sticker}"
   input:
     backgroundColor: "{colors.raised}"
     textColor: "{colors.ink}"
-    rounded: "{rounded.photo}"
-    padding: "0 14px"
-    height: "44px"
+    rounded: "{rounded.card}"
+    padding: "0 16px"
+    height: "48px"
+  book-card:
+    backgroundColor: "{colors.raised}"
+    rounded: "{rounded.card}"
+    padding: "12px"
   book-cover:
-    rounded: "{rounded.photo}"
+    rounded: "{rounded.cover}"
   dialog:
     backgroundColor: "{colors.raised}"
     textColor: "{colors.ink}"
     rounded: "{rounded.dialog}"
-    padding: "24px"
+    padding: "28px"
     width: "min(28rem, calc(100% - 2rem))"
-  spectrum-band:
-    height: "28px"
+  read-rule:
+    height: "4px"
 ---
 
 # Design System: LibreScan
 
 ## Overview
 
-**Creative North Star: "Spine Spectrum"**
+**Creative North Star: "Ink Blue on Paper"**
 
-The shelf's own colours run the interface. Everything LibreScan draws itself is neutral: a cool off-white ground (near-black in dark mode), ink type, ink rules. Colour enters the screen from exactly two places: the spine spectrum, a band of thin vertical stripes sampled from the user's shelf photo (or a fixed house spectrum of bookcloth hues before there is a photo), and book covers, which are shown untouched. The band sits full-width directly under the nav on every page, so each screen is literally coloured by the shelf it is about.
+A well-made paperback, not a dashboard. Warm cream paper, navy ink, one soft peach highlight, and a single coral detail. The interface is calm so the books (real covers, or generated bookcloth covers) carry the colour. Headings are set in Young Serif, a sturdy bookish serif; everything you read or operate is set in Outfit, a clean geometric sans.
 
-Type carries the identity the palette withholds. Archivo's variable width axis does double duty: squeezed to 62% at 800 weight in uppercase it becomes spine lettering for display headings; at normal width it is a plain, legible UI face. Density is moderate and list-like: steps, recommendations, saved sets and preference groups are rows separated by 1.5px ink rules rather than boxed cards. Surfaces are flat; there are no shadows at rest, no gradients, no glass.
+The friendliness comes from shape, not from hue. Controls are full pills. Content sits on cream-white cards with hairline borders and soft, ink-tinted shadows. A few tilted "stickers" (the upload icon, status icons, confidence badges) add a hand-placed touch without adding colours.
 
-Motion is short and physical: exponential ease-out for entrances, one shared spring for layout changes, stripes that grow up from their baseline, and one signature effect, the read sweep, where a white read-line crosses the photo and the band while the unread side stays veiled.
+There is one signature effect, and it only appears while work is happening. The hairline under the nav becomes a navy-to-coral progress rule, and a single coral scan line crosses the shelf photo.
 
 **Key Characteristics:**
-- Neutral ground and ink; chromatic colour comes only from the spine spectrum and covers.
-- Full-width spectrum band under the nav on every route (20px mobile, 28px from `sm`).
-- Condensed uppercase Archivo display (62% width, 800); normal-width Archivo for UI; tabular figures everywhere.
-- Ink-filled and ink-outlined pill buttons; 4px corners on photos, covers and fields.
-- 1.5px ink rules between rows instead of cards.
-- Flat at rest; Lucide icons at 1.75 stroke.
+- Cream ground, navy ink and accent, peach highlight, coral reserved for large display words and the read line.
+- Young Serif display (one weight) and Outfit UI; tabular figures everywhere.
+- Pill buttons; 16px cards, 20px photo frame and stickers, 10px covers, 24px dialog.
+- Soft tinted shadows (`shadow-card`, `shadow-lift`, `shadow-sticker`); no hard offset shadows, no ink outlines.
+- A plain hairline under the nav that becomes the reading progress bar.
 - Light and dark follow the OS (`prefers-color-scheme`); reduced motion follows the OS.
 
 ## Colors
 
-A colourless instrument: neutral ground and ink, with all hue delegated to the shelf.
+One accent, one highlight, one detail. Everything else is paper and ink.
 
 ### Primary
-- **Ink** (`ink` / `ink-dark`): text, rules, the active-nav underline, text selection fill, and (as `accent`) the fill of primary buttons, the selected sort segment and selected chips. Accent is deliberately the same value as ink: the "brand colour" is black on light, bone on dark.
-- **Accent Ink** (`accent-ink`): text on ink-filled controls; equals the ground.
+- **Accent** (`accent`, navy; light blue-grey in dark mode): the only interactive colour. It fills primary buttons, selected chips, selected sort segments, selected reading-level tiles, done or active step chips, checkbox ticks and the focus ring. Text on it is `accent-ink`, which is the ground colour.
+- **Ink** (`ink`): text. Navy-black in light mode, near-white in dark mode.
 
 ### Secondary
-- **The Spine Spectrum** (`house-*` plus `spine-black`, `spine-bone`, `spine-graphite`): seven bookcloth hues (oxblood, rust, ochre, green, blue, violet, plum). Used three ways only: (1) the default band before a photo exists, 60 stripes with every fourth one a neutral spine so it reads as a shelf, not a rainbow; (2) the stable generated colour of a coverless book (hash of the title into the seven hues); (3) the band for a scan whose photo spectrum is no longer on this device. Once a photo exists, the band is sampled from it (64 stripes) and replaces the house hues entirely.
-- Text on any spine colour uses black ink or near-white chosen by luminance (threshold 0.22), never a fixed colour.
+- **Highlight** (`highlight`, peach; brown-rose in dark mode): soft emphasis. Used for the active nav pill, author chips, confidence badges, the upload and status stickers, and text selection. Text on it is `highlight-ink`.
+- **Coral** (`coral`): a detail, never a fill for controls. Used for the one emphasised word in a page h1 ("shelf", "next"), the elapsed-seconds counter, the read line and the end of the progress rule, and the underline of auth footer links. In light mode coral on cream is 3.4:1, which passes AA for large text only. Never use it for body or label text.
 
 ### Neutral
-- **Ground** (`ground` / `ground-dark`): page background, and text on danger buttons.
-- **Surface** (`surface` / `surface-dark`): empty photo frame, sort-control track, author chips, loading skeletons.
-- **Raised** (`raised` / `raised-dark`): inputs and dialogs, the only surfaces lighter than the ground.
-- **Line** (`line` / `line-dark`): input borders, inactive chip outlines, quiet row dividers, the "later" pipeline steps.
-- **Ink Muted** (`ink-muted` / `ink-muted-dark`): ledes, metadata, hints, inactive nav.
+- **Ground** (`ground`): page background, and the veil of the read sweep.
+- **Surface** (`surface`): skeletons and the sort-control track.
+- **Raised** (`raised`): cards, inputs, dialogs, secondary buttons and the active pipeline step.
+- **Line** (`line`): hairline borders, outlined chips, idle steps, the idle rule under the nav.
+- **Ink Muted** (`ink-muted`): ledes, metadata, hints and inactive nav. 5.1:1 on ground.
 
 ### Functional
-- **Focus** (`focus`): 2px focus outline at 2px offset on every focusable element. Light value shares the house blue.
-- **Danger** / **Success**: notice tints at 12% alpha with a solid icon; danger also fills the destructive button and the error status icon. Never decorative.
+- **Focus** (`focus`): a 2px outline at 3px offset on every focusable element. It equals the accent.
+- **Danger** / **Success**: notices use an 8–10% tint with a 25% border and a solid icon. Danger also fills the destructive button, with white text in light mode and ground-coloured text in dark mode.
+
+### Bookcloth (generated covers)
+Seven muted cloth tones (`cloth-*`: navy, coral, sage, mustard, linen, brick, slate). A coverless book gets a stable colour by hashing its title. Cover text is ink or off-white, picked by luminance (threshold 0.2). These are mid-tones on purpose, so a grid reads as books and not as sweets.
 
 ### Named Rules
-**The Shelf Owns The Colour Rule.** Interface chrome is ink and neutrals only. A hue on screen must come from the spectrum band, a cover, a generated spine binding, or a functional state (focus, danger, success).
+**The One Accent Rule.** Navy is the only colour that means "you can press this" or "selected". Peach is emphasis, coral is a detail. Do not add a fourth hue to the chrome.
 
-**The Untinted Cover Rule.** Covers are shown as delivered: no overlays, tints, duotones or filters. A missing cover is bound in its generated spine colour with the title in spine lettering.
+**The Untinted Cover Rule.** Covers are shown as delivered: no overlays, tints, duotones or filters. A missing cover is bound in bookcloth with the title in the display face.
 
 ## Typography
 
-**Display Font:** Archivo variable at 62% width (with ui-sans-serif, system-ui fallback)
-**Body Font:** Archivo variable at normal width
-**Label Font:** Archivo at 72% width, bold
+**Display Font:** Young Serif (Google Fonts, single weight 400) with a Georgia fallback.
+**Body Font:** Outfit variable 400–700 with a system sans fallback.
 
-**Character:** One family on its width axis: condensed caps that read like lettering on a spine, against a neutral grotesque for everything you actually read. Loaded from Google Fonts with `wdth 62..125, wght 400..800`.
+**Character:** A friendly, slightly old-style serif for headings, like a paperback title page, set against a clean geometric sans for everything you read or operate.
 
 ### Hierarchy
-- **Display** (800, 62% width, uppercase, 0.92 line-height, balanced wrap): page h1 only; 60px on phones, 72px from `sm`, 84px on the Home hero; 48–60px in status views; 60–72px on auth pages. Also the elapsed-seconds counter on Recommendations (80–96px) and titles on generated covers (20px). The wordmark uses the same face in mixed case at 26px.
-- **Headline** (700, 20px): recommendation titles, account-CTA and dialog titles (18px), preference group titles (18px).
-- **Title** (600, 16px, snug): book titles in grids, active step labels, field labels (14px).
-- **Body** (400, 15px, relaxed): metadata lines and supporting copy; **Lede** (17px, relaxed, max ~56–60ch) under every h1; recommendation reasons at 16px.
-- **Label** (700, 72% width, 13px, sentence case): figures and short state words: step numbers (18px), step states, confidence ("92% · good"), saved-set counts, cover author lines.
+- **Display** (`type-display`: Young Serif, line-height 1.02, -0.015em, balanced wrap). Page h1s are 60px on phones and 72px from `sm`, and 84px on the Home hero. Status views use 48–60px and auth pages 60–72px. One word may be coral. The elapsed counter on Recommendations is 80–96px in coral. The wordmark is 27px.
+- **Headline** (Young Serif, 20–30px): recommendation titles (24px), dialog titles (24px), account-CTA titles (24–30px), preference group titles (20px), and titles on generated covers (18px).
+- **Title** (Outfit 600, 16px): book titles in grids, the active step label, and field labels (14px).
+- **Body** (Outfit 400, 15px, relaxed). The **Lede** is 17px with a maximum of about 60ch, under every h1. Recommendation reasons are 16px.
+- **Label** (`type-label`, Outfit 600, 12–13px, sentence case): badges, step states and counts.
 
 ### Named Rules
-**The Spine Lettering Rule.** Condensed uppercase is for display headings and cover titles only. Labels stay sentence case; body never condenses.
-
-**The Tabular Figures Rule.** `tabular-nums` is set on the body; counts, percentages, timings and sizes always align.
+**The Tabular Figures Rule.** `tabular-nums` is set on the body, so counts, percentages, timings and sizes always align.
 
 ## Layout
 
-A single centred column capped at 80rem with side padding of 16px / 24px / 40px (base / `sm` / `lg`) and 32–40px top padding. The header is a 64px row (wordmark, nav, account pills right) followed by the full-bleed spectrum band, which ignores the column.
+A single centred column capped at 80rem, with side padding of 16px / 24px / 40px (base / `sm` / `lg`) and 32–40px top padding. The header is a 72px row: wordmark, nav pills, then account pills on the right. It is followed by the full-bleed 4px read rule. On phones, signed-in nav links drop to a second row.
 
-Pages are left-aligned, never centred heroes. The Home scan screen is a two-column grid from `lg` (fluid photo column, 380px pipeline column, 56px gap); on phones the actions move directly under the photo. Auth pages split a display title from a 400px form column. Book grids step 2 → 3 → 4 → 5 → 6 columns with 20px column gaps and ~36px row gaps. Recommendations are rows: cover, title block, reason, in a three-column grid from `md` (cover 120px). Preferences use a 16rem label column beside controls, with a sticky save bar ruled in ink at the bottom.
-
-Rhythm: 16px inside rows, 24–32px between rows, 40–64px between sections. On phones signed-in nav links drop to a second row under the header.
+Pages are left-aligned. Home is a two-column grid from `lg` (a fluid photo column and a 380px pipeline column); on phones the actions sit directly under the photo. Auth pages split a display title from a 420px form card. Book grids step 2 → 3 → 4 → 5 → 6 columns with 16–20px gaps. Recommendations are stacked cards, each with a three-column grid from `md` (cover 120px, title block, reason). Preferences use a 16rem label column beside the controls, with a translucent sticky save bar.
 
 ## Elevation & Depth
 
-Flat. No surface casts a shadow at rest or on hover; depth is tonal (surface is darker than ground, raised is lighter) and structural (ink rules). The only `box-shadow` uses in the build are not elevation: a 1.5px inset ring that acts as a border on outlined pills and option tiles, and a 1px hard edge that keeps the white read-line visible on pale photos. Modal dialogs separate from the page with a 55% black backdrop, not a shadow.
+Soft and quiet. Three ink-tinted shadows, defined as utilities in `src/styles/index.css`:
+- `shadow-card`: cards, the photo frame, the active step, and book cards on hover.
+- `shadow-lift`: filled buttons. It drops away on press as the button settles 1px.
+- `shadow-sticker`: a faint coral glow under peach stickers.
 
-### Named Rules
-**The Flat Shelf Rule.** No drop shadows, gradients or backdrop blur. If something needs to stand apart, use a rule, a tonal step, or the dialog backdrop.
+The dialog uses one larger shadow over a 50% navy-black backdrop. There is no glass and no hard offset shadow. The only gradient is the navy-to-coral fill of the read rule.
 
 ## Shapes
 
-Two corner languages, by role. Photographic and data objects (shelf photo frame, covers, fields, notices, option tiles, skeletons) take a tight 4px corner, close to a printed object. Controls (buttons, chips, sort segments, dismiss buttons) are full pills. The dialog alone uses 8px. Covers are always 2:3; the photo frame is 3:2. Rules are 1.5px ink for structure, 1px line for quiet subdivision; the photo frame uses a 1.5px line border that turns ink while a file is dragged over it.
+Controls (buttons, chips, nav and sort segments) are full pills. Cards, inputs, notices, step rows and option tiles use 16px. The photo frame, account CTA, auth card and recommendation cards use 20px. Stickers use 20px and are tilted −6°. Covers use 10px with a slight inset shadow on the spine edge, the dialog uses 24px, and the mini covers in Saved use 4px. Borders are 1px `line`; the empty photo frame is dashed.
 
 ## Components
 
 ### Buttons
-Solid and tactile; they press in (scale 0.97 on tap).
-- **Shape:** full pill.
-- **Sizes:** 32px / 40px / 48px tall, 13 / 14 / 15px semibold, optional 16px Lucide icon at 1.75 stroke.
-- **Primary:** ink fill, ground text; hover drops fill to 85%.
-- **Secondary:** transparent with a 1.5px inset ink ring; hover adds an 8% ink wash.
-- **Danger:** danger fill, ground text. **Ghost:** muted text, 8% ink wash on hover, used for back links.
-- **Loading:** a spinning loader replaces the icon and the cursor becomes "wait"; busy buttons do not dim. Only a plainly disabled button drops to 45% opacity.
+- **Sizes:** 36 / 44 / 52px tall, 13 / 14 / 16px semibold, with an optional 16px Lucide icon.
+- **Primary and danger:** filled, with `shadow-lift`. They rise 1px on hover and settle 1px with no shadow on press (CSS only, and disabled under reduced motion).
+- **Secondary:** raised fill with a 1px line border, which turns muted ink on hover. **Ghost:** muted text with a faint ink wash, used for back links.
+- **Loading:** a spinner replaces the icon and the cursor becomes "wait"; busy buttons do not dim. Only a plainly disabled button drops to 45% opacity.
 
-### Chips and Segments
-- **Toggle chip (genres):** 36px pill, 1.5px inset line ring, ring turns ink on hover; selected fills ink with a check icon.
-- **Removable chip (authors):** surface fill with a round dismiss button.
-- **Sort segment:** pill track in surface; the selected segment's ink pill slides between options on the shared spring.
-- **Option tile (reading level):** 4px corner, line ring, selected fills ink; focus ring drawn on the tile.
+### Chips, Badges and Segments
+- **Toggle chip (genres):** 36px pill, raised with a line border; selected fills navy with a check icon.
+- **Removable chip (authors):** peach pill with a round dismiss button.
+- **Confidence badge:** a peach pill tilted −2°. Low confidence (under 75%) becomes a dashed navy outline tilted +1°. The category chip is a plain line-outlined pill.
+- **Sort segment:** a surface track; the selected navy pill slides between options on the shared spring.
+- **Option tile (reading level):** a 16px card that fills navy when selected; the focus ring is drawn on the tile.
 
 ### Inputs / Fields
-- **Style:** 44px, raised fill, 1px line border, 4px corner, 15px text, label 14px semibold above, 13px muted hint below.
-- **Focus:** border turns ink plus the global 2px focus outline. Hover darkens the border to muted ink.
-- Checkboxes are native, tinted to ink.
+48px tall, raised fill, 1px line border, 16px corner, 15px text. The label is 14px semibold above, with a 13px muted hint below. On focus the border turns navy and the global focus ring is added. Checkboxes are native and tinted with the accent.
 
-### Rows (structural "cards")
-LibreScan does not box content. Pipeline steps, recommendations, preference groups, the account CTA and the saved-list header open with a 1.5px ink top rule; inactive or skeleton rows use the line colour. Saved sets are 1px-line rows with a small spectrum thumbnail.
+### Cards
+- **Book card:** a raised 16px card with a hairline border and 12px padding. On hover it gains `shadow-card`, and the cover lifts 4px and tilts −1°.
+- **Recommendation card:** a raised 20px card with `shadow-card`: cover, then title, author and category chips, then the reason (16px) and a three-line description.
+- **Saved list:** one raised 20px card with hairline rows; a selected row takes a peach wash. Each row shows three fanned mini covers in bookcloth.
 
 ### Book Cover
-2:3, 4px corner, never tinted. Fades in over 500ms when loaded; before that, and when no cover exists, it shows the generated spine colour with the title in display lettering and the author as a label, in luminance-picked ink.
+2:3 with a 10px corner, never tinted. A loaded cover fades in over 500ms. Before that, and when no cover exists, it shows the bookcloth colour with the title in Young Serif (hyphenated) and the author beneath.
+
+### Home Pipeline
+Four steps: choose a photo, read the spines, match covers, recommendations. Each has a 36px numbered chip. Done and active chips fill navy (active is tilted −6°, done shows a check). The active row is a raised card. Working steps show a pulsing coral dot.
 
 ### Notices and Status Views
-- **Notice:** 4px corner, 12% danger or success tint, solid icon, ink text, optional dismiss; drops in 6px on ease-out.
-- **Status view:** left-aligned block for empty, error and login-gated states: a 32px Lucide icon (muted, or danger for errors), display title, lede, actions.
+- **Notice:** a 16px card with a tint and border in danger or success, a solid icon, ink text and an optional dismiss. It springs in.
+- **Status view:** a left-aligned block for empty, error and login-gated states. It has a tilted 64px peach sticker holding the icon (a danger tint for errors), a display title, a lede and actions.
 
 ### Dialog
-Native modal `<dialog>`, raised fill, 8px corner, 24px padding, max 28rem; springs in from 96% scale. Actions stack on phones, right-align from `sm`.
+A native modal `<dialog>` with a raised fill, hairline border and 24px corner, 28px padding and a maximum width of 28rem. It springs in from 96% scale. Actions stack on phones and right-align from `sm`.
 
 ### Navigation
-Wordmark left in mixed-case display lettering; links 14px, muted at medium weight, active at bold ink with a 2px ink underline that slides between links on the spring. Account actions are small pills (outlined Log in, filled Sign up; outlined Log out with the email beside it on `md`+).
+The wordmark sits on the left in Young Serif. Links are 14px semibold pills, muted when inactive. The active link sits on a peach pill that slides between links on the spring. Account actions are small pills: outlined Log in and filled Sign up, or outlined Log out with the email beside it from `md`.
 
-### Spectrum Band (signature)
-Full-width stripes under the nav, flex-grown 0.5–1.8× per stripe so they read as books of different thickness. Pages set what it shows: the house band, the photo spectrum, or title colours. Stripes grow up from the baseline (400ms ease-out, 12ms stagger) when the colours change.
+### Read Rule (signature)
+A full-bleed 4px hairline in `line` under the header. While a page reports reading (`useReading(true)` from `src/reading.jsx`: the Home upload and Recommendations generation), it becomes an indeterminate progress bar. A navy-to-coral fill scales from 0 toward 92% over 14s on an ease-out and waits there, and the page navigates away when the work ends. It is exposed as `role="progressbar"` without a value while reading, and is `aria-hidden` when idle. Under reduced motion the fill appears without animating.
 
 ### Read Sweep (signature)
-While a photo is being read, a veil of the ground at 70% slides off the photo and the band as a 2px white line with a 1px dark edge travels with it: 2.6s travel plus 0.35s hold, sinusoidal ease, looping. Every sweep is phase-locked to the wall clock so the band and the photo move in step. Hidden entirely under reduced motion; the step labels and button state carry progress instead.
+While the photo is read, a 55% ground veil slides off it, and a 3px coral line with a soft coral glow travels with its edge. The loop is a 2.6s travel plus a 0.35s hold on a sinusoidal ease, phase-locked to the wall clock. It is hidden entirely under reduced motion; the read rule, step states and button state carry progress instead.
 
 ### Motion grammar
-Exponential ease-out `cubic-bezier(0.16, 1, 0.3, 1)` for entrances. Page change: 8px rise and fade over 350ms, exit fade 140ms. Lists: children rise 14px over 500ms with 60–70ms staggers. Layout moves (nav underline, sort pill, dialog) use one spring (stiffness 420, damping 36, mass 0.8). Transform and opacity only. `MotionConfig reducedMotion="user"` removes travel app-wide.
+Entrances use the exponential ease-out `cubic-bezier(0.16, 1, 0.3, 1)`. A page change is a 10px rise and fade over 350ms. Cards in grids and lists use the `pop` variant, a spring from 95% scale and 12px below with a 50–70ms stagger. Layout moves (the nav pill, sort pill, author chips, re-sorted books and the dialog) share one spring: stiffness 440, damping 30, mass 0.8. Only transform and opacity animate. `MotionConfig reducedMotion="user"` removes travel app-wide.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** put every new route under the shell band and declare what it shows (house band, photo spectrum, or title colours).
-- **Do** keep chrome to ground, surface, raised, line, ink and ink-muted; take hue only from the spectrum, covers, or functional states.
-- **Do** set page h1s in display lettering (62% width, 800, uppercase) with a 17px muted lede beneath.
-- **Do** separate list content with 1.5px ink top rules instead of boxing it.
-- **Do** use pills for controls and the 4px corner for photos, covers and fields.
-- **Do** use Lucide icons at 1.75 stroke (1.5 for large status icons).
-- **Do** animate only transform and opacity, with the shared ease-out and spring, and give every looping effect a reduced-motion fallback.
-- **Do** check every new colour pair in both light and dark mode.
+- **Do** keep the chrome to paper, ink, navy, peach and the occasional coral word.
+- **Do** call `useReading(true)` from a page while it waits on slow work, so the rule under the nav shows progress.
+- **Do** set page h1s in Young Serif with a 17px muted lede beneath, and colour at most one word coral.
+- **Do** use pills for controls, 16–20px cards for content, and soft tinted shadows for depth.
+- **Do** use Lucide icons (1.75–2 stroke); no inline SVG.
+- **Do** animate only transform and opacity, and give every looping effect a reduced-motion fallback.
+- **Do** check every new colour pair in both light and dark mode (AA: 4.5:1 for text, 3:1 for large text).
 
 ### Don't:
 - **Don't** tint, overlay or filter book covers.
-- **Don't** introduce a chromatic brand or accent colour; the accent is ink.
-- **Don't** add drop shadows, gradients, glass or backdrop blur.
-- **Don't** wrap rows in rounded cards or grids of boxed tiles.
-- **Don't** set body or labels in condensed caps, or add tracked-out uppercase labels above headings.
-- **Don't** order the house hues as a spectral rainbow; keep neutral spines mixed in.
-- **Don't** return to the retired cream, serif and brown look.
+- **Don't** add more brights: no rainbow palettes, multicolour chips or candy-coloured covers.
+- **Don't** use coral for text under 24px, or as a control fill.
+- **Don't** use a violet or aubergine dark mode; dark mode is navy-black.
+- **Don't** put a decorative band or graphic under the nav; the rule is a hairline until something is reading.
+- **Don't** use hard offset shadows or thick ink outlines (the rejected "chunky playful" direction).
+- **Don't** return to the retired "Spine Spectrum" look (grey, condensed uppercase Archivo, ink rules, no colour).
