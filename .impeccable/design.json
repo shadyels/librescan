@@ -1,152 +1,208 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-07T02:54:48.620Z",
+  "generatedAt": "2026-11-09T19:55:15.357Z",
   "title": "Design System: LibreScan",
   "extensions": {
     "colorMeta": {
       "ground": {
         "role": "neutral",
-        "displayName": "Shelf Ground",
+        "displayName": "Cream Paper",
+        "canonical": "oklch(95.6% 0.014 84.6)",
         "tonalRamp": [
-          "oklch(15% 0.003 106.4)",
-          "oklch(25% 0.003 106.4)",
-          "oklch(35% 0.003 106.4)",
-          "oklch(48% 0.003 106.4)",
-          "oklch(60% 0.003 106.4)",
-          "oklch(72% 0.003 106.4)",
-          "oklch(84% 0.003 106.4)",
-          "oklch(95% 0.003 106.4)"
+          "oklch(15% 0.014 84.6)",
+          "oklch(25% 0.014 84.6)",
+          "oklch(35% 0.014 84.6)",
+          "oklch(48% 0.014 84.6)",
+          "oklch(60% 0.014 84.6)",
+          "oklch(72% 0.014 84.6)",
+          "oklch(84% 0.014 84.6)",
+          "oklch(95% 0.014 84.6)"
         ]
       },
       "surface": {
         "role": "neutral",
-        "displayName": "Board Grey",
+        "displayName": "Deckle",
+        "canonical": "oklch(92.4% 0.019 83.1)",
         "tonalRamp": [
-          "oklch(15% 0.004 106.5)",
-          "oklch(25% 0.004 106.5)",
-          "oklch(35% 0.004 106.5)",
-          "oklch(48% 0.004 106.5)",
-          "oklch(60% 0.004 106.5)",
-          "oklch(72% 0.004 106.5)",
-          "oklch(84% 0.004 106.5)",
-          "oklch(95% 0.004 106.5)"
+          "oklch(15% 0.019 83.1)",
+          "oklch(25% 0.019 83.1)",
+          "oklch(35% 0.019 83.1)",
+          "oklch(48% 0.019 83.1)",
+          "oklch(60% 0.019 83.1)",
+          "oklch(72% 0.019 83.1)",
+          "oklch(84% 0.019 83.1)",
+          "oklch(95% 0.019 83.1)"
         ]
       },
       "raised": {
         "role": "neutral",
-        "displayName": "Paper White",
+        "displayName": "Card Stock",
+        "canonical": "oklch(99.4% 0.007 88.6)",
         "tonalRamp": [
-          "oklch(15% 0 89.9)",
-          "oklch(25% 0 89.9)",
-          "oklch(35% 0 89.9)",
-          "oklch(48% 0 89.9)",
-          "oklch(60% 0 89.9)",
-          "oklch(72% 0 89.9)",
-          "oklch(84% 0 89.9)",
-          "oklch(95% 0 89.9)"
+          "oklch(15% 0.007 88.6)",
+          "oklch(25% 0.007 88.6)",
+          "oklch(35% 0.007 88.6)",
+          "oklch(48% 0.007 88.6)",
+          "oklch(60% 0.007 88.6)",
+          "oklch(72% 0.007 88.6)",
+          "oklch(84% 0.007 88.6)",
+          "oklch(95% 0.007 88.6)"
         ]
       },
       "line": {
         "role": "neutral",
-        "displayName": "Pencil Line",
+        "displayName": "Hairline",
+        "canonical": "oklch(87.9% 0.021 81.8)",
         "tonalRamp": [
-          "oklch(15% 0.007 106.5)",
-          "oklch(25% 0.007 106.5)",
-          "oklch(35% 0.007 106.5)",
-          "oklch(48% 0.007 106.5)",
-          "oklch(60% 0.007 106.5)",
-          "oklch(72% 0.007 106.5)",
-          "oklch(84% 0.007 106.5)",
-          "oklch(95% 0.007 106.5)"
+          "oklch(15% 0.021 81.8)",
+          "oklch(25% 0.021 81.8)",
+          "oklch(35% 0.021 81.8)",
+          "oklch(48% 0.021 81.8)",
+          "oklch(60% 0.021 81.8)",
+          "oklch(72% 0.021 81.8)",
+          "oklch(84% 0.021 81.8)",
+          "oklch(95% 0.021 81.8)"
         ]
       },
       "ink": {
-        "role": "primary",
-        "displayName": "Spine Ink",
+        "role": "neutral",
+        "displayName": "Navy-Black Ink",
+        "canonical": "oklch(26.2% 0.03 267.5)",
         "tonalRamp": [
-          "oklch(15% 0.006 271.1)",
-          "oklch(25% 0.006 271.1)",
-          "oklch(35% 0.006 271.1)",
-          "oklch(48% 0.006 271.1)",
-          "oklch(60% 0.006 271.1)",
-          "oklch(72% 0.006 271.1)",
-          "oklch(84% 0.006 271.1)",
-          "oklch(95% 0.006 271.1)"
+          "oklch(15% 0.03 267.5)",
+          "oklch(25% 0.03 267.5)",
+          "oklch(35% 0.03 267.5)",
+          "oklch(48% 0.03 267.5)",
+          "oklch(60% 0.03 267.5)",
+          "oklch(72% 0.03 267.5)",
+          "oklch(84% 0.03 267.5)",
+          "oklch(95% 0.03 267.5)"
         ]
       },
       "ink-muted": {
         "role": "neutral",
         "displayName": "Faded Ink",
+        "canonical": "oklch(51% 0.028 267.7)",
         "tonalRamp": [
-          "oklch(15% 0.01 271.2)",
-          "oklch(25% 0.01 271.2)",
-          "oklch(35% 0.01 271.2)",
-          "oklch(48% 0.01 271.2)",
-          "oklch(60% 0.01 271.2)",
-          "oklch(72% 0.01 271.2)",
-          "oklch(84% 0.01 271.2)",
-          "oklch(95% 0.01 271.2)"
+          "oklch(15% 0.028 267.7)",
+          "oklch(25% 0.028 267.7)",
+          "oklch(35% 0.028 267.7)",
+          "oklch(48% 0.028 267.7)",
+          "oklch(60% 0.028 267.7)",
+          "oklch(72% 0.028 267.7)",
+          "oklch(84% 0.028 267.7)",
+          "oklch(95% 0.028 267.7)"
         ]
       },
       "accent": {
         "role": "primary",
-        "displayName": "Ink Accent (same as ink)",
+        "displayName": "Ink Blue",
+        "canonical": "oklch(34.5% 0.069 259.8)",
         "tonalRamp": [
-          "oklch(15% 0.006 271.1)",
-          "oklch(25% 0.006 271.1)",
-          "oklch(35% 0.006 271.1)",
-          "oklch(48% 0.006 271.1)",
-          "oklch(60% 0.006 271.1)",
-          "oklch(72% 0.006 271.1)",
-          "oklch(84% 0.006 271.1)",
-          "oklch(95% 0.006 271.1)"
+          "oklch(15% 0.069 259.8)",
+          "oklch(25% 0.069 259.8)",
+          "oklch(35% 0.069 259.8)",
+          "oklch(48% 0.069 259.8)",
+          "oklch(60% 0.069 259.8)",
+          "oklch(72% 0.069 259.8)",
+          "oklch(84% 0.069 259.8)",
+          "oklch(95% 0.069 259.8)"
         ]
       },
       "accent-ink": {
         "role": "primary",
-        "displayName": "Text on Ink",
+        "displayName": "Text on Ink Blue",
+        "canonical": "oklch(95.6% 0.014 84.6)",
         "tonalRamp": [
-          "oklch(15% 0.003 106.4)",
-          "oklch(25% 0.003 106.4)",
-          "oklch(35% 0.003 106.4)",
-          "oklch(48% 0.003 106.4)",
-          "oklch(60% 0.003 106.4)",
-          "oklch(72% 0.003 106.4)",
-          "oklch(84% 0.003 106.4)",
-          "oklch(95% 0.003 106.4)"
+          "oklch(15% 0.014 84.6)",
+          "oklch(25% 0.014 84.6)",
+          "oklch(35% 0.014 84.6)",
+          "oklch(48% 0.014 84.6)",
+          "oklch(60% 0.014 84.6)",
+          "oklch(72% 0.014 84.6)",
+          "oklch(84% 0.014 84.6)",
+          "oklch(95% 0.014 84.6)"
+        ]
+      },
+      "highlight": {
+        "role": "secondary",
+        "displayName": "Peach Highlight",
+        "canonical": "oklch(86.7% 0.055 46.9)",
+        "tonalRamp": [
+          "oklch(15% 0.055 46.9)",
+          "oklch(25% 0.055 46.9)",
+          "oklch(35% 0.055 46.9)",
+          "oklch(48% 0.055 46.9)",
+          "oklch(60% 0.055 46.9)",
+          "oklch(72% 0.055 46.9)",
+          "oklch(84% 0.055 46.9)",
+          "oklch(95% 0.055 46.9)"
+        ]
+      },
+      "highlight-ink": {
+        "role": "secondary",
+        "displayName": "Text on Peach",
+        "canonical": "oklch(26.2% 0.03 267.5)",
+        "tonalRamp": [
+          "oklch(15% 0.03 267.5)",
+          "oklch(25% 0.03 267.5)",
+          "oklch(35% 0.03 267.5)",
+          "oklch(48% 0.03 267.5)",
+          "oklch(60% 0.03 267.5)",
+          "oklch(72% 0.03 267.5)",
+          "oklch(84% 0.03 267.5)",
+          "oklch(95% 0.03 267.5)"
+        ]
+      },
+      "coral": {
+        "role": "tertiary",
+        "displayName": "Coral Detail",
+        "canonical": "oklch(62.4% 0.152 36.9)",
+        "tonalRamp": [
+          "oklch(15% 0.152 36.9)",
+          "oklch(25% 0.152 36.9)",
+          "oklch(35% 0.152 36.9)",
+          "oklch(48% 0.152 36.9)",
+          "oklch(60% 0.152 36.9)",
+          "oklch(72% 0.152 36.9)",
+          "oklch(84% 0.152 36.9)",
+          "oklch(95% 0.152 36.9)"
         ]
       },
       "focus": {
         "role": "functional",
-        "displayName": "Focus Blue",
+        "displayName": "Focus (Ink Blue)",
+        "canonical": "oklch(34.5% 0.069 259.8)",
         "tonalRamp": [
-          "oklch(15% 0.101 252.8)",
-          "oklch(25% 0.101 252.8)",
-          "oklch(35% 0.101 252.8)",
-          "oklch(48% 0.101 252.8)",
-          "oklch(60% 0.101 252.8)",
-          "oklch(72% 0.101 252.8)",
-          "oklch(84% 0.101 252.8)",
-          "oklch(95% 0.101 252.8)"
+          "oklch(15% 0.069 259.8)",
+          "oklch(25% 0.069 259.8)",
+          "oklch(35% 0.069 259.8)",
+          "oklch(48% 0.069 259.8)",
+          "oklch(60% 0.069 259.8)",
+          "oklch(72% 0.069 259.8)",
+          "oklch(84% 0.069 259.8)",
+          "oklch(95% 0.069 259.8)"
         ]
       },
       "danger": {
         "role": "functional",
         "displayName": "Danger Red",
+        "canonical": "oklch(50% 0.182 29.5)",
         "tonalRamp": [
-          "oklch(15% 0.16 29.5)",
-          "oklch(25% 0.16 29.5)",
-          "oklch(35% 0.16 29.5)",
-          "oklch(48% 0.16 29.5)",
-          "oklch(60% 0.16 29.5)",
-          "oklch(72% 0.16 29.5)",
-          "oklch(84% 0.16 29.5)",
-          "oklch(95% 0.16 29.5)"
+          "oklch(15% 0.182 29.5)",
+          "oklch(25% 0.182 29.5)",
+          "oklch(35% 0.182 29.5)",
+          "oklch(48% 0.182 29.5)",
+          "oklch(60% 0.182 29.5)",
+          "oklch(72% 0.182 29.5)",
+          "oklch(84% 0.182 29.5)",
+          "oklch(95% 0.182 29.5)"
         ]
       },
       "success": {
         "role": "functional",
         "displayName": "Success Green",
+        "canonical": "oklch(47.5% 0.095 150.4)",
         "tonalRamp": [
           "oklch(15% 0.095 150.4)",
           "oklch(25% 0.095 150.4)",
@@ -160,105 +216,188 @@
       },
       "ground-dark": {
         "role": "neutral",
-        "displayName": "Shelf Ground (dark)",
+        "displayName": "Night Paper (dark)",
+        "canonical": "oklch(21% 0.018 270.4)",
         "tonalRamp": [
-          "oklch(15% 0.004 264.5)",
-          "oklch(25% 0.004 264.5)",
-          "oklch(35% 0.004 264.5)",
-          "oklch(48% 0.004 264.5)",
-          "oklch(60% 0.004 264.5)",
-          "oklch(72% 0.004 264.5)",
-          "oklch(84% 0.004 264.5)",
-          "oklch(95% 0.004 264.5)"
+          "oklch(15% 0.018 270.4)",
+          "oklch(25% 0.018 270.4)",
+          "oklch(35% 0.018 270.4)",
+          "oklch(48% 0.018 270.4)",
+          "oklch(60% 0.018 270.4)",
+          "oklch(72% 0.018 270.4)",
+          "oklch(84% 0.018 270.4)",
+          "oklch(95% 0.018 270.4)"
         ]
       },
       "surface-dark": {
         "role": "neutral",
-        "displayName": "Board Grey (dark)",
+        "displayName": "Deckle (dark)",
+        "canonical": "oklch(23.3% 0.024 273.6)",
         "tonalRamp": [
-          "oklch(15% 0.006 271.2)",
-          "oklch(25% 0.006 271.2)",
-          "oklch(35% 0.006 271.2)",
-          "oklch(48% 0.006 271.2)",
-          "oklch(60% 0.006 271.2)",
-          "oklch(72% 0.006 271.2)",
-          "oklch(84% 0.006 271.2)",
-          "oklch(95% 0.006 271.2)"
+          "oklch(15% 0.024 273.6)",
+          "oklch(25% 0.024 273.6)",
+          "oklch(35% 0.024 273.6)",
+          "oklch(48% 0.024 273.6)",
+          "oklch(60% 0.024 273.6)",
+          "oklch(72% 0.024 273.6)",
+          "oklch(84% 0.024 273.6)",
+          "oklch(95% 0.024 273.6)"
         ]
       },
       "raised-dark": {
         "role": "neutral",
-        "displayName": "Paper (dark)",
+        "displayName": "Card Stock (dark)",
+        "canonical": "oklch(25.5% 0.027 272)",
         "tonalRamp": [
-          "oklch(15% 0.009 276.7)",
-          "oklch(25% 0.009 276.7)",
-          "oklch(35% 0.009 276.7)",
-          "oklch(48% 0.009 276.7)",
-          "oklch(60% 0.009 276.7)",
-          "oklch(72% 0.009 276.7)",
-          "oklch(84% 0.009 276.7)",
-          "oklch(95% 0.009 276.7)"
+          "oklch(15% 0.027 272)",
+          "oklch(25% 0.027 272)",
+          "oklch(35% 0.027 272)",
+          "oklch(48% 0.027 272)",
+          "oklch(60% 0.027 272)",
+          "oklch(72% 0.027 272)",
+          "oklch(84% 0.027 272)",
+          "oklch(95% 0.027 272)"
         ]
       },
       "line-dark": {
         "role": "neutral",
-        "displayName": "Pencil Line (dark)",
+        "displayName": "Hairline (dark)",
+        "canonical": "oklch(32.7% 0.033 270.2)",
         "tonalRamp": [
-          "oklch(15% 0.009 276.9)",
-          "oklch(25% 0.009 276.9)",
-          "oklch(35% 0.009 276.9)",
-          "oklch(48% 0.009 276.9)",
-          "oklch(60% 0.009 276.9)",
-          "oklch(72% 0.009 276.9)",
-          "oklch(84% 0.009 276.9)",
-          "oklch(95% 0.009 276.9)"
+          "oklch(15% 0.033 270.2)",
+          "oklch(25% 0.033 270.2)",
+          "oklch(35% 0.033 270.2)",
+          "oklch(48% 0.033 270.2)",
+          "oklch(60% 0.033 270.2)",
+          "oklch(72% 0.033 270.2)",
+          "oklch(84% 0.033 270.2)",
+          "oklch(95% 0.033 270.2)"
         ]
       },
       "ink-dark": {
-        "role": "primary",
-        "displayName": "Bone Ink (dark)",
+        "role": "neutral",
+        "displayName": "Paper-White Ink (dark)",
+        "canonical": "oklch(95.5% 0.007 268.5)",
         "tonalRamp": [
-          "oklch(15% 0.004 106.5)",
-          "oklch(25% 0.004 106.5)",
-          "oklch(35% 0.004 106.5)",
-          "oklch(48% 0.004 106.5)",
-          "oklch(60% 0.004 106.5)",
-          "oklch(72% 0.004 106.5)",
-          "oklch(84% 0.004 106.5)",
-          "oklch(95% 0.004 106.5)"
+          "oklch(15% 0.007 268.5)",
+          "oklch(25% 0.007 268.5)",
+          "oklch(35% 0.007 268.5)",
+          "oklch(48% 0.007 268.5)",
+          "oklch(60% 0.007 268.5)",
+          "oklch(72% 0.007 268.5)",
+          "oklch(84% 0.007 268.5)",
+          "oklch(95% 0.007 268.5)"
         ]
       },
       "ink-muted-dark": {
         "role": "neutral",
         "displayName": "Faded Ink (dark)",
+        "canonical": "oklch(74.8% 0.027 268.8)",
         "tonalRamp": [
-          "oklch(15% 0.009 271.3)",
-          "oklch(25% 0.009 271.3)",
-          "oklch(35% 0.009 271.3)",
-          "oklch(48% 0.009 271.3)",
-          "oklch(60% 0.009 271.3)",
-          "oklch(72% 0.009 271.3)",
-          "oklch(84% 0.009 271.3)",
-          "oklch(95% 0.009 271.3)"
+          "oklch(15% 0.027 268.8)",
+          "oklch(25% 0.027 268.8)",
+          "oklch(35% 0.027 268.8)",
+          "oklch(48% 0.027 268.8)",
+          "oklch(60% 0.027 268.8)",
+          "oklch(72% 0.027 268.8)",
+          "oklch(84% 0.027 268.8)",
+          "oklch(95% 0.027 268.8)"
+        ]
+      },
+      "accent-dark": {
+        "role": "primary",
+        "displayName": "Ink Blue (dark)",
+        "canonical": "oklch(76.8% 0.068 263.2)",
+        "tonalRamp": [
+          "oklch(15% 0.068 263.2)",
+          "oklch(25% 0.068 263.2)",
+          "oklch(35% 0.068 263.2)",
+          "oklch(48% 0.068 263.2)",
+          "oklch(60% 0.068 263.2)",
+          "oklch(72% 0.068 263.2)",
+          "oklch(84% 0.068 263.2)",
+          "oklch(95% 0.068 263.2)"
+        ]
+      },
+      "accent-ink-dark": {
+        "role": "primary",
+        "displayName": "Text on Ink Blue (dark)",
+        "canonical": "oklch(21% 0.018 270.4)",
+        "tonalRamp": [
+          "oklch(15% 0.018 270.4)",
+          "oklch(25% 0.018 270.4)",
+          "oklch(35% 0.018 270.4)",
+          "oklch(48% 0.018 270.4)",
+          "oklch(60% 0.018 270.4)",
+          "oklch(72% 0.018 270.4)",
+          "oklch(84% 0.018 270.4)",
+          "oklch(95% 0.018 270.4)"
+        ]
+      },
+      "highlight-dark": {
+        "role": "secondary",
+        "displayName": "Peach Highlight (dark)",
+        "canonical": "oklch(38.3% 0.049 38.1)",
+        "tonalRamp": [
+          "oklch(15% 0.049 38.1)",
+          "oklch(25% 0.049 38.1)",
+          "oklch(35% 0.049 38.1)",
+          "oklch(48% 0.049 38.1)",
+          "oklch(60% 0.049 38.1)",
+          "oklch(72% 0.049 38.1)",
+          "oklch(84% 0.049 38.1)",
+          "oklch(95% 0.049 38.1)"
+        ]
+      },
+      "highlight-ink-dark": {
+        "role": "secondary",
+        "displayName": "Text on Peach (dark)",
+        "canonical": "oklch(91.2% 0.034 48.3)",
+        "tonalRamp": [
+          "oklch(15% 0.034 48.3)",
+          "oklch(25% 0.034 48.3)",
+          "oklch(35% 0.034 48.3)",
+          "oklch(48% 0.034 48.3)",
+          "oklch(60% 0.034 48.3)",
+          "oklch(72% 0.034 48.3)",
+          "oklch(84% 0.034 48.3)",
+          "oklch(95% 0.034 48.3)"
+        ]
+      },
+      "coral-dark": {
+        "role": "tertiary",
+        "displayName": "Coral Detail (dark)",
+        "canonical": "oklch(73.5% 0.132 38.3)",
+        "tonalRamp": [
+          "oklch(15% 0.132 38.3)",
+          "oklch(25% 0.132 38.3)",
+          "oklch(35% 0.132 38.3)",
+          "oklch(48% 0.132 38.3)",
+          "oklch(60% 0.132 38.3)",
+          "oklch(72% 0.132 38.3)",
+          "oklch(84% 0.132 38.3)",
+          "oklch(95% 0.132 38.3)"
         ]
       },
       "focus-dark": {
         "role": "functional",
-        "displayName": "Focus Blue (dark)",
+        "displayName": "Focus (dark)",
+        "canonical": "oklch(76.8% 0.068 263.2)",
         "tonalRamp": [
-          "oklch(15% 0.09 259.6)",
-          "oklch(25% 0.09 259.6)",
-          "oklch(35% 0.09 259.6)",
-          "oklch(48% 0.09 259.6)",
-          "oklch(60% 0.09 259.6)",
-          "oklch(72% 0.09 259.6)",
-          "oklch(84% 0.09 259.6)",
-          "oklch(95% 0.09 259.6)"
+          "oklch(15% 0.068 263.2)",
+          "oklch(25% 0.068 263.2)",
+          "oklch(35% 0.068 263.2)",
+          "oklch(48% 0.068 263.2)",
+          "oklch(60% 0.068 263.2)",
+          "oklch(72% 0.068 263.2)",
+          "oklch(84% 0.068 263.2)",
+          "oklch(95% 0.068 263.2)"
         ]
       },
       "danger-dark": {
         "role": "functional",
         "displayName": "Danger (dark)",
+        "canonical": "oklch(73.7% 0.133 27.4)",
         "tonalRamp": [
           "oklch(15% 0.133 27.4)",
           "oklch(25% 0.133 27.4)",
@@ -273,6 +412,7 @@
       "success-dark": {
         "role": "functional",
         "displayName": "Success (dark)",
+        "canonical": "oklch(74.6% 0.106 150.8)",
         "tonalRamp": [
           "oklch(15% 0.106 150.8)",
           "oklch(25% 0.106 150.8)",
@@ -284,235 +424,225 @@
           "oklch(95% 0.106 150.8)"
         ]
       },
-      "house-oxblood": {
+      "cloth-navy": {
         "role": "secondary",
-        "displayName": "Oxblood Bookcloth",
+        "displayName": "Navy Bookcloth",
+        "canonical": "oklch(34.5% 0.069 259.8)",
         "tonalRamp": [
-          "oklch(15% 0.134 27.9)",
-          "oklch(25% 0.134 27.9)",
-          "oklch(35% 0.134 27.9)",
-          "oklch(48% 0.134 27.9)",
-          "oklch(60% 0.134 27.9)",
-          "oklch(72% 0.134 27.9)",
-          "oklch(84% 0.134 27.9)",
-          "oklch(95% 0.134 27.9)"
+          "oklch(15% 0.069 259.8)",
+          "oklch(25% 0.069 259.8)",
+          "oklch(35% 0.069 259.8)",
+          "oklch(48% 0.069 259.8)",
+          "oklch(60% 0.069 259.8)",
+          "oklch(72% 0.069 259.8)",
+          "oklch(84% 0.069 259.8)",
+          "oklch(95% 0.069 259.8)"
         ]
       },
-      "house-rust": {
+      "cloth-coral": {
         "role": "secondary",
-        "displayName": "Rust Bookcloth",
+        "displayName": "Coral Bookcloth",
+        "canonical": "oklch(62.4% 0.152 36.9)",
         "tonalRamp": [
-          "oklch(15% 0.141 54.8)",
-          "oklch(25% 0.141 54.8)",
-          "oklch(35% 0.141 54.8)",
-          "oklch(48% 0.141 54.8)",
-          "oklch(60% 0.141 54.8)",
-          "oklch(72% 0.141 54.8)",
-          "oklch(84% 0.141 54.8)",
-          "oklch(95% 0.141 54.8)"
+          "oklch(15% 0.152 36.9)",
+          "oklch(25% 0.152 36.9)",
+          "oklch(35% 0.152 36.9)",
+          "oklch(48% 0.152 36.9)",
+          "oklch(60% 0.152 36.9)",
+          "oklch(72% 0.152 36.9)",
+          "oklch(84% 0.152 36.9)",
+          "oklch(95% 0.152 36.9)"
         ]
       },
-      "house-ochre": {
+      "cloth-sage": {
         "role": "secondary",
-        "displayName": "Ochre Bookcloth",
+        "displayName": "Sage Bookcloth",
+        "canonical": "oklch(60.8% 0.048 151)",
         "tonalRamp": [
-          "oklch(15% 0.138 89.7)",
-          "oklch(25% 0.138 89.7)",
-          "oklch(35% 0.138 89.7)",
-          "oklch(48% 0.138 89.7)",
-          "oklch(60% 0.138 89.7)",
-          "oklch(72% 0.138 89.7)",
-          "oklch(84% 0.138 89.7)",
-          "oklch(95% 0.138 89.7)"
+          "oklch(15% 0.048 151)",
+          "oklch(25% 0.048 151)",
+          "oklch(35% 0.048 151)",
+          "oklch(48% 0.048 151)",
+          "oklch(60% 0.048 151)",
+          "oklch(72% 0.048 151)",
+          "oklch(84% 0.048 151)",
+          "oklch(95% 0.048 151)"
         ]
       },
-      "house-green": {
+      "cloth-mustard": {
         "role": "secondary",
-        "displayName": "Library Green",
+        "displayName": "Mustard Bookcloth",
+        "canonical": "oklch(73.9% 0.101 83.6)",
         "tonalRamp": [
-          "oklch(15% 0.088 153.6)",
-          "oklch(25% 0.088 153.6)",
-          "oklch(35% 0.088 153.6)",
-          "oklch(48% 0.088 153.6)",
-          "oklch(60% 0.088 153.6)",
-          "oklch(72% 0.088 153.6)",
-          "oklch(84% 0.088 153.6)",
-          "oklch(95% 0.088 153.6)"
+          "oklch(15% 0.101 83.6)",
+          "oklch(25% 0.101 83.6)",
+          "oklch(35% 0.101 83.6)",
+          "oklch(48% 0.101 83.6)",
+          "oklch(60% 0.101 83.6)",
+          "oklch(72% 0.101 83.6)",
+          "oklch(84% 0.101 83.6)",
+          "oklch(95% 0.101 83.6)"
         ]
       },
-      "house-blue": {
+      "cloth-linen": {
         "role": "secondary",
-        "displayName": "Cloth Blue",
+        "displayName": "Linen Bookcloth",
+        "canonical": "oklch(91.2% 0.022 83.3)",
         "tonalRamp": [
-          "oklch(15% 0.101 252.8)",
-          "oklch(25% 0.101 252.8)",
-          "oklch(35% 0.101 252.8)",
-          "oklch(48% 0.101 252.8)",
-          "oklch(60% 0.101 252.8)",
-          "oklch(72% 0.101 252.8)",
-          "oklch(84% 0.101 252.8)",
-          "oklch(95% 0.101 252.8)"
+          "oklch(15% 0.022 83.3)",
+          "oklch(25% 0.022 83.3)",
+          "oklch(35% 0.022 83.3)",
+          "oklch(48% 0.022 83.3)",
+          "oklch(60% 0.022 83.3)",
+          "oklch(72% 0.022 83.3)",
+          "oklch(84% 0.022 83.3)",
+          "oklch(95% 0.022 83.3)"
         ]
       },
-      "house-violet": {
+      "cloth-brick": {
         "role": "secondary",
-        "displayName": "Violet Bookcloth",
+        "displayName": "Brick Bookcloth",
+        "canonical": "oklch(48.6% 0.093 33.1)",
         "tonalRamp": [
-          "oklch(15% 0.105 293.3)",
-          "oklch(25% 0.105 293.3)",
-          "oklch(35% 0.105 293.3)",
-          "oklch(48% 0.105 293.3)",
-          "oklch(60% 0.105 293.3)",
-          "oklch(72% 0.105 293.3)",
-          "oklch(84% 0.105 293.3)",
-          "oklch(95% 0.105 293.3)"
+          "oklch(15% 0.093 33.1)",
+          "oklch(25% 0.093 33.1)",
+          "oklch(35% 0.093 33.1)",
+          "oklch(48% 0.093 33.1)",
+          "oklch(60% 0.093 33.1)",
+          "oklch(72% 0.093 33.1)",
+          "oklch(84% 0.093 33.1)",
+          "oklch(95% 0.093 33.1)"
         ]
       },
-      "house-plum": {
+      "cloth-slate": {
         "role": "secondary",
-        "displayName": "Plum Bookcloth",
+        "displayName": "Slate Bookcloth",
+        "canonical": "oklch(47.6% 0.043 261.1)",
         "tonalRamp": [
-          "oklch(15% 0.117 351.0)",
-          "oklch(25% 0.117 351.0)",
-          "oklch(35% 0.117 351.0)",
-          "oklch(48% 0.117 351.0)",
-          "oklch(60% 0.117 351.0)",
-          "oklch(72% 0.117 351.0)",
-          "oklch(84% 0.117 351.0)",
-          "oklch(95% 0.117 351.0)"
-        ]
-      },
-      "spine-black": {
-        "role": "secondary",
-        "displayName": "Black Spine",
-        "tonalRamp": [
-          "oklch(15% 0.01 268.3)",
-          "oklch(25% 0.01 268.3)",
-          "oklch(35% 0.01 268.3)",
-          "oklch(48% 0.01 268.3)",
-          "oklch(60% 0.01 268.3)",
-          "oklch(72% 0.01 268.3)",
-          "oklch(84% 0.01 268.3)",
-          "oklch(95% 0.01 268.3)"
-        ]
-      },
-      "spine-bone": {
-        "role": "secondary",
-        "displayName": "Bone Spine",
-        "tonalRamp": [
-          "oklch(15% 0.013 91.5)",
-          "oklch(25% 0.013 91.5)",
-          "oklch(35% 0.013 91.5)",
-          "oklch(48% 0.013 91.5)",
-          "oklch(60% 0.013 91.5)",
-          "oklch(72% 0.013 91.5)",
-          "oklch(84% 0.013 91.5)",
-          "oklch(95% 0.013 91.5)"
-        ]
-      },
-      "spine-graphite": {
-        "role": "secondary",
-        "displayName": "Graphite Spine",
-        "tonalRamp": [
-          "oklch(15% 0.011 271.1)",
-          "oklch(25% 0.011 271.1)",
-          "oklch(35% 0.011 271.1)",
-          "oklch(48% 0.011 271.1)",
-          "oklch(60% 0.011 271.1)",
-          "oklch(72% 0.011 271.1)",
-          "oklch(84% 0.011 271.1)",
-          "oklch(95% 0.011 271.1)"
+          "oklch(15% 0.043 261.1)",
+          "oklch(25% 0.043 261.1)",
+          "oklch(35% 0.043 261.1)",
+          "oklch(48% 0.043 261.1)",
+          "oklch(60% 0.043 261.1)",
+          "oklch(72% 0.043 261.1)",
+          "oklch(84% 0.043 261.1)",
+          "oklch(95% 0.043 261.1)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Spine Lettering",
-        "purpose": "Page h1s, status titles, auth titles, coverless book titles, the elapsed counter. Uppercase, 62% width, 800. 60px / 72px (sm) / 84px Home hero."
+        "displayName": "Young Serif Display",
+        "purpose": "type-display: Young Serif 400, line-height 1.02, -0.015em, balanced wrap. Page h1s 60px (72px from sm, 84px Home hero); status views 48-60px; auth 60-72px; the coral elapsed counter 80-96px; the 27px wordmark. At most one word coral."
       },
       "headline": {
-        "displayName": "Headline",
-        "purpose": "Recommendation titles, dialog and CTA titles, preference group titles."
+        "displayName": "Serif Headline",
+        "purpose": "Young Serif 20-30px: recommendation titles and dialog titles (24px), account-CTA titles (24-30px), preference group titles (20px), titles on generated covers (18px)."
       },
       "title": {
         "displayName": "Title",
-        "purpose": "Book titles in grids, active step labels, field labels (14px)."
+        "purpose": "Outfit 600, 16px: book titles in grids, the active step label; field labels at 14px."
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Metadata and supporting copy; tabular figures on."
+        "purpose": "Outfit 400, 15px, relaxed leading, tabular figures on; recommendation reasons at 16px."
       },
       "lede": {
         "displayName": "Lede",
-        "purpose": "The muted line under every h1, max ~56-60ch."
+        "purpose": "Outfit 400, 17px muted line under every h1, max about 60ch."
       },
       "label": {
-        "displayName": "Condensed Label",
-        "purpose": "Figures and short state words in sentence case: step numbers, step states, confidence, counts."
+        "displayName": "Label",
+        "purpose": "type-label: Outfit 600, 12-13px, sentence case: badges, step states and counts."
       }
     },
     "shadows": [
       {
-        "name": "ring-ink",
-        "value": "inset 0 0 0 1.5px var(--color-ink)",
-        "purpose": "Border substitute on outlined pills and hovered chips/tiles. Not elevation."
+        "name": "shadow-card",
+        "value": "0 1px 2px rgb(30 36 51 / 0.05), 0 8px 22px rgb(30 36 51 / 0.07)",
+        "purpose": "Cards, the photo frame, the active step, and book cards on hover."
       },
       {
-        "name": "ring-line",
-        "value": "inset 0 0 0 1.5px var(--color-line)",
-        "purpose": "Resting border of toggle chips and option tiles. Not elevation."
+        "name": "shadow-lift",
+        "value": "0 1px 2px rgb(30 36 51 / 0.18), 0 4px 12px rgb(35 57 93 / 0.18)",
+        "purpose": "Filled buttons (primary, danger); drops away on press."
       },
       {
-        "name": "read-line-edge",
-        "value": "1px 0 0 rgb(0 0 0 / 0.35)",
-        "purpose": "Keeps the white read-line visible on pale photos. Only inside the read sweep."
+        "name": "shadow-sticker",
+        "value": "0 6px 14px rgb(210 96 63 / 0.25)",
+        "purpose": "Faint coral glow under peach stickers (upload, status icons)."
+      },
+      {
+        "name": "cover-spine",
+        "value": "inset -6px 0 0 rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.08)",
+        "purpose": "Spine edge on every book cover."
+      },
+      {
+        "name": "dialog",
+        "value": "0 24px 60px rgb(21 24 33 / 0.25)",
+        "purpose": "The native modal dialog only."
       },
       {
         "name": "dialog-backdrop",
-        "value": "rgb(0 0 0 / 0.55)",
-        "purpose": "Native dialog::backdrop; the only separation for modals."
+        "value": "rgb(21 24 33 / 0.5)",
+        "purpose": "dialog::backdrop, a 50% navy-black wash."
+      },
+      {
+        "name": "read-line-glow",
+        "value": "0 0 18px var(--color-coral)",
+        "purpose": "Soft coral glow on the 3px read-sweep line only."
       }
     ],
     "motion": [
       {
         "name": "ease-out-expo",
         "value": "cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "All entrances: page, list rise, notices, stripe growth."
+        "purpose": "All entrances (--ease-out-expo, easeOut in src/motion.js)."
       },
       {
         "name": "spring-layout",
-        "value": "spring(stiffness 420, damping 36, mass 0.8)",
-        "purpose": "Layout moves: nav underline, sort pill, dialog entrance."
+        "value": "spring(stiffness 440, damping 30, mass 0.8)",
+        "purpose": "Layout moves: nav pill, sort pill, author chips, re-sorted books, dialog and notice entrance."
       },
       {
         "name": "page-enter",
-        "value": "opacity 0 -> 1, y 8px -> 0, 350ms ease-out-expo; exit fade 140ms",
+        "value": "opacity 0 -> 1, y 10px -> 0, 350ms ease-out-expo; exit fade 140ms",
         "purpose": "Route transitions."
       },
       {
-        "name": "list-rise",
-        "value": "opacity 0 -> 1, y 14px -> 0, 500ms ease-out-expo, stagger 60-70ms",
-        "purpose": "Book grid and recommendation rows landing."
+        "name": "pop",
+        "value": "spring(stiffness 380, damping 22) from opacity 0, scale 0.95, y 12px; stagger 50-70ms",
+        "purpose": "Cards in grids and lists landing."
       },
       {
-        "name": "stripe-grow",
-        "value": "scaleY 0 -> 1 from bottom, 400ms ease-out-expo, 12ms per stripe",
-        "purpose": "Spectrum band when its colours change."
+        "name": "rise",
+        "value": "opacity 0 -> 1, y 14px -> 0, 500ms ease-out-expo",
+        "purpose": "Non-card list entrances."
+      },
+      {
+        "name": "button-lift",
+        "value": "translate -1px on hover, +1px on press, 150ms",
+        "purpose": "Filled buttons; transition removed under reduced motion."
+      },
+      {
+        "name": "tap-press",
+        "value": "scale 0.96",
+        "purpose": "Toggle chips on press."
+      },
+      {
+        "name": "read-progress",
+        "value": "scaleX 0 -> 0.92, 14s cubic-bezier(0.1, 0.6, 0.3, 1), forwards",
+        "purpose": "Read rule while reading; static under reduced motion."
       },
       {
         "name": "read-sweep",
         "value": "2950ms loop (2.6s travel + 0.35s hold), cubic-bezier(0.45, 0, 0.55, 1), phase-locked to wall clock",
-        "purpose": "While a photo is being read; hidden under prefers-reduced-motion."
-      },
-      {
-        "name": "tap-press",
-        "value": "scale 0.97",
-        "purpose": "Buttons and chips (0.96) on press."
+        "purpose": "Coral line and 55% ground veil over the photo while reading; hidden under reduced motion."
       },
       {
         "name": "cover-fade",
         "value": "opacity 500ms",
-        "purpose": "A loaded cover replacing its generated binding."
+        "purpose": "A loaded cover replacing its bookcloth binding."
       }
     ],
     "breakpoints": [
@@ -539,133 +669,119 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Ink-filled pill for the main action on a screen.",
-      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/></svg>Take or choose a photo</button>",
-      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 8px; height: 48px; padding: 0 24px; border: 0; border-radius: 9999px; background: var(--color-ink, #141518); color: var(--color-ground, #f4f4f2); font: 600 15px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, transform 150ms; } .ds-btn-primary:hover { background: color-mix(in srgb, var(--color-ink, #141518) 85%, transparent); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+      "description": "Navy pill with a soft lift shadow for the main action; rises 1px on hover, settles 1px with no shadow on press. Also 36px (sm) and 52px (lg) sizes.",
+      "html": "<button class=\"ds-btn-primary\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\"/><circle cx=\"12\" cy=\"13\" r=\"3\"/></svg>Take or choose a photo</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: 9999px; font-family: Outfit, ui-sans-serif, system-ui, sans-serif; font-weight: 600; line-height: 1; cursor: pointer; transition: translate 150ms, box-shadow 150ms, background-color 150ms, border-color 150ms, color 150ms; height: 44px; padding: 0 20px; border: 0; font-size: 14px; background: var(--color-accent, #23395d); color: var(--color-accent-ink, #f5f0e6); box-shadow: 0 1px 2px rgb(30 36 51 / 0.18), 0 4px 12px rgb(35 57 93 / 0.18); } .ds-btn-primary:hover { translate: 0 -1px; } .ds-btn-primary:active { translate: 0 1px; box-shadow: none; } .ds-btn-primary:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-btn-primary { transition: none; } .ds-btn-primary:hover, .ds-btn-primary:active { translate: none; } }"
     },
     {
       "name": "Secondary Button",
       "kind": "button",
       "refersTo": "button-secondary",
-      "description": "Ink-outlined pill (1.5px inset ring) for the alternative action.",
+      "description": "Raised pill with a 1px hairline border for the alternative action; the border turns muted ink on hover. Also used small for Log in / Log out.",
       "html": "<button class=\"ds-btn-secondary\">Choose another</button>",
-      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; height: 40px; padding: 0 20px; border: 0; border-radius: 9999px; background: transparent; color: var(--color-ink, #141518); box-shadow: inset 0 0 0 1.5px var(--color-ink, #141518); font: 600 14px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, transform 150ms; } .ds-btn-secondary:hover { background: color-mix(in srgb, var(--color-ink, #141518) 8%, transparent); } .ds-btn-secondary:active { transform: scale(0.97); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: 9999px; font-family: Outfit, ui-sans-serif, system-ui, sans-serif; font-weight: 600; line-height: 1; cursor: pointer; transition: translate 150ms, box-shadow 150ms, background-color 150ms, border-color 150ms, color 150ms; height: 44px; padding: 0 20px; font-size: 14px; border: 1px solid var(--color-line, #ded6c8); background: var(--color-raised, #fffdf8); color: var(--color-ink, #1e2433); } .ds-btn-secondary:hover { border-color: var(--color-ink-muted, #5f6677); } .ds-btn-secondary:active { translate: 0 1px; } .ds-btn-secondary:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-btn-secondary { transition: none; } .ds-btn-secondary:hover, .ds-btn-secondary:active { translate: none; } }"
     },
     {
       "name": "Ghost Button",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "Muted text pill for back links and low-weight actions.",
+      "description": "Muted text pill with a faint ink wash on hover, for back links and low-weight actions.",
       "html": "<button class=\"ds-btn-ghost\">Back to your shelf</button>",
-      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border: 0; border-radius: 9999px; background: transparent; color: var(--color-ink-muted, #55575d); font: 600 13px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, color 150ms; } .ds-btn-ghost:hover { background: color-mix(in srgb, var(--color-ink, #141518) 8%, transparent); color: var(--color-ink, #141518); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: 9999px; font-family: Outfit, ui-sans-serif, system-ui, sans-serif; font-weight: 600; line-height: 1; cursor: pointer; transition: translate 150ms, box-shadow 150ms, background-color 150ms, border-color 150ms, color 150ms; height: 36px; padding: 0 16px; border: 0; font-size: 13px; background: transparent; color: var(--color-ink-muted, #5f6677); } .ds-btn-ghost:hover { background: color-mix(in srgb, var(--color-ink, #1e2433) 8%, transparent); color: var(--color-ink, #1e2433); } .ds-btn-ghost:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; }"
+    },
+    {
+      "name": "Danger Button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Danger-filled pill with the same lift as primary, for destructive confirmations (white text; ground-coloured text in dark mode).",
+      "html": "<button class=\"ds-btn-danger\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.25\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 6h18\"/><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6\"/><path d=\"M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/></svg>Delete set</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; border-radius: 9999px; font-family: Outfit, ui-sans-serif, system-ui, sans-serif; font-weight: 600; line-height: 1; cursor: pointer; transition: translate 150ms, box-shadow 150ms, background-color 150ms, border-color 150ms, color 150ms; height: 44px; padding: 0 20px; border: 0; font-size: 14px; background: var(--color-danger, #b42318); color: #ffffff; box-shadow: 0 1px 2px rgb(30 36 51 / 0.18), 0 4px 12px rgb(35 57 93 / 0.18); } .ds-btn-danger:hover { translate: 0 -1px; } .ds-btn-danger:active { translate: 0 1px; box-shadow: none; } .ds-btn-danger:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; } @media (prefers-color-scheme: dark) { .ds-btn-danger { color: var(--color-ground, #151821); } } @media (prefers-reduced-motion: reduce) { .ds-btn-danger { transition: none; } .ds-btn-danger:hover, .ds-btn-danger:active { translate: none; } }"
     },
     {
       "name": "Text Field",
       "kind": "input",
       "refersTo": "input",
-      "description": "Raised field with a 1px line border and 4px corner; border turns ink on focus.",
-      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Email</span><input class=\"ds-input\" type=\"email\" placeholder=\"you@example.com\"></label>",
-      "css": ".ds-field { display: block; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-field-label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; color: var(--color-ink, #141518); } .ds-input { height: 44px; width: 100%; box-sizing: border-box; padding: 0 14px; border: 1px solid var(--color-line, #d4d4cf); border-radius: 4px; background: var(--color-raised, #fff); color: var(--color-ink, #141518); font: 400 15px Archivo, ui-sans-serif, system-ui, sans-serif; transition: border-color 150ms; } .ds-input::placeholder { color: var(--color-ink-muted, #55575d); } .ds-input:hover { border-color: var(--color-ink-muted, #55575d); } .ds-input:focus { border-color: var(--color-ink, #141518); } .ds-input:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+      "description": "48px raised field, 1px hairline border, 16px corner; 14px semibold label above, 13px muted hint below; border turns navy on focus.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-email\">Email</label><input class=\"ds-input\" id=\"ds-email\" type=\"email\" placeholder=\"you@example.com\"><p class=\"ds-field-hint\">We only use it to sign you in.</p></div>",
+      "css": ".ds-field { font-family: Outfit, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #1e2433); } .ds-field-label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; } .ds-input { height: 48px; width: 100%; padding: 0 16px; border: 1px solid var(--color-line, #ded6c8); border-radius: 16px; background: var(--color-raised, #fffdf8); color: var(--color-ink, #1e2433); font: 400 15px Outfit, ui-sans-serif, system-ui, sans-serif; transition: border-color 150ms; } .ds-input::placeholder { color: var(--color-ink-muted, #5f6677); } .ds-input:hover { border-color: var(--color-ink-muted, #5f6677); } .ds-input:focus { border-color: var(--color-accent, #23395d); } .ds-input:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; } .ds-field-hint { margin: 6px 0 0; font-size: 13px; color: var(--color-ink-muted, #5f6677); }"
     },
     {
       "name": "Toggle Chip",
       "kind": "chip",
       "refersTo": "chip-toggle",
-      "description": "Genre toggle: line-ringed pill, ink fill with a check when selected.",
-      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"false\">Fantasy</button><button class=\"ds-chip\" aria-pressed=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 6 9 17l-5-5\"/></svg>History</button></div>",
-      "css": ".ds-chips { display: flex; gap: 8px; } .ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 0; border-radius: 9999px; background: transparent; color: var(--color-ink, #141518); box-shadow: inset 0 0 0 1.5px var(--color-line, #d4d4cf); font: 600 14px/1 Archivo, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: box-shadow 150ms, background-color 150ms; } .ds-chip:hover { box-shadow: inset 0 0 0 1.5px var(--color-ink, #141518); } .ds-chip[aria-pressed=\"true\"] { background: var(--color-ink, #141518); color: var(--color-ground, #f4f4f2); box-shadow: none; } .ds-chip:active { transform: scale(0.96); } .ds-chip:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+      "description": "Genre toggle: 36px raised pill with a hairline border; selected fills navy with a check.",
+      "html": "<div class=\"ds-chips\"><button class=\"ds-chip\" aria-pressed=\"false\">Fantasy</button><button class=\"ds-chip\" aria-pressed=\"true\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg>History</button><button class=\"ds-chip\" aria-pressed=\"false\">Poetry</button></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; gap: 8px; } .ds-chip { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--color-line, #ded6c8); border-radius: 9999px; background: var(--color-raised, #fffdf8); color: var(--color-ink, #1e2433); font: 600 14px/1 Outfit, ui-sans-serif, system-ui, sans-serif; cursor: pointer; transition: background-color 150ms, border-color 150ms, color 150ms, transform 150ms; } .ds-chip:hover { border-color: var(--color-ink-muted, #5f6677); } .ds-chip[aria-pressed=\"true\"] { border-color: var(--color-accent, #23395d); background: var(--color-accent, #23395d); color: var(--color-accent-ink, #f5f0e6); } .ds-chip:active { transform: scale(0.96); } .ds-chip:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; } @media (prefers-reduced-motion: reduce) { .ds-chip:active { transform: none; } }"
     },
     {
       "name": "Navigation",
       "kind": "nav",
       "refersTo": "nav",
-      "description": "Header row: condensed wordmark, links with a sliding 2px ink underline, account pills right.",
-      "html": "<header class=\"ds-nav\"><span class=\"ds-wordmark\">LibreScan</span><a class=\"ds-nav-link is-active\" href=\"#\">Scan</a><a class=\"ds-nav-link\" href=\"#\">Saved</a><a class=\"ds-nav-link\" href=\"#\">Preferences</a><span class=\"ds-nav-end\"><a class=\"ds-pill ds-pill-out\" href=\"#\">Log in</a><a class=\"ds-pill\" href=\"#\">Sign up</a></span></header>",
-      "css": ".ds-nav { display: flex; align-items: center; gap: 24px; height: 64px; padding: 0 16px; background: var(--color-ground, #f4f4f2); font-family: Archivo, ui-sans-serif, system-ui, sans-serif; } .ds-wordmark { font-size: 26px; font-weight: 800; font-stretch: 62%; line-height: 0.92; margin-right: 8px; color: var(--color-ink, #141518); } .ds-nav-link { position: relative; display: flex; align-items: center; height: 40px; font-size: 14px; font-weight: 500; color: var(--color-ink-muted, #55575d); text-decoration: none; transition: color 150ms; } .ds-nav-link:hover { color: var(--color-ink, #141518); } .ds-nav-link.is-active { font-weight: 700; color: var(--color-ink, #141518); } .ds-nav-link.is-active::after { content: \"\"; position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; background: var(--color-ink, #141518); } .ds-nav-end { margin-left: auto; display: flex; gap: 8px; } .ds-pill { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; border-radius: 9999px; background: var(--color-ink, #141518); color: var(--color-ground, #f4f4f2); font-size: 13px; font-weight: 600; text-decoration: none; } .ds-pill-out { background: transparent; color: var(--color-ink, #141518); box-shadow: inset 0 0 0 1.5px var(--color-ink, #141518); } .ds-nav-link:focus-visible, .ds-pill:focus-visible { outline: 2px solid var(--color-focus, #2a5a8f); outline-offset: 2px; }"
+      "description": "72px header on cream: Young Serif wordmark, semibold link pills with the active link on a peach pill, small Log in / Sign up pills right, over the 4px hairline read rule.",
+      "html": "<header class=\"ds-nav\"><div class=\"ds-nav-row\"><a class=\"ds-wordmark\" href=\"#\">LibreScan</a><nav class=\"ds-nav-links\" aria-label=\"Main\"><a class=\"ds-nav-link is-active\" href=\"#\" aria-current=\"page\">Scan</a><a class=\"ds-nav-link\" href=\"#\">Saved</a><a class=\"ds-nav-link\" href=\"#\">Preferences</a></nav><span class=\"ds-nav-end\"><a class=\"ds-nav-btn ds-nav-btn-out\" href=\"#\">Log in</a><a class=\"ds-nav-btn\" href=\"#\">Sign up</a></span></div><div class=\"ds-nav-rule\" aria-hidden=\"true\"></div></header>",
+      "css": ".ds-nav { background: var(--color-ground, #f5f0e6); font-family: Outfit, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #1e2433); } .ds-nav-row { display: flex; align-items: center; gap: 24px; height: 72px; padding: 0 16px; } .ds-wordmark { font-family: 'Young Serif', Georgia, serif; font-weight: 400; font-size: 27px; line-height: 1.02; letter-spacing: -0.015em; color: inherit; text-decoration: none; } .ds-nav-links { display: flex; gap: 4px; } .ds-nav-link { display: flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 9999px; font-size: 14px; font-weight: 600; color: var(--color-ink-muted, #5f6677); text-decoration: none; transition: color 150ms, background-color 150ms; } .ds-nav-link:hover { color: var(--color-ink, #1e2433); } .ds-nav-link.is-active { background: var(--color-highlight, #f3c9b5); color: var(--color-highlight-ink, #1e2433); } .ds-nav-end { margin-left: auto; display: flex; gap: 8px; } .ds-nav-btn { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 9999px; font-size: 13px; font-weight: 600; text-decoration: none; background: var(--color-accent, #23395d); color: var(--color-accent-ink, #f5f0e6); box-shadow: 0 1px 2px rgb(30 36 51 / 0.18), 0 4px 12px rgb(35 57 93 / 0.18); } .ds-nav-btn-out { border: 1px solid var(--color-line, #ded6c8); background: var(--color-raised, #fffdf8); color: var(--color-ink, #1e2433); box-shadow: none; } .ds-nav-btn-out:hover { border-color: var(--color-ink-muted, #5f6677); } .ds-nav-rule { height: 4px; background: var(--color-line, #ded6c8); } .ds-wordmark:focus-visible, .ds-nav-link:focus-visible, .ds-nav-btn:focus-visible { outline: 2px solid var(--color-focus, #23395d); outline-offset: 3px; }"
     },
     {
-      "name": "Spectrum Band",
-      "kind": "custom",
-      "refersTo": "spectrum-band",
-      "description": "Full-width spine stripes under the nav; house band shown here (every fourth stripe a neutral spine, widths 0.5-1.8x).",
-      "html": "<div class=\"ds-band\"><i style=\"background:#8f2d26;flex-grow:0.5\"></i><i style=\"background:#2f6b45;flex-grow:1.4\"></i><i style=\"background:#7a2d55;flex-grow:0.9\"></i><i style=\"background:#1d1f24;flex-grow:1.8\"></i><i style=\"background:#4b3a7a;flex-grow:1.3\"></i><i style=\"background:#c46a1e;flex-grow:0.8\"></i><i style=\"background:#2a5a8f;flex-grow:1.7\"></i><i style=\"background:#e4e1d8;flex-grow:1.2\"></i><i style=\"background:#2f6b45;flex-grow:0.7\"></i><i style=\"background:#7a2d55;flex-grow:1.6\"></i><i style=\"background:#c9a227;flex-grow:1.1\"></i><i style=\"background:#3a3c42;flex-grow:0.6\"></i><i style=\"background:#c46a1e;flex-grow:1.5\"></i><i style=\"background:#2a5a8f;flex-grow:1\"></i><i style=\"background:#8f2d26;flex-grow:0.5\"></i><i style=\"background:#1d1f24;flex-grow:1.4\"></i><i style=\"background:#7a2d55;flex-grow:0.9\"></i><i style=\"background:#c9a227;flex-grow:1.8\"></i><i style=\"background:#4b3a7a;flex-grow:1.3\"></i><i style=\"background:#e4e1d8;flex-grow:0.8\"></i><i style=\"background:#2a5a8f;flex-grow:1.7\"></i><i style=\"background:#8f2d26;flex-grow:1.2\"></i><i style=\"background:#2f6b45;flex-grow:0.7\"></i><i style=\"background:#3a3c42;flex-grow:1.6\"></i><i style=\"background:#c9a227;flex-grow:1.1\"></i><i style=\"background:#4b3a7a;flex-grow:0.6\"></i><i style=\"background:#c46a1e;flex-grow:1.5\"></i><i style=\"background:#1d1f24;flex-grow:1\"></i><i style=\"background:#8f2d26;flex-grow:0.5\"></i><i style=\"background:#2f6b45;flex-grow:1.4\"></i><i style=\"background:#7a2d55;flex-grow:0.9\"></i><i style=\"background:#e4e1d8;flex-grow:1.8\"></i><i style=\"background:#4b3a7a;flex-grow:1.3\"></i><i style=\"background:#c46a1e;flex-grow:0.8\"></i><i style=\"background:#2a5a8f;flex-grow:1.7\"></i><i style=\"background:#3a3c42;flex-grow:1.2\"></i><i style=\"background:#2f6b45;flex-grow:0.7\"></i><i style=\"background:#7a2d55;flex-grow:1.6\"></i><i style=\"background:#c9a227;flex-grow:1.1\"></i><i style=\"background:#1d1f24;flex-grow:0.6\"></i></div>",
-      "css": ".ds-band { display: flex; height: 28px; overflow: hidden; } .ds-band i { display: block; flex-basis: 0; transform-origin: bottom; animation: ds-grow 400ms cubic-bezier(0.16, 1, 0.3, 1) both; } @keyframes ds-grow { from { transform: scaleY(0); } } @media (prefers-reduced-motion: reduce) { .ds-band i { animation: none; } }"
-    },
-    {
-      "name": "Book Cover (generated binding)",
+      "name": "Book Card",
       "kind": "card",
-      "refersTo": "book-cover",
-      "description": "2:3 cover at 4px corner; coverless books are bound in their title colour with the title in spine lettering.",
-      "html": "<article class=\"ds-book\"><div class=\"ds-cover\" style=\"background:#2f6b45;color:#f7f7f5\"><span class=\"ds-cover-title\">The Name of the Rose</span><span class=\"ds-cover-author\">Umberto Eco</span></div><h3 class=\"ds-book-title\">The Name of the Rose</h3><p class=\"ds-book-meta\">Umberto Eco</p><p class=\"ds-book-conf\">92% · good</p></article>",
-      "css": ".ds-book { width: 150px; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #141518); } .ds-cover { aspect-ratio: 2 / 3; border-radius: 4px; padding: 12px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between; } .ds-cover-title { font-size: 20px; font-weight: 800; font-stretch: 62%; text-transform: uppercase; line-height: 0.92; } .ds-cover-author { font-size: 12px; font-weight: 700; font-stretch: 72%; opacity: 0.85; } .ds-book-title { margin: 12px 0 0; font-size: 16px; font-weight: 600; line-height: 1.375; } .ds-book-meta { margin: 2px 0 0; font-size: 14px; color: var(--color-ink-muted, #55575d); } .ds-book-conf { margin: 8px 0 0; font-size: 13px; font-weight: 700; font-stretch: 72%; color: var(--color-ink-muted, #55575d); font-variant-numeric: tabular-nums; }"
+      "refersTo": "book-card",
+      "description": "Raised 16px card with a hairline border: an untinted 2:3 cover (here a generated sage bookcloth binding with the title in Young Serif), title, author, a tilted peach confidence badge and a line-outlined category chip. On hover it gains shadow-card and the cover lifts 4px and tilts -1deg.",
+      "html": "<article class=\"ds-book\"><div class=\"ds-cover\"><span class=\"ds-cover-title\">The Name of the Rose</span><span class=\"ds-cover-author\">Umberto Eco</span></div><h3 class=\"ds-book-title\">The Name of the Rose</h3><p class=\"ds-book-author\">Umberto Eco</p><div class=\"ds-book-tags\"><span class=\"ds-badge\">92% · good</span><span class=\"ds-badge ds-badge-low\">71% · low, worth a check</span><span class=\"ds-tag\">Fiction</span></div></article>",
+      "css": ".ds-book { width: 180px; padding: 12px; border: 1px solid var(--color-line, #ded6c8); border-radius: 16px; background: var(--color-raised, #fffdf8); font-family: Outfit, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #1e2433); font-variant-numeric: tabular-nums; transition: box-shadow 150ms; } .ds-book:hover { box-shadow: 0 1px 2px rgb(30 36 51 / 0.05), 0 8px 22px rgb(30 36 51 / 0.07); } .ds-cover { aspect-ratio: 2 / 3; display: flex; flex-direction: column; justify-content: space-between; padding: 12px; border-radius: 10px; background: #6e8b74; color: #1e2433; box-shadow: inset -6px 0 0 rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.08); transition: transform 300ms ease-out; } .ds-book:hover .ds-cover { transform: translateY(-4px) rotate(-1deg); } .ds-cover-title { font-family: 'Young Serif', Georgia, serif; font-size: 18px; line-height: 1.25; letter-spacing: -0.015em; hyphens: auto; overflow-wrap: break-word; } .ds-cover-author { font-size: 11px; font-weight: 600; opacity: 0.85; } .ds-book-title { margin: 12px 0 0; font-size: 16px; font-weight: 600; line-height: 1.375; } .ds-book-author { margin: 2px 0 0; font-size: 14px; color: var(--color-ink-muted, #5f6677); } .ds-book-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; } .ds-badge, .ds-tag { border-radius: 9999px; padding: 2px 10px; font-size: 12px; font-weight: 600; } .ds-badge { background: var(--color-highlight, #f3c9b5); color: var(--color-highlight-ink, #1e2433); transform: rotate(-2deg); } .ds-badge-low { background: transparent; color: var(--color-accent, #23395d); border: 1px dashed currentColor; transform: rotate(1deg); } .ds-tag { border: 1px solid var(--color-line, #ded6c8); color: var(--color-ink-muted, #5f6677); } @media (prefers-reduced-motion: reduce) { .ds-cover { transition: none; } .ds-book:hover .ds-cover { transform: none; } }"
     },
     {
-      "name": "Ruled Step Row",
+      "name": "Read Rule",
       "kind": "custom",
-      "refersTo": "row",
-      "description": "Pipeline steps: 1.5px ink top rule, condensed figure, label, state word; later steps fall back to the line colour.",
-      "html": "<ol class=\"ds-steps\"><li class=\"ds-step is-now\"><span class=\"ds-n\">1</span><span>Choose a shelf photo</span><span class=\"ds-tag\">Now</span></li><li class=\"ds-step is-later\"><span class=\"ds-n\">2</span><span>Read the spines</span><span class=\"ds-tag\">Later</span></li></ol>",
-      "css": ".ds-steps { list-style: none; margin: 0; padding: 0; width: 380px; font-family: Archivo, ui-sans-serif, system-ui, sans-serif; color: var(--color-ink, #141518); } .ds-step { display: grid; grid-template-columns: 2rem 1fr auto; align-items: center; padding: 16px 0; border-top: 1.5px solid var(--color-ink, #141518); font-size: 15px; } .ds-step.is-now span:nth-child(2) { font-weight: 600; } .ds-step.is-later { border-color: var(--color-line, #d4d4cf); color: var(--color-ink-muted, #55575d); } .ds-n { font-size: 18px; font-weight: 700; font-stretch: 72%; } .ds-tag { font-size: 13px; font-weight: 700; font-stretch: 72%; }"
+      "refersTo": "read-rule",
+      "description": "Signature: the 4px hairline under the nav. While a page reads (useReading(true)), a navy-to-coral fill eases from 0 toward 92% over 14s and waits; static under reduced motion. Shown here in the reading state.",
+      "html": "<div class=\"ds-read-rule\" role=\"progressbar\" aria-label=\"Reading your shelf\"><div class=\"ds-read-fill\"></div></div>",
+      "css": ".ds-read-rule { position: relative; width: 420px; height: 4px; background: var(--color-line, #ded6c8); } .ds-read-fill { position: absolute; inset: 0; transform-origin: left; border-radius: 0 9999px 9999px 0; background: linear-gradient(to right, var(--color-accent, #23395d), var(--color-coral, #d2603f)); animation: ds-read-progress 14s cubic-bezier(0.1, 0.6, 0.3, 1) forwards; } @keyframes ds-read-progress { from { transform: scaleX(0); } to { transform: scaleX(0.92); } } @media (prefers-reduced-motion: reduce) { .ds-read-fill { animation: none; } }"
     }
   ],
   "narrative": {
-    "northStar": "Spine Spectrum",
-    "overview": "The shelf's own colours run the interface. Everything LibreScan draws itself is neutral: a cool off-white ground (near-black in dark mode), ink type, ink rules. Colour enters the screen from exactly two places: the spine spectrum, a band of thin vertical stripes sampled from the user's shelf photo (or a fixed house spectrum of bookcloth hues before there is a photo), and book covers, which are shown untouched. The band sits full-width directly under the nav on every page, so each screen is literally coloured by the shelf it is about.\n\nType carries the identity the palette withholds. Archivo's variable width axis does double duty: squeezed to 62% at 800 weight in uppercase it becomes spine lettering for display headings; at normal width it is a plain, legible UI face. Density is moderate and list-like: steps, recommendations, saved sets and preference groups are rows separated by 1.5px ink rules rather than boxed cards. Surfaces are flat; there are no shadows at rest, no gradients, no glass.\n\nMotion is short and physical: exponential ease-out for entrances, one shared spring for layout changes, stripes that grow up from their baseline, and one signature effect, the read sweep, where a white read-line crosses the photo and the band while the unread side stays veiled.",
+    "northStar": "Ink Blue on Paper",
+    "overview": "A well-made paperback, not a dashboard. Warm cream paper, navy ink, one soft peach highlight, and a single coral detail. The interface is calm so the books (real covers, or generated bookcloth covers) carry the colour. Headings are set in Young Serif, a sturdy bookish serif; everything you read or operate is set in Outfit, a clean geometric sans.\n\nThe friendliness comes from shape, not from hue. Controls are full pills. Content sits on cream-white cards with hairline borders and soft, ink-tinted shadows. A few tilted \"stickers\" (the upload icon, status icons, confidence badges) add a hand-placed touch without adding colours.\n\nThere is one signature effect, and it only appears while work is happening. The hairline under the nav becomes a navy-to-coral progress rule, and a single coral scan line crosses the shelf photo.",
     "keyCharacteristics": [
-      "Neutral ground and ink; chromatic colour comes only from the spine spectrum and covers.",
-      "Full-width spectrum band under the nav on every route (20px mobile, 28px from `sm`).",
-      "Condensed uppercase Archivo display (62% width, 800); normal-width Archivo for UI; tabular figures everywhere.",
-      "Ink-filled and ink-outlined pill buttons; 4px corners on photos, covers and fields.",
-      "1.5px ink rules between rows instead of cards.",
-      "Flat at rest; Lucide icons at 1.75 stroke.",
+      "Cream ground, navy ink and accent, peach highlight, coral reserved for large display words and the read line.",
+      "Young Serif display (one weight) and Outfit UI; tabular figures everywhere.",
+      "Pill buttons; 16px cards, 20px photo frame and stickers, 10px covers, 24px dialog.",
+      "Soft tinted shadows (`shadow-card`, `shadow-lift`, `shadow-sticker`); no hard offset shadows, no ink outlines.",
+      "A plain hairline under the nav that becomes the reading progress bar.",
       "Light and dark follow the OS (`prefers-color-scheme`); reduced motion follows the OS."
     ],
     "rules": [
       {
-        "name": "The Shelf Owns The Colour Rule",
-        "body": "Interface chrome is ink and neutrals only. A hue on screen must come from the spectrum band, a cover, a generated spine binding, or a functional state (focus, danger, success).",
+        "name": "The One Accent Rule",
+        "body": "Navy is the only colour that means \"you can press this\" or \"selected\". Peach is emphasis, coral is a detail. Do not add a fourth hue to the chrome.",
         "section": "colors"
       },
       {
         "name": "The Untinted Cover Rule",
-        "body": "Covers are shown as delivered: no overlays, tints, duotones or filters. A missing cover is bound in its generated spine colour with the title in spine lettering.",
+        "body": "Covers are shown as delivered: no overlays, tints, duotones or filters. A missing cover is bound in bookcloth with the title in the display face.",
         "section": "colors"
       },
       {
-        "name": "The Spine Lettering Rule",
-        "body": "Condensed uppercase is for display headings and cover titles only. Labels stay sentence case; body never condenses.",
-        "section": "typography"
-      },
-      {
         "name": "The Tabular Figures Rule",
-        "body": "`tabular-nums` is set on the body; counts, percentages, timings and sizes always align.",
+        "body": "`tabular-nums` is set on the body, so counts, percentages, timings and sizes always align.",
         "section": "typography"
-      },
-      {
-        "name": "The Flat Shelf Rule",
-        "body": "No drop shadows, gradients or backdrop blur. If something needs to stand apart, use a rule, a tonal step, or the dialog backdrop.",
-        "section": "elevation"
       }
     ],
     "dos": [
-      "**Do** put every new route under the shell band and declare what it shows (house band, photo spectrum, or title colours).",
-      "**Do** keep chrome to ground, surface, raised, line, ink and ink-muted; take hue only from the spectrum, covers, or functional states.",
-      "**Do** set page h1s in display lettering (62% width, 800, uppercase) with a 17px muted lede beneath.",
-      "**Do** separate list content with 1.5px ink top rules instead of boxing it.",
-      "**Do** use pills for controls and the 4px corner for photos, covers and fields.",
-      "**Do** use Lucide icons at 1.75 stroke (1.5 for large status icons).",
-      "**Do** animate only transform and opacity, with the shared ease-out and spring, and give every looping effect a reduced-motion fallback.",
-      "**Do** check every new colour pair in both light and dark mode."
+      "**Do** keep the chrome to paper, ink, navy, peach and the occasional coral word.",
+      "**Do** call `useReading(true)` from a page while it waits on slow work, so the rule under the nav shows progress.",
+      "**Do** set page h1s in Young Serif with a 17px muted lede beneath, and colour at most one word coral.",
+      "**Do** use pills for controls, 16–20px cards for content, and soft tinted shadows for depth.",
+      "**Do** use Lucide icons (1.75–2 stroke); no inline SVG.",
+      "**Do** animate only transform and opacity, and give every looping effect a reduced-motion fallback.",
+      "**Do** check every new colour pair in both light and dark mode (AA: 4.5:1 for text, 3:1 for large text)."
     ],
     "donts": [
       "**Don't** tint, overlay or filter book covers.",
-      "**Don't** introduce a chromatic brand or accent colour; the accent is ink.",
-      "**Don't** add drop shadows, gradients, glass or backdrop blur.",
-      "**Don't** wrap rows in rounded cards or grids of boxed tiles.",
-      "**Don't** set body or labels in condensed caps, or add tracked-out uppercase labels above headings.",
-      "**Don't** order the house hues as a spectral rainbow; keep neutral spines mixed in.",
-      "**Don't** return to the retired cream, serif and brown look.",
-      ""
+      "**Don't** add more brights: no rainbow palettes, multicolour chips or candy-coloured covers.",
+      "**Don't** use coral for text under 24px, or as a control fill.",
+      "**Don't** use a violet or aubergine dark mode; dark mode is navy-black.",
+      "**Don't** put a decorative band or graphic under the nav; the rule is a hairline until something is reading.",
+      "**Don't** use hard offset shadows or thick ink outlines (the rejected \"chunky playful\" direction)."
     ]
   }
 }
