@@ -47,14 +47,8 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
-  async function refresh() {
-    const res = await fetch("/api/auth/me", { credentials: "include" });
-    const data = res.ok ? await res.json() : null;
-    setUser(data?.user ?? null);
-  }
-
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

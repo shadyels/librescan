@@ -1,6 +1,12 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { Check, ChevronDown, Plus, X } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import LoginGate from "../components/LoginGate";
+import { spring } from "../motion";
+import AccountCta from "../components/ui/AccountCta";
+import Button from "../components/ui/Button";
+import Notice from "../components/ui/Notice";
+import { inputClass } from "../components/ui/Field";
 
 const GENRE_OPTIONS = [
   "Fiction",
@@ -38,16 +44,31 @@ const LANGUAGE_OPTIONS = [
   "Turkish",
 ];
 
-const READING_LEVEL_OPTIONS = ["Beginner", "Intermediate", "Advanced"];
-const READING_LEVEL_DESCRIPTIONS = {
-  Beginner: "Light, easy-to-follow reads with accessible language",
-  Intermediate: "Standard complexity — most popular fiction and non-fiction",
-  Advanced: "Complex, literary, or academic works with dense prose",
-};
+const READING_LEVELS = [
+  ["Beginner", "Light, easy-to-follow reads with accessible language"],
+  ["Intermediate", "Standard complexity: most popular fiction and non-fiction"],
+  ["Advanced", "Complex, literary or academic works with dense prose"],
+];
 
-function Preferences() {
+const MAX_AUTHORS = 20;
+
+function Section({ title, hint, children, htmlFor }) {
+  const Title = htmlFor ? "label" : "h2";
+  return (
+    <section className="grid gap-4 border-t border-line py-8 md:grid-cols-[16rem_1fr] md:gap-10">
+      <div>
+        <Title htmlFor={htmlFor} className="type-display block text-xl">
+          {title}
+        </Title>
+        <p className="mt-1 text-sm text-ink-muted">{hint}</p>
+      </div>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+export default function Preferences() {
   const { user, loading: authLoading } = useAuth();
-
   const [genres, setGenres] = useState([]);
   const [authors, setAuthors] = useState([]);
   const [authorInput, setAuthorInput] = useState("");
@@ -59,70 +80,37 @@ function Preferences() {
 
   useEffect(() => {
     if (authLoading || !user) return;
-
-    async function fetchPreferences() {
-      try {
-        const response = await fetch("/api/preferences", { credentials: "include" });
-        const data = await response.json();
-
+    fetch("/api/preferences", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => {
         if (data.success && data.preferences) {
           setGenres(data.preferences.genres || []);
           setAuthors(data.preferences.authors || []);
           setLanguage(data.preferences.language || "");
           setReadingLevel(data.preferences.reading_level || "");
         }
-      } catch {
-        // Network error — form stays empty
-      } finally {
-        setFetchLoading(false);
-      }
-    }
-
-    fetchPreferences();
+      })
+      .catch(() => setFeedback({ tone: "error", message: "Couldn't load your saved preferences. You can still edit and save." }))
+      .finally(() => setFetchLoading(false));
   }, [user, authLoading]);
 
-  function handleGenreToggle(genre) {
-    setGenres((prev) =>
-      prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]
-    );
-  }
+  const toggleGenre = (genre) =>
+    setGenres((prev) => (prev.includes(genre) ? prev.filter((g) => g !== genre) : [...prev, genre]));
 
-  function handleAddAuthor() {
-    const trimmed = authorInput.trim();
-    if (trimmed.length === 0) return;
-
-    const alreadyExists = authors.some(
-      (a) => a.toLowerCase() === trimmed.toLowerCase()
-    );
-    if (alreadyExists) {
-      setAuthorInput("");
-      return;
+  function addAuthor() {
+    const name = authorInput.trim();
+    if (!name) return;
+    if (authors.some((a) => a.toLowerCase() === name.toLowerCase())) return setAuthorInput("");
+    if (authors.length >= MAX_AUTHORS) {
+      return setFeedback({ tone: "error", message: `You can add up to ${MAX_AUTHORS} authors. Remove one to add another.` });
     }
-
-    if (authors.length >= 20) {
-      setFeedback({ type: "error", message: "Maximum 20 authors allowed" });
-      return;
-    }
-
-    setAuthors((prev) => [...prev, trimmed]);
+    setAuthors((prev) => [...prev, name]);
     setAuthorInput("");
-  }
-
-  function handleAuthorKeyDown(e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleAddAuthor();
-    }
-  }
-
-  function handleRemoveAuthor(index) {
-    setAuthors((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleSave() {
     setFeedback(null);
     setSaving(true);
-
     try {
       const response = await fetch("/api/preferences", {
         method: "PUT",
@@ -130,25 +118,14 @@ function Preferences() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ genres, authors, language, reading_level: readingLevel }),
       });
-
       const data = await response.json();
-
-      if (data.success) {
-        setFeedback({
-          type: "success",
-          message: "Preferences saved! They'll be used for your next recommendations.",
-        });
-      } else {
-        setFeedback({
-          type: "error",
-          message: data.error || "Failed to save preferences",
-        });
-      }
+      setFeedback(
+        data.success
+          ? { tone: "success", message: "Preferences saved. They'll shape your next recommendations." }
+          : { tone: "error", message: data.error || "Couldn't save your preferences." }
+      );
     } catch {
-      setFeedback({
-        type: "error",
-        message: "Network error. Please check your connection and try again.",
-      });
+      setFeedback({ tone: "error", message: "Network error. Check your connection and try again." });
     } finally {
       setSaving(false);
     }
@@ -156,249 +133,169 @@ function Preferences() {
 
   if (authLoading) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
-        </div>
+      <div aria-busy="true" aria-label="Loading">
+        <div className="h-16 w-2/3 max-w-lg animate-pulse rounded-photo bg-surface" />
+        <div className="mt-10 h-48 animate-pulse rounded-photo bg-surface" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <LoginGate
-          title="Preferences require an account"
-          description="Create a free account to save your reading preferences and get personalised recommendations."
-        />
-      </div>
+      <AccountCta variant="gate" title="Preferences need an account">
+        Create a free account to save your reading preferences. They're added to every recommendation request.
+      </AccountCta>
     );
   }
 
   if (fetchLoading) {
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-4 border-bg-surface border-t-accent rounded-full animate-spin" />
-          <span className="ml-3 text-text-secondary">Loading preferences...</span>
-        </div>
+      <div aria-busy="true" aria-label="Loading preferences">
+        <div className="h-16 w-2/3 max-w-lg animate-pulse rounded-photo bg-surface" />
+        <div className="mt-10 h-48 animate-pulse rounded-photo bg-surface" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="font-display text-4xl font-bold text-text-primary mb-2">
-        Your Preferences
-      </h1>
-      <p className="text-text-secondary mb-8">
-        Tell us about your reading preferences to get personalized recommendations.
+    <div className="mx-auto max-w-5xl">
+      <h1 className="type-display text-6xl sm:text-7xl">Preferences</h1>
+      <p className="mt-3 max-w-[60ch] text-[15px] text-ink-muted">
+        These are written into the recommendation prompt as plain language, so the model weighs them rather than
+        filtering by them.
       </p>
 
-      {feedback && (
-        <div
-          className={`mb-6 p-4 rounded-lg flex items-center justify-between ${
-            feedback.type === "success"
-              ? "bg-success-muted border border-success/30 text-success"
-              : "bg-danger-muted border border-danger/30 text-danger"
-          }`}
-        >
-          <span className="text-sm">{feedback.message}</span>
-          <button
-            onClick={() => setFeedback(null)}
-            className="ml-4 opacity-60 hover:opacity-100 text-lg leading-none"
-          >
-            ×
-          </button>
-        </div>
-      )}
-
-      <div className="glass-card p-8 space-y-10">
-        {/* Genres */}
-        <div>
-          <label className="block text-lg font-semibold text-text-primary mb-1">
-            Favorite Genres
-          </label>
-          <p className="text-sm text-text-muted mb-4">
-            Select all genres you enjoy reading.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="mt-10">
+        <Section title="Favourite genres" hint={genres.length ? `${genres.length} selected` : "Pick any you enjoy."}>
+          <div className="flex flex-wrap gap-2">
             {GENRE_OPTIONS.map((genre) => {
-              const isSelected = genres.includes(genre);
+              const on = genres.includes(genre);
               return (
-                <button
+                <motion.button
                   key={genre}
                   type="button"
-                  onClick={() => handleGenreToggle(genre)}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all duration-150 text-left ${
-                    isSelected
-                      ? "bg-accent-muted border-accent text-accent"
-                      : "bg-bg-surface border-border text-text-secondary hover:bg-bg-hover hover:border-border-accent hover:text-text-primary"
+                  aria-pressed={on}
+                  onClick={() => toggleGenre(genre)}
+                  whileTap={{ scale: 0.96 }}
+                  className={`inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition-colors ${
+                    on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised text-ink hover:border-ink-muted"
                   }`}
                 >
-                  {isSelected && (
-                    <svg className="inline w-3 h-3 mr-1.5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
+                  {on && <Check className="size-3.5" strokeWidth={2.5} aria-hidden />}
                   {genre}
-                </button>
+                </motion.button>
               );
             })}
           </div>
-          {genres.length > 0 && (
-            <p className="text-sm text-accent mt-2">
-              {genres.length} genre{genres.length !== 1 ? "s" : ""} selected
-            </p>
-          )}
-        </div>
+        </Section>
 
-        {/* Authors */}
-        <div>
-          <label className="block text-lg font-semibold text-text-primary mb-1">
-            Favorite Authors
-          </label>
-          <p className="text-sm text-text-muted mb-4">
-            Add authors you enjoy. Type a name and press Enter to add.
-          </p>
-          <div className="flex gap-2 mb-3">
+        <Section title="Favourite authors" hint={`Type a name and press Enter. Up to ${MAX_AUTHORS}.`} htmlFor="author-input">
+          <div className="flex max-w-md gap-2">
             <input
+              id="author-input"
               type="text"
               value={authorInput}
               onChange={(e) => setAuthorInput(e.target.value)}
-              onKeyDown={handleAuthorKeyDown}
-              placeholder="e.g. Isaac Asimov"
-              className="flex-1 px-4 py-2 border border-border rounded-lg text-sm bg-bg-surface text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addAuthor();
+                }
+              }}
+              placeholder="e.g. Ursula K. Le Guin"
+              className={inputClass}
             />
-            <button
-              type="button"
-              onClick={handleAddAuthor}
-              disabled={authorInput.trim().length === 0}
-              className="px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
+            <Button variant="secondary" icon={Plus} onClick={addAuthor} disabled={!authorInput.trim()} className="h-12">
               Add
-            </button>
+            </Button>
           </div>
-          {authors.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {authors.map((author, index) => (
-                <span
-                  key={`${author}-${index}`}
-                  className="inline-flex items-center gap-1 px-3 py-1 bg-accent-muted text-accent text-sm rounded-full border border-accent/20"
+          <ul className="mt-4 flex flex-wrap gap-2" aria-label="Added authors">
+            <AnimatePresence initial={false}>
+              {authors.map((author) => (
+                <motion.li
+                  key={author}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.12 } }}
+                  transition={spring}
+                  className="inline-flex h-9 items-center gap-1 rounded-full bg-highlight pl-3.5 pr-1.5 text-sm font-semibold text-highlight-ink"
                 >
                   {author}
                   <button
                     type="button"
-                    onClick={() => handleRemoveAuthor(index)}
-                    className="ml-1 opacity-60 hover:opacity-100 font-bold"
+                    onClick={() => setAuthors((prev) => prev.filter((a) => a !== author))}
+                    aria-label={`Remove ${author}`}
+                    className="rounded-full p-1 opacity-70 hover:bg-highlight-ink/10 hover:opacity-100"
                   >
-                    ×
+                    <X className="size-3.5" aria-hidden />
                   </button>
-                </span>
+                </motion.li>
               ))}
-            </div>
-          )}
-          {authors.length === 0 && (
-            <p className="text-sm text-text-muted">No authors added yet</p>
-          )}
-        </div>
+            </AnimatePresence>
+          </ul>
+          {authors.length === 0 && <p className="text-sm text-ink-muted">No authors added yet.</p>}
+        </Section>
 
-        {/* Language */}
-        <div>
-          <label htmlFor="language-select" className="block text-lg font-semibold text-text-primary mb-1">
-            Preferred Language
-          </label>
-          <p className="text-sm text-text-muted mb-4">
-            Choose the language you prefer for book recommendations.
-          </p>
-          <select
-            id="language-select"
-            value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="w-full max-w-sm px-4 py-2 border border-border rounded-lg text-sm bg-bg-surface text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
-          >
-            <option value="">No preference</option>
-            {LANGUAGE_OPTIONS.map((lang) => (
-              <option key={lang} value={lang}>{lang}</option>
-            ))}
-          </select>
-        </div>
+        <Section title="Language" hint="The language you'd like recommendations in." htmlFor="language-select">
+          <div className="relative max-w-xs">
+            <select
+              id="language-select"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className={`${inputClass} cursor-pointer appearance-none pr-10`}
+            >
+              <option value="">No preference</option>
+              {LANGUAGE_OPTIONS.map((lang) => (
+                <option key={lang} value={lang}>
+                  {lang}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-3 top-3.5 size-4 text-ink-muted" aria-hidden />
+          </div>
+        </Section>
 
-        {/* Reading Level */}
-        <div>
-          <label className="block text-lg font-semibold text-text-primary mb-1">
-            Reading Level
-          </label>
-          <p className="text-sm text-text-muted mb-4">
-            What complexity level do you prefer?
-          </p>
-          <div className="space-y-3">
-            {READING_LEVEL_OPTIONS.map((level) => {
-              const isSelected = readingLevel === level;
+        <Section title="Reading level" hint="How demanding you like your books.">
+          <fieldset className="grid gap-2 sm:grid-cols-3">
+            <legend className="sr-only">Reading level</legend>
+            {READING_LEVELS.map(([level, description]) => {
+              const on = readingLevel === level;
               return (
                 <label
                   key={level}
-                  className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all duration-150 ${
-                    isSelected
-                      ? "bg-accent-muted border-accent"
-                      : "bg-bg-surface border-border hover:bg-bg-hover hover:border-border-accent"
+                  className={`flex cursor-pointer flex-col gap-1 rounded-2xl border p-4 transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus ${
+                    on ? "border-accent bg-accent text-accent-ink" : "border-line bg-raised hover:border-ink-muted"
                   }`}
                 >
                   <input
                     type="radio"
                     name="reading-level"
                     value={level}
-                    checked={isSelected}
+                    checked={on}
                     onChange={(e) => setReadingLevel(e.target.value)}
-                    className="mt-0.5 accent-[#7c5e36]"
+                    className="sr-only"
                   />
-                  <div>
-                    <span className={`font-medium ${isSelected ? "text-accent" : "text-text-primary"}`}>
-                      {level}
-                    </span>
-                    <p className="text-sm text-text-secondary mt-0.5">
-                      {READING_LEVEL_DESCRIPTIONS[level]}
-                    </p>
-                  </div>
+                  <span className="font-semibold">{level}</span>
+                  <span className={`text-sm ${on ? "opacity-85" : "text-ink-muted"}`}>{description}</span>
                 </label>
               );
             })}
-            {readingLevel && (
-              <button
-                type="button"
-                onClick={() => setReadingLevel("")}
-                className="text-sm text-text-muted hover:text-text-secondary underline"
-              >
-                Clear selection
-              </button>
-            )}
-          </div>
-        </div>
+          </fieldset>
+          {readingLevel && (
+            <button type="button" onClick={() => setReadingLevel("")} className="mt-3 text-sm text-ink-muted underline hover:text-ink">
+              Clear reading level
+            </button>
+          )}
+        </Section>
 
-        {/* Save */}
-        <div className="pt-4 border-t border-border">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="px-8 py-3 bg-accent text-white font-semibold rounded-lg hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
-          >
-            {saving ? (
-              <span className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-bg-primary/40 border-t-bg-primary rounded-full animate-spin" />
-                Saving...
-              </span>
-            ) : (
-              "Save Preferences"
-            )}
-          </button>
-          <p className="text-sm text-text-muted mt-2">
-            Preferences are applied when you next generate recommendations.
-          </p>
+        <div className="sticky bottom-0 -mx-4 flex flex-col gap-3 border-t border-line bg-ground/90 px-4 py-5 backdrop-blur sm:flex-row sm:items-center">
+          <Button size="lg" loading={saving} onClick={handleSave}>
+            {saving ? "Saving…" : "Save preferences"}
+          </Button>
+          <Notice tone={feedback?.tone} message={feedback?.message} onDismiss={() => setFeedback(null)} className="flex-1" />
         </div>
       </div>
     </div>
   );
 }
-
-export default Preferences;

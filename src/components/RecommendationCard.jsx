@@ -1,84 +1,27 @@
-import { useState } from 'react';
-import BookIcon from './BookIcon';
+import BookCover from "./ui/BookCover";
 
 export default function RecommendationCard({ book }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [imageError, setImageError] = useState(false);
-
-  const {
-    title = 'Unknown Title',
-    author = 'Unknown Author',
-    reason = '',
-    cover_url = null,
-    description = null,
-    categories = []
-  } = book;
-
-  const showRealCover = cover_url && imageLoaded && !imageError;
-
-  const truncateDescription = (text, maxLength = 200) => {
-    if (!text) return null;
-    if (text.length <= maxLength) return text;
-    const lastSpace = text.lastIndexOf(' ', maxLength);
-    const cutPoint = lastSpace > 100 ? lastSpace : maxLength;
-    return text.substring(0, cutPoint) + '...';
-  };
-
+  const { title = "Unknown title", author = "Unknown author", reason, cover_url, description, categories = [] } = book;
   return (
-    <div className="glass-card border-l-2 border-l-accent overflow-hidden flex flex-col animate-fade-in-up">
-      <div className="flex p-4 gap-4">
-        <div className="relative w-24 h-36 flex-shrink-0 rounded-lg overflow-hidden">
-          <div className={`absolute inset-0 transition-opacity duration-300 ${showRealCover ? 'opacity-0' : 'opacity-100'}`}>
-            <BookIcon title={title} />
-          </div>
-          {cover_url && !imageError && (
-            <img
-              src={cover_url}
-              alt={`Cover of ${title}`}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-              onLoad={() => setImageLoaded(true)}
-              onError={() => setImageError(true)}
-              loading="lazy"
-            />
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-text-primary text-lg leading-tight line-clamp-2">{title}</h3>
-          <p className="text-text-secondary text-sm mt-1 truncate">by {author}</p>
-          {categories.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-2">
-              {categories.slice(0, 3).map((category, index) => (
-                <span key={index} className="text-xs bg-accent-muted text-accent rounded-full px-2 py-0.5">
-                  {category}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+    <article className="grid grid-cols-[5.5rem_1fr] gap-x-5 gap-y-4 rounded-photo border border-line bg-raised p-5 shadow-card sm:grid-cols-[7.5rem_1fr] sm:p-6 md:grid-cols-[7.5rem_minmax(0,1fr)_minmax(0,1.3fr)] md:gap-x-8">
+      <BookCover title={title} author={author} src={cover_url} className="row-span-2 md:row-span-1" />
+      <div className="min-w-0">
+        <h3 className="type-display text-2xl">{title}</h3>
+        <p className="mt-1 text-[15px] text-ink-muted">{author}</p>
+        {categories.length > 0 && (
+          <ul className="mt-3 flex flex-wrap gap-1.5">
+            {categories.slice(0, 3).map((c) => (
+              <li key={c} className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-ink-muted">
+                {c}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-
-      {reason && (
-        <div className="px-4 pb-3">
-          <div className="bg-accent-muted rounded-lg p-3">
-            <p className="text-xs font-semibold text-accent uppercase tracking-wide mb-1">
-              Why you'll like this
-            </p>
-            <p className="text-sm text-text-primary leading-relaxed">{reason}</p>
-          </div>
-        </div>
-      )}
-
-      {description && (
-        <div className="px-4 pb-4">
-          <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-1">
-            About this book
-          </p>
-          <p className="text-sm text-text-secondary leading-relaxed">
-            {truncateDescription(description)}
-          </p>
-        </div>
-      )}
-    </div>
+      <div className="min-w-0 space-y-3 md:col-start-3">
+        {reason && <p className="text-[16px] leading-relaxed">{reason}</p>}
+        {description && <p className="line-clamp-3 text-sm leading-relaxed text-ink-muted">{description}</p>}
+      </div>
+    </article>
   );
 }

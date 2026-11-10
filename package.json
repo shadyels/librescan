@@ -34,11 +34,11 @@
     "@vitejs/plugin-react": "^5.1.2",
     "bcryptjs": "^2.4.3",
     "cookie": "^1.0.2",
-    "dom": "^0.0.3",
     "dotenv": "^17.2.3",
     "formidable": "^3.5.4",
     "idb": "^8.0.3",
-    "multer": "^2.0.2",
+    "lucide-react": "^1.70.0",
+    "motion": "^14.10.1",
     "pg": "^8.18.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
@@ -48,11 +48,8 @@
     "vite": "^6.4.1"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.23",
-    "axios": "^1.13.4",
     "form-data": "^4.0.5",
     "node-fetch": "^2.7.0",
-    "postcss": "^8.5.6",
     "tailwindcss": "^4.1.18",
     "vercel": "^52.0.0"
   }

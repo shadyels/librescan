@@ -1,4 +1,6 @@
-import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
+import { LogOut } from "lucide-react";
 import Home from "./pages/Home";
 import Preferences from "./pages/Preferences";
 import Results from "./pages/Results";
@@ -6,94 +8,135 @@ import Saved from "./pages/Saved";
 import Recommendations from "./pages/Recommendations";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Button from "./components/ui/Button";
 import { useAuth } from "./contexts/AuthContext";
+import { ReadingProvider, ReadRule, useShellReading } from "./reading";
+import { page, spring } from "./motion";
 
-function NavLink({ to, children }) {
+function NavItem({ to, children }) {
   return (
-    <Link
+    <NavLink
       to={to}
-      className="relative group text-text-secondary hover:text-accent transition-colors duration-200 text-sm font-medium"
+      end={to === "/"}
+      className={({ isActive }) =>
+        `relative flex h-9 items-center rounded-full px-4 text-sm font-semibold transition-colors ${
+          isActive ? "text-highlight-ink" : "text-ink-muted hover:text-ink"
+        }`
+      }
     >
-      {children}
-      <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-accent group-hover:w-full transition-all duration-300" />
-    </Link>
+      {({ isActive }) => (
+        <>
+          {isActive && (
+            <motion.span
+              layoutId="nav-active"
+              transition={spring}
+              className="absolute inset-0 rounded-full bg-highlight"
+            />
+          )}
+          <span className="relative">{children}</span>
+        </>
+      )}
+    </NavLink>
   );
 }
 
-function NavAuth() {
-  const { user, logout } = useAuth();
+function Account() {
+  const { user, loading, logout } = useAuth();
   const navigate = useNavigate();
+
+  if (loading) return <div className="h-10" />;
 
   if (user) {
     return (
-      <div className="flex items-center gap-4">
-        <span className="text-text-muted text-sm hidden sm:block">{user.email}</span>
-        <button
-          onClick={() => { logout(); navigate("/"); }}
-          className="px-4 py-1.5 text-sm text-text-secondary border border-border rounded-lg hover:border-border-accent hover:text-text-primary transition-all"
+      <div className="flex items-center gap-3">
+        <span className="hidden max-w-56 truncate text-sm font-medium text-ink-muted md:block">{user.email}</span>
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={LogOut}
+          onClick={async () => {
+            await logout();
+            navigate("/");
+          }}
         >
           Log out
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <Link
-        to="/login"
-        className="px-4 py-1.5 text-sm text-text-secondary border border-border rounded-lg hover:border-border-accent hover:text-text-primary transition-all"
-      >
+    <div className="flex items-center gap-2">
+      <Button to="/login" variant="secondary" size="sm">
         Log in
-      </Link>
-      <Link
-        to="/signup"
-        className="px-4 py-1.5 text-sm bg-accent text-white rounded-lg hover:bg-accent-hover transition-colors font-medium"
-      >
+      </Button>
+      <Button to="/signup" size="sm">
         Sign up
-      </Link>
+      </Button>
     </div>
   );
 }
 
-function App() {
-  const { user, loading } = useAuth();
+function Shell() {
+  const location = useLocation();
+  const { user } = useAuth();
+  const reading = useShellReading();
+
+  const links = (
+    <>
+      <NavItem to="/">Scan</NavItem>
+      {user && <NavItem to="/saved">Saved</NavItem>}
+      {user && <NavItem to="/preferences">Preferences</NavItem>}
+    </>
+  );
 
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-bg-primary">
-        <nav className="sticky top-0 z-40 bg-bg-primary/90 backdrop-blur-sm border-b border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16 items-center">
-              <Link to="/" className="font-display text-2xl font-semibold text-accent tracking-wide">
-                LibreScan
-              </Link>
-              <div className="flex items-center gap-8">
-                <div className="flex gap-8">
-                  <NavLink to="/">Home</NavLink>
-                  {user && <NavLink to="/preferences">Preferences</NavLink>}
-                  {user && <NavLink to="/saved">Saved</NavLink>}
-                </div>
-                {!loading && <NavAuth />}
-              </div>
-            </div>
+    <div className="min-h-screen">
+      <header>
+        <div className="mx-auto flex h-18 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-10">
+          <Link to="/" className="type-display text-[27px]">
+            LibreScan
+          </Link>
+          <nav aria-label="Main" className="hidden items-center gap-1 sm:flex">
+            {links}
+          </nav>
+          <div className="ml-auto">
+            <Account />
           </div>
-        </nav>
+        </div>
+        {user && (
+          <nav aria-label="Main" className="flex gap-1 px-3 pb-2 sm:hidden">
+            {links}
+          </nav>
+        )}
+        <ReadRule reading={reading} />
+      </header>
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/preferences" element={<Preferences />} />
-            <Route path="/recommendations/:scanId" element={<Recommendations />} />
-            <Route path="/results/:scanId" element={<Results />} />
-            <Route path="/saved" element={<Saved />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-10">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div key={location.pathname} {...page}>
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/preferences" element={<Preferences />} />
+              <Route path="/recommendations/:scanId" element={<Recommendations />} />
+              <Route path="/results/:scanId" element={<Results />} />
+              <Route path="/saved" element={<Saved />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+            </Routes>
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ReadingProvider>
+        <Shell />
+      </ReadingProvider>
+    </BrowserRouter>
+  );
+}

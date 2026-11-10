@@ -32,11 +32,17 @@ There are no automated tests. Validation is done via manual scripts in `scripts/
 
 LibreScan is a full-stack AI bookshelf scanner: users upload a photo of their bookshelf, the app identifies books using a vision model, enriches them with Google Books metadata, and generates personalized recommendations via an LLM.
 
-**Frontend**: React 19 SPA (Vite 6 + Tailwind CSS v4) with React Router v7. Entry: `index.html` → `src/main.jsx` → `SessionProvider` → `AuthProvider` → `App.jsx`.
+**Frontend**: React 19 SPA (Vite 6 + Tailwind CSS v4) with React Router v7. Entry: `index.html` → `src/main.jsx` → `MotionConfig` → `SessionProvider` → `AuthProvider` → `App.jsx` (`BrowserRouter` → `ReadingProvider` → shell).
 
-**Backend**: Vercel serverless functions under `api/`. Each file is a standalone function — no shared Express app. Shared utilities live in `api/lib/`.
+**Frontend design system** ("Ink Blue on Paper"; product truth in `PRODUCT.md`, direction in `.impeccable/surfaces/src-app-jsx.md`, system in `DESIGN.md`):
+- Tokens: semantic `@theme` colours in `src/styles/index.css` (`ground`, `surface`, `raised`, `line`, `ink`, `ink-muted`, `accent` (navy, the only interactive colour), `accent-ink`, `highlight` (peach), `highlight-ink`, `coral` (large display words and the read line only; under AA for small text), `focus`, `danger`, `success`), redefined for dark mode under `prefers-color-scheme`. Use `bg-ground`/`text-ink` etc., never raw hex in components. Fonts: Young Serif (`type-display`, `font-display`) for headings, Outfit for UI. Soft shadows via the `shadow-card`, `shadow-lift` and `shadow-sticker` utilities.
+- Reading state: `src/reading.jsx`. A page calls `useReading(true)` while it waits on slow work (upload, recommendation generation), and the 4px `ReadRule` under the nav becomes an indeterminate progress bar. `ReadSweep` is the coral scan line over the photo (CSS keyframes phase-locked to the wall clock). Both are hidden or static under reduced motion.
+- Shared components in `src/components/ui/`: `Button` (variants, `loading`, renders a `Link` with `to`), `Dialog` (native `<dialog>`), `Notice`, `StatusView`, `Field`/`inputClass`, `BookCover` (generated bookcloth cover fallback; exports `titleColor`), `AccountCta` (inline / gate), `AuthLayout`.
+- Motion: `motion/react` with shared variants in `src/motion.js`; transform/opacity only; `reducedMotion="user"`. Icons: `lucide-react` only, no inline SVG.
 
-**Database**: PostgreSQL (Neon serverless) accessed via `pg` connection pool in `api/lib/database.js`.
+**Backend**: Vercel serverless functions under `api/`. Each file is a standalone function — no shared Express app. Shared utilities live in root `lib/` (outside `api/` so they don't count as functions).
+
+**Database**: PostgreSQL (Neon serverless) accessed via `pg` connection pool in `lib/database.js`.
 
 ### Identity Model
 
@@ -68,7 +74,7 @@ Two identity primitives coexist:
 - `POST /api/auth/logout` — delete session, clear cookie
 - `GET /api/auth/me` — return current user or 401
 
-Auth helper: `api/lib/auth.js` — exports `hashPassword`, `verifyPassword`, `generateSessionToken`, `hashToken`, `createSession`, `getCurrentUser`, `requireUser`, `serializeSessionCookie`, `clearSessionCookie`.
+Auth helper: `lib/auth.js` — exports `hashPassword`, `verifyPassword`, `generateSessionToken`, `hashToken`, `createSession`, `getCurrentUser`, `requireUser`, `serializeSessionCookie`, `clearSessionCookie`.
 
 ### Core Data Flow
 
@@ -99,7 +105,7 @@ Required in `.env.local`:
 DATABASE_URL=           # PostgreSQL connection string (Neon)
 GROQ_API_KEY=           # For qwen/qwen3.6-27b (vision) and openai/gpt-oss-120b (recommendations)
 GOOGLE_BOOKS_API_KEY=   # Book metadata and cover images
-USE_MOCK_AI=false       # Set to "true" to skip real AI calls during development
+USE_MOCK_AI=false       # "true" swaps the vision call for lib/mockAI.js (8 fixed books). Recommendations have no mock. Note: a linked `vercel dev` may load Development env vars from Vercel, so check the server log for "AI Mode: MOCK"
 ```
 
 ## Deployment

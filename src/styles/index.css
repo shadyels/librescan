@@ -1,103 +1,140 @@
 @import "tailwindcss";
 
+/*
+ * Ink blue on paper. Cream ground, navy ink and accent, one peach highlight,
+ * one coral detail (large display text and the read line only; it is under
+ * AA for small text on cream). Dark values are redefined on :root under
+ * prefers-color-scheme.
+ */
 @theme {
-  /* Backgrounds */
-  --color-bg-primary: #f6f1ea;
-  --color-bg-elevated: #ffffff;
-  --color-bg-surface: #ece5db;
-  --color-bg-hover: #e3dbd0;
+  --color-ground: #f5f0e6;
+  --color-surface: #ece5d8;
+  --color-raised: #fffdf8;
+  --color-line: #ded6c8;
+  --color-ink: #1e2433;
+  --color-ink-muted: #5f6677;
+  --color-accent: #23395d;
+  --color-accent-ink: #f5f0e6;
+  --color-highlight: #f3c9b5;
+  --color-highlight-ink: #1e2433;
+  --color-coral: #d2603f;
+  --color-focus: #23395d;
+  --color-danger: #b42318;
+  --color-success: #2e6b3f;
 
-  /* Warm brown accent */
-  --color-accent: #7c5e36;
-  --color-accent-hover: #6b4f2b;
-  --color-accent-muted: #7c5e3615;
-  --color-accent-glow: #7c5e3620;
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Young Serif", Georgia, serif;
 
-  /* Text */
-  --color-text-primary: #2a2017;
-  --color-text-secondary: #6b5c4b;
-  --color-text-muted: #9c8d7c;
+  --radius-photo: 1.25rem;
 
-  /* Borders */
-  --color-border: #ddd4c7;
-  --color-border-accent: #7c5e3630;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
-  /* Feedback */
-  --color-danger: #c44133;
-  --color-danger-muted: #c4413312;
-  --color-success: #3a7d56;
-  --color-success-muted: #3a7d5612;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ground: #151821;
+    --color-surface: #1a1d29;
+    --color-raised: #1e2230;
+    --color-line: #2e3446;
+    --color-ink: #eef0f5;
+    --color-ink-muted: #a6adbf;
+    --color-accent: #9db4e0;
+    --color-accent-ink: #151821;
+    --color-highlight: #5a3a30;
+    --color-highlight-ink: #f6dccf;
+    --color-coral: #ef8a6a;
+    --color-focus: #9db4e0;
+    --color-danger: #f2877b;
+    --color-success: #79c08a;
+  }
+}
 
-  /* Body font override */
-  --font-sans: "Outfit", system-ui, sans-serif;
+/* Display voice: Young Serif has one weight; tighten it a touch. */
+@utility type-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Label voice for figures and short labels. */
+@utility type-label {
+  font-weight: 600;
+}
+
+/* Soft, ink-tinted elevation for cards and stickers. */
+@utility shadow-card {
+  box-shadow: 0 1px 2px rgb(30 36 51 / 0.05), 0 8px 22px rgb(30 36 51 / 0.07);
+}
+@utility shadow-lift {
+  box-shadow: 0 1px 2px rgb(30 36 51 / 0.18), 0 4px 12px rgb(35 57 93 / 0.18);
+}
+@utility shadow-sticker {
+  box-shadow: 0 6px 14px rgb(210 96 63 / 0.25);
+}
+
+/* Header rule while reading (src/reading.jsx ReadRule): indeterminate, eases
+   toward 92% and waits there; the page navigates away when the read ends. */
+@keyframes read-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(0.92); }
+}
+.read-progress {
+  animation: read-progress 14s cubic-bezier(0.1, 0.6, 0.3, 1) forwards;
+}
+
+/* Read sweep over the photo (src/reading.jsx ReadSweep): 2.6 s travel + 0.35 s hold = 2950 ms. */
+@keyframes read-veil {
+  0% { transform: translateX(0); }
+  88%, 100% { transform: translateX(100%); }
+}
+@keyframes read-line {
+  0% { transform: translateX(-100%); }
+  88%, 100% { transform: translateX(0); }
+}
+.read-sweep-veil,
+.read-sweep-line {
+  animation: 2950ms cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.read-sweep-veil { animation-name: read-veil; }
+.read-sweep-line { animation-name: read-line; }
+
+@media (prefers-reduced-motion: reduce) {
+  .read-sweep { display: none; }
+  .read-progress { animation: none; }
 }
 
 @layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
   body {
-    background-color: var(--color-bg-primary);
-    color: var(--color-text-primary);
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+    caret-color: var(--color-accent);
+    scrollbar-color: var(--color-line) transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-}
 
-@layer components {
-  .font-display {
-    font-family: "Fraunces", Georgia, serif;
+  ::selection {
+    background-color: var(--color-highlight);
+    color: var(--color-highlight-ink);
   }
 
-  .glass-card {
-    background-color: var(--color-bg-elevated);
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(42, 32, 23, 0.06);
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
   }
 
-  .glass-card-hover {
-    transition:
-      transform 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      border-color 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      box-shadow 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    &:hover {
-      transform: translateY(-2px);
-      border-color: var(--color-border-accent);
-      box-shadow: 0 8px 24px rgba(42, 32, 23, 0.08);
-    }
+  a {
+    text-underline-offset: 0.2em;
   }
 
-  .animate-fade-in-up {
-    animation: fade-in-up 0.5s ease-out both;
-  }
-
-  .animate-shimmer {
-    background: linear-gradient(
-      90deg,
-      var(--color-bg-surface) 25%,
-      var(--color-bg-hover) 50%,
-      var(--color-bg-surface) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.8s ease-in-out infinite;
-  }
-}
-
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
+  dialog::backdrop {
+    background: rgb(21 24 33 / 0.5);
   }
 }

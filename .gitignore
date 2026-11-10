@@ -142,3 +142,11 @@ vite.config.ts.timestamp-*
 
 # git worktrees (local dev isolation)
 .worktrees/
+
+# design tooling scratch (impeccable / taste-skill)
+.taste-skill/
+.impeccable/mocks/
+.impeccable/review/
+.impeccable/build/
+.impeccable/live/
+.impeccable/config.local.json
