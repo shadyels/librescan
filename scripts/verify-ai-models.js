@@ -28,7 +28,7 @@ console.log(JSON.stringify(vision.metadata, null, 2));
 console.log("books:", JSON.stringify(vision.books, null, 2).substring(0, 1200));
 
 check("returns a books array", Array.isArray(vision.books));
-check("model_used is the friendly label", vision.metadata.model_used === "Qwen 3.6 27B",
+check("model_used is the friendly label", vision.metadata.model_used === "Qwen 3.8 27B",
   `got "${vision.metadata.model_used}"`);
 check("no placeholder titles survived",
   !vision.books.some((b) => /^(unknown|untitled|book|n\/a)$/i.test(b.title)));
