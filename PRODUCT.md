@@ -24,7 +24,7 @@ Two claims together, which neighbouring book apps (Goodreads, StoryGraph) can't 
 ## Operating Context
 
 - Upload: JPEG/PNG/HEIC, max 10 MB, via camera capture on phones or file picker on desktop.
-- Vision recognition (`qwen/qwen3.6-27b` on Groq) takes several seconds; recommendation generation (`openai/gpt-oss-120b`) takes 10–30 s on first request and is cached afterwards.
+- Vision recognition (`qwen/qwen3.8-27b` on Groq) takes several seconds; recommendation generation (`openai/gpt-oss-120b`) takes 10–30 s on first request and is cached afterwards.
 - Anonymous scope is a device id in IndexedDB, passed as `?device_id=` on Results/Recommendations URLs.
 - Claim flow: signing up or logging in moves the device's most recent anon scan and its recommendation into the account and redirects to that scan's Results.
 - Daily API ceilings can block all operations (`daily_limit_hit`).

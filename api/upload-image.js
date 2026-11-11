@@ -192,9 +192,9 @@ export default async function handler(req, res) {
           console.log("[upload] Using MOCK AI (USE_MOCK_AI=true)");
           recognizedBooks = await recognizeBooksMock(uploadedFile.filepath);
         } else {
-          // REAL PATH: Use qwen/qwen3.6-27b (Groq) to analyze the bookshelf image.
+          // REAL PATH: Use qwen/qwen3.8-27b (Groq) to analyze the bookshelf image.
           // Requires GROQ_API_KEY to be set.
-          console.log("[upload] Using REAL AI - qwen3.6-27b via Groq (USE_MOCK_AI=false)");
+          console.log("[upload] Using REAL AI - qwen3.8-27b via Groq (USE_MOCK_AI=false)");
           recognizedBooks = await recognizeBooksReal(uploadedFile.filepath);
         }
 
@@ -243,7 +243,8 @@ export default async function handler(req, res) {
          *
          * JSONB allows flexible querying:
          * - SELECT recognized_books->'books' to get book array
-         * - WHERE recognized_books->'metadata'->>'model_used' = 'Qwen 3.6 27B'
+         * - WHERE recognized_books->'metadata'->>'model_used' = 'Qwen 3.8 27B'
+         *   (older scans keep 'Qwen 3.6 27B')
          */
         if (user) {
           // Logged-in user: insert with user_id
